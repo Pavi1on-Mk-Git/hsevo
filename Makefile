@@ -5,10 +5,10 @@ BROWSER = powershell.exe
 .PHONY: test
 
 run:
-	@ ./build/bin/gravel
+	@ ./build/bin/hsevo
 
 debug:
-	@ gdb ./build/bin/gravel
+	@ gdb ./build/bin/hsevo
 
 test:
 	@ ./build/bin/test_hsevo

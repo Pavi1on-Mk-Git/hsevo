@@ -1,13 +1,16 @@
 #include "Game.h"
 
-Game::Game(std::array<AIPlayer, 2> players, std::ranlux24_base& random_engine):
-    _random_engine(random_engine), _players(std::move(players)), _game_ended(false), _turn_ended(false)
+Game::Game(
+    const RandomPlayerLogic& first_player, const RandomPlayerLogic& second_player, std::ranlux24_base& random_engine
+):
+    _random_engine(random_engine),
+    _players({first_player, second_player}), _game_ended(false), _turn_ended(false)
 {}
 
 void Game::check_winner()
 {
-    bool first_player_dead = _players.at(0).health <= 0;
-    bool second_player_dead = _players.at(1).health <= 0;
+    bool first_player_dead = _players.at(0).state.health <= 0;
+    bool second_player_dead = _players.at(1).state.health <= 0;
 
     if(first_player_dead || second_player_dead)
         _game_ended = true;
@@ -27,12 +30,12 @@ void Game::switch_active_player()
     _active_player = 1 - _active_player;
 }
 
-AIPlayer& Game::current_player()
+Player& Game::current_player()
 {
     return _players.at(_active_player);
 }
 
-AIPlayer& Game::opponent()
+Player& Game::opponent()
 {
     return _players.at(1 - _active_player);
 }
@@ -58,13 +61,13 @@ void Game::do_turn()
     if(_game_ended)
         return;
 
-    current_player().mana = ++current_player().mana_crystals;
+    current_player().state.mana = ++current_player().state.mana_crystals;
 
     _turn_ended = false;
 
     while(!_turn_ended)
     {
-        auto chosen_action = current_player().choose_action(get_possible_actions());
+        auto chosen_action = current_player().logic.choose_action(get_possible_actions());
 
         chosen_action->apply(*this);
 
@@ -78,44 +81,44 @@ void Game::do_turn()
 
 void Game::draw(unsigned int amount)
 {
-    auto [drawn_cards, fatigue_count] = current_player().deck.draw(amount);
-    current_player().hand.add_cards(std::move(drawn_cards));
-    current_player().fatigue(fatigue_count);
+    auto [drawn_cards, fatigue_count] = current_player().state.deck.draw(amount);
+    current_player().state.hand.add_cards(std::move(drawn_cards));
+    current_player().state.fatigue(fatigue_count);
 }
 
 void Game::draw()
 {
-    auto drawn_card = current_player().deck.draw();
+    auto drawn_card = current_player().state.deck.draw();
     if(drawn_card)
-        current_player().hand.add_cards(std::move(drawn_card));
+        current_player().state.hand.add_cards(std::move(drawn_card));
     else
-        current_player().fatigue(1);
+        current_player().state.fatigue(1);
 }
 
 std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
 {
     std::vector<std::unique_ptr<Action>> possible_actions;
-    for(auto hand_position = 0u; hand_position < current_player().hand.size(); ++hand_position)
+    for(auto hand_position = 0u; hand_position < current_player().state.hand.size(); ++hand_position)
     {
-        auto minion_count = current_player().board.minion_count();
+        auto minion_count = current_player().state.board.minion_count();
         if(minion_count == Board::MAX_BOARD_SIZE)
             break;
 
-        auto card_cost = current_player().hand.get_card(hand_position)->mana_cost;
+        auto card_cost = current_player().state.hand.get_card(hand_position)->mana_cost;
 
-        if(card_cost > current_player().mana)
+        if(card_cost > current_player().state.mana)
             continue;
 
         for(auto board_position = 0u; board_position <= minion_count; ++board_position)
             possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position, card_cost));
     }
 
-    for(auto current_board_position = 0u; current_board_position < current_player().board.minion_count();
+    for(auto current_board_position = 0u; current_board_position < current_player().state.board.minion_count();
         ++current_board_position)
     {
         possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
 
-        for(auto opponent_board_position = 0u; opponent_board_position < opponent().board.minion_count();
+        for(auto opponent_board_position = 0u; opponent_board_position < opponent().state.board.minion_count();
             ++opponent_board_position)
             possible_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position));
     }
@@ -144,24 +147,24 @@ void Game::do_action(const EndTurnAction& action)
 
 void Game::do_action(const PlayCardAction& action)
 {
-    auto played_card = std::move(current_player().hand.remove_card(action.hand_position));
-    current_player().board.add_card(std::move(played_card), action.board_position);
-    current_player().mana -= action.card_cost;
+    auto played_card = std::move(current_player().state.hand.remove_card(action.hand_position));
+    current_player().state.board.add_card(std::move(played_card), action.board_position);
+    current_player().state.mana -= action.card_cost;
 }
 
 void Game::do_action(const TradeAction& action)
 {
-    auto& first_minion = current_player().board.get_minion(action.first_target);
-    auto& second_minion = opponent().board.get_minion(action.second_target);
+    auto& first_minion = current_player().state.board.get_minion(action.first_target);
+    auto& second_minion = opponent().state.board.get_minion(action.second_target);
 
     first_minion->health -= second_minion->attack;
     second_minion->health -= first_minion->attack;
 
-    current_player().board.remove_dead_minions();
-    opponent().board.remove_dead_minions();
+    current_player().state.board.remove_dead_minions();
+    opponent().state.board.remove_dead_minions();
 }
 
 void Game::do_action(const HitHeroAction& action)
 {
-    opponent().health -= current_player().board.get_minion(action.position)->attack;
+    opponent().state.health -= current_player().state.board.get_minion(action.position)->attack;
 }

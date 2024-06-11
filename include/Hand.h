@@ -15,6 +15,7 @@ public:
     void add_cards(std::unique_ptr<Card> card);
     std::unique_ptr<Card> remove_card(unsigned int position);
     unsigned int size();
+    std::unique_ptr<Card>& get_card(unsigned int position);
     Hand();
 };
 

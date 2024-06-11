@@ -1,5 +1,7 @@
 #include "Board.h"
 
+#include <algorithm>
+
 Board::Board() {}
 
 const unsigned int Board::MAX_BOARD_SIZE = 7;
@@ -12,4 +14,15 @@ void Board::add_card(std::unique_ptr<Card> card, unsigned int position)
 unsigned int Board::minion_count()
 {
     return _board.size();
+}
+
+std::unique_ptr<Card>& Board::get_minion(unsigned int position)
+{
+    return _board.at(position);
+}
+
+void Board::remove_dead_minions()
+{
+    auto new_end = std::remove_if(_board.begin(), _board.end(), [](const auto& minion) { return minion->health <= 0; });
+    _board.erase(new_end, _board.end());
 }

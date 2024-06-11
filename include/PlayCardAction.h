@@ -5,12 +5,9 @@
 
 struct PlayCardAction: Action
 {
-    const unsigned int hand_position, board_position;
+    const unsigned int hand_position, board_position, card_cost;
 
-    PlayCardAction(unsigned int hand_position, unsigned int board_position):
-        hand_position(hand_position), board_position(board_position)
-    {}
-
+    PlayCardAction(unsigned int hand_position, unsigned int board_position, unsigned int card_cost);
     void apply(Game& game);
 };
 

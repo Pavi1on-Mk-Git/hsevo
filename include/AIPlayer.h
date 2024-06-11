@@ -9,10 +9,12 @@
 class AIPlayer
 {
 private:
-    unsigned int max_health;
-    unsigned int fatigue_dmg;
+    unsigned int _max_health;
+    unsigned int _fatigue_dmg;
+    std::ranlux24_base& _random_engine;
 public:
     int health;
+    unsigned int mana_crystals, mana;
     Deck deck;
     Hand hand;
     Board board;

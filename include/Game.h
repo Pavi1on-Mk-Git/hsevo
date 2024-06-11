@@ -6,7 +6,9 @@
 #include "AIPlayer.h"
 #include "Deck.h"
 #include "EndTurnAction.h"
+#include "HitHeroAction.h"
 #include "PlayCardAction.h"
+#include "TradeAction.h"
 
 class Game
 {
@@ -21,6 +23,7 @@ private:
     void check_winner();
     void switch_active_player();
     AIPlayer& current_player();
+    AIPlayer& opponent();
 
     void mulligan();
     void do_turn();
@@ -32,6 +35,8 @@ public:
     std::optional<unsigned int> run();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);
+    void do_action(const TradeAction& action);
+    void do_action(const HitHeroAction& action);
 };
 
 #endif

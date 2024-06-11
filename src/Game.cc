@@ -32,6 +32,11 @@ AIPlayer& Game::current_player()
     return _players.at(_active_player);
 }
 
+AIPlayer& Game::opponent()
+{
+    return _players.at(1 - _active_player);
+}
+
 static constexpr auto first_draw_amount = 3;
 static constexpr auto second_draw_amount = 4;
 
@@ -52,6 +57,8 @@ void Game::do_turn()
     check_winner();
     if(_game_ended)
         return;
+
+    current_player().mana = ++current_player().mana_crystals;
 
     _turn_ended = false;
 
@@ -93,9 +100,26 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
         auto minion_count = current_player().board.minion_count();
         if(minion_count == Board::MAX_BOARD_SIZE)
             break;
+
+        auto card_cost = current_player().hand.get_card(hand_position)->mana_cost;
+
+        if(card_cost > current_player().mana)
+            continue;
+
         for(auto board_position = 0u; board_position <= minion_count; ++board_position)
-            possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position));
+            possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position, card_cost));
     }
+
+    for(auto current_board_position = 0u; current_board_position < current_player().board.minion_count();
+        ++current_board_position)
+    {
+        possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
+
+        for(auto opponent_board_position = 0u; opponent_board_position < opponent().board.minion_count();
+            ++opponent_board_position)
+            possible_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position));
+    }
+
     possible_actions.push_back(std::make_unique<EndTurnAction>());
 
     return possible_actions;
@@ -121,5 +145,23 @@ void Game::do_action(const EndTurnAction& action)
 void Game::do_action(const PlayCardAction& action)
 {
     auto played_card = std::move(current_player().hand.remove_card(action.hand_position));
-    current_player().board.add_card(std::move(played_card), action.hand_position);
+    current_player().board.add_card(std::move(played_card), action.board_position);
+    current_player().mana -= action.card_cost;
+}
+
+void Game::do_action(const TradeAction& action)
+{
+    auto& first_minion = current_player().board.get_minion(action.first_target);
+    auto& second_minion = opponent().board.get_minion(action.second_target);
+
+    first_minion->health -= second_minion->attack;
+    second_minion->health -= first_minion->attack;
+
+    current_player().board.remove_dead_minions();
+    opponent().board.remove_dead_minions();
+}
+
+void Game::do_action(const HitHeroAction& action)
+{
+    opponent().health -= current_player().board.get_minion(action.position)->attack;
 }

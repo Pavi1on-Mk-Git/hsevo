@@ -30,3 +30,8 @@ unsigned int Hand::size()
 {
     return _hand.size();
 }
+
+std::unique_ptr<Card>& Hand::get_card(unsigned int position)
+{
+    return _hand.at(position);
+}

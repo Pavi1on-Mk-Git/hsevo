@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game(std::array<AIPlayer, 2> players, std::ranlux24_base& random_engine):
-    _random_engine(random_engine), _players(std::move(players)), _game_ended(false)
+    _random_engine(random_engine), _players(std::move(players)), _game_ended(false), _turn_ended(false)
 {}
 
 void Game::check_winner()
@@ -27,6 +27,11 @@ void Game::switch_active_player()
     _active_player = 1 - _active_player;
 }
 
+AIPlayer& Game::current_player()
+{
+    return _players.at(_active_player);
+}
+
 static constexpr auto first_draw_amount = 3;
 static constexpr auto second_draw_amount = 4;
 
@@ -36,9 +41,8 @@ void Game::mulligan()
     switch_active_player();
 
     draw(second_draw_amount);
-    switch_active_player();
-
     // TODO add The Coin to hand
+    switch_active_player();
 }
 
 void Game::do_turn()
@@ -49,23 +53,52 @@ void Game::do_turn()
     if(_game_ended)
         return;
 
+    _turn_ended = false;
+
+    while(!_turn_ended)
+    {
+        auto chosen_action = current_player().choose_action(get_possible_actions());
+
+        chosen_action->apply(*this);
+
+        check_winner();
+        if(_game_ended)
+            return;
+    }
+
     switch_active_player();
 }
 
 void Game::draw(unsigned int amount)
 {
-    auto [drawn_cards, fatigue_count] = _players.at(_active_player).deck.draw(amount);
-    _players.at(_active_player).hand.add_cards(std::move(drawn_cards));
-    _players.at(_active_player).fatigue(fatigue_count);
+    auto [drawn_cards, fatigue_count] = current_player().deck.draw(amount);
+    current_player().hand.add_cards(std::move(drawn_cards));
+    current_player().fatigue(fatigue_count);
 }
 
 void Game::draw()
 {
-    auto drawn_card = _players.at(_active_player).deck.draw();
+    auto drawn_card = current_player().deck.draw();
     if(drawn_card)
-        _players.at(_active_player).hand.add_cards(std::move(drawn_card));
+        current_player().hand.add_cards(std::move(drawn_card));
     else
-        _players.at(_active_player).fatigue(1);
+        current_player().fatigue(1);
+}
+
+std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
+{
+    std::vector<std::unique_ptr<Action>> possible_actions;
+    for(auto hand_position = 0u; hand_position < current_player().hand.size(); ++hand_position)
+    {
+        auto minion_count = current_player().board.minion_count();
+        if(minion_count == Board::MAX_BOARD_SIZE)
+            break;
+        for(auto board_position = 0u; board_position <= minion_count; ++board_position)
+            possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position));
+    }
+    possible_actions.push_back(std::make_unique<EndTurnAction>());
+
+    return possible_actions;
 }
 
 std::optional<unsigned int> Game::run()
@@ -77,4 +110,16 @@ std::optional<unsigned int> Game::run()
         do_turn();
 
     return _winner;
+}
+
+void Game::do_action(const EndTurnAction& action)
+{
+    static_cast<void>(action);
+    _turn_ended = true;
+}
+
+void Game::do_action(const PlayCardAction& action)
+{
+    auto played_card = std::move(current_player().hand.remove_card(action.hand_position));
+    current_player().board.add_card(std::move(played_card), action.hand_position);
 }

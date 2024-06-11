@@ -16,7 +16,7 @@ private:
 public:
     Deck(const DeckList& decklist, std::ranlux24_base& random_engine);
     void shuffle();
-    std::vector<std::unique_ptr<Card>> draw(unsigned int amount);
+    std::tuple<std::vector<std::unique_ptr<Card>>, unsigned int> draw(unsigned int amount);
     std::unique_ptr<Card> draw();
 };
 

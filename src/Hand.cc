@@ -1,7 +1,5 @@
 #include "Hand.h"
 
-#include <iostream>
-
 Hand::Hand(): _hand()
 {
     _hand.reserve(10);

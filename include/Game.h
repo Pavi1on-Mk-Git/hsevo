@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <optional>
+
 #include "AIPlayer.h"
 #include "Deck.h"
 
@@ -11,7 +13,9 @@ private:
     std::array<AIPlayer, 2> _players;
     unsigned int _active_player;
     bool _game_ended;
+    std::optional<unsigned int> _winner;
 
+    void check_winner();
     void switch_active_player();
     void mulligan();
     void do_turn();
@@ -19,7 +23,7 @@ private:
     void draw();
 public:
     Game(std::array<AIPlayer, 2> players, std::ranlux24_base& random_engine);
-    void run();
+    std::optional<unsigned int> run();
 };
 
 #endif

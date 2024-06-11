@@ -3,7 +3,7 @@ project(hsevo)
 
 include_directories(include)
 
-set(COMMON_FLAGS -Og -g -Wall -Werror -Wextra -Wpedantic)
+set(COMMON_FLAGS -std=c++17 -Og -g -Wall -Werror -Wextra -Wpedantic)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)

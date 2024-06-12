@@ -1,10 +1,12 @@
 #include "Game.h"
 
 Game::Game(
-    const RandomPlayerLogic& first_player, const RandomPlayerLogic& second_player, std::ranlux24_base& random_engine
+    const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
+    std::ranlux24_base& random_engine
 ):
     _random_engine(random_engine),
-    _players({first_player, second_player}), _game_ended(false), _turn_ended(false)
+    _players({Player(first_player, random_engine), Player(second_player, random_engine)}), _game_ended(false),
+    _turn_ended(false)
 {}
 
 void Game::check_winner()
@@ -67,7 +69,7 @@ void Game::do_turn()
 
     while(!_turn_ended)
     {
-        auto chosen_action = current_player().logic.choose_action(*this, get_possible_actions());
+        auto chosen_action = current_player().logic->choose_action(*this, get_possible_actions());
 
         chosen_action->apply(*this);
 

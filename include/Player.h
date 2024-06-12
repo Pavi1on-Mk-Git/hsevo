@@ -1,14 +1,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "PlayerLogic.h"
 #include "PlayerState.h"
-#include "RandomPlayerLogic.h"
 
 struct Player
 {
-    const RandomPlayerLogic& logic;
+    const std::unique_ptr<PlayerLogic>& logic;
     PlayerState state;
-    Player(const RandomPlayerLogic& logic);
+    Player(const std::unique_ptr<PlayerLogic>& logic, std::ranlux24_base& random_engine);
 };
 
 #endif

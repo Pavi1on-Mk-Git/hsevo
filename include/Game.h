@@ -31,7 +31,8 @@ private:
     std::vector<std::unique_ptr<Action>> get_possible_actions();
 public:
     Game(
-        const RandomPlayerLogic& first_player, const RandomPlayerLogic& second_player, std::ranlux24_base& random_engine
+        const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
+        std::ranlux24_base& random_engine
     );
     std::optional<unsigned int> run();
     Game copy();

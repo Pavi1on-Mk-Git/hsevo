@@ -67,7 +67,7 @@ void Game::do_turn()
 
     while(!_turn_ended)
     {
-        auto chosen_action = current_player().logic.choose_action(get_possible_actions());
+        auto chosen_action = current_player().logic.choose_action(*this, get_possible_actions());
 
         chosen_action->apply(*this);
 
@@ -137,6 +137,11 @@ std::optional<unsigned int> Game::run()
         do_turn();
 
     return _winner;
+}
+
+Game Game::copy()
+{
+    return Game(*this);
 }
 
 void Game::do_action(const EndTurnAction& action)

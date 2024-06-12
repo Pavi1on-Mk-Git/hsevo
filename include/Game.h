@@ -34,6 +34,7 @@ public:
         const RandomPlayerLogic& first_player, const RandomPlayerLogic& second_player, std::ranlux24_base& random_engine
     );
     std::optional<unsigned int> run();
+    Game copy();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);
     void do_action(const TradeAction& action);

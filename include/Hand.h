@@ -17,6 +17,7 @@ public:
     unsigned int size();
     std::unique_ptr<Card>& get_card(unsigned int position);
     Hand();
+    Hand(const Hand& hand);
 };
 
 #endif

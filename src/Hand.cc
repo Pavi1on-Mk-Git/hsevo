@@ -1,11 +1,21 @@
 #include "Hand.h"
 
-Hand::Hand(): _hand()
-{
-    _hand.reserve(10);
-}
+#include <algorithm>
 
 static constexpr auto MAX_HAND_SIZE = 10;
+
+Hand::Hand()
+{
+    _hand.reserve(MAX_HAND_SIZE);
+}
+
+Hand::Hand(const Hand& hand)
+{
+    _hand.reserve(MAX_HAND_SIZE);
+    std::transform(hand._hand.begin(), hand._hand.end(), std::back_inserter(_hand), [](const auto& card) {
+        return std::make_unique<Card>(*card);
+    });
+}
 
 void Hand::add_cards(std::vector<std::unique_ptr<Card>> cards)
 {

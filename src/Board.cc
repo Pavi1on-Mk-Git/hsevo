@@ -2,9 +2,20 @@
 
 #include <algorithm>
 
-Board::Board() {}
-
 const unsigned int Board::MAX_BOARD_SIZE = 7;
+
+Board::Board()
+{
+    _board.reserve(MAX_BOARD_SIZE);
+}
+
+Board::Board(const Board& board)
+{
+    _board.reserve(MAX_BOARD_SIZE);
+    std::transform(board._board.begin(), board._board.end(), std::back_inserter(_board), [](const auto& card) {
+        return std::make_unique<Card>(*card);
+    });
+}
 
 void Board::add_card(std::unique_ptr<Card> card, unsigned int position)
 {

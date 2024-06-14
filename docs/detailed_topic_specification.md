@@ -23,8 +23,6 @@ Wybranym przeze mnie zawężeniem zawartości gry jest ograniczenie się do kart
 
 Wszystkie karty wymagają zapłacenia pewnego kosztu many, aby możliwe było jej zagranie. Dzielą się one na trzy zasadnicze kategorie: stronników, zaklęcia i bronie.
 
-<div style="page-break-after: always;"></div>
-
 #### Stronnicy
 [<p align="center"><img src="./images/voidwalker.webp" width="200"/>](Voidwalker)
 
@@ -52,8 +50,6 @@ Szczególny podtyp zaklęcia stanowią tzw. Sekrety. Nie wpływają one na pole 
 
 Broń posiada dwie główne statystyki: atak i wytrzymałość. Założenie broni przez gracza pozwala mu raz na turę wykonać atak, tak jakby był stronnikiem. Wytrzymałość opisuje ile razy może zostać użyta zanim zostanie zniszczona.
 
-<div style="page-break-after: always;"></div>
-
 #### Moc bohatera
 [<p align="center"><img src="./images/life_tap.webp" width="200"/>](Hero_Power)
 
@@ -64,12 +60,10 @@ Każdy bohater posiada charakterystyczną dla swojej klasy moc bohatera. Po zap�
 
 Próba dobrania karty z pustej talii, aplikuje na gracza dobierającego obrażenia za zmęczenie. Rosną one o 1 za każdą następną kartę dobraną z pustej talii
 
-<div style="page-break-after: always;"></div>
-
 #### Pętla gry
 [<p align="center"><img src="./images/hs_board.webp" width="800"/>](Hearthstone_board)
 
-Obydwaj gracze zaczynają grę z 30 punktami zdrowia bohatera, zerową liczbą kryształów many (których to ilość wzrasta o 1 na początku każdej tury, aż do maksimum 10 i odnawia się po zakończeniu tury). Na początku gry dochodzi do pierwszego dobrania kart, gdzie pierwszemu i drugiemu graczowi zostają zaprezentowane odpowiednio 3 i 4 karty, z możliwością odrzucenia części z nich i dobrania innych z talii. Gracz zaczynający drugi otrzymuje ponadto kartę "Moneta" - zaklęcie o koszcie 0 dodające graczowi jednorazowo 1 kryształ many do końca tury.
+Obydwaj gracze zaczynają grę z 30 punktami zdrowia bohatera, zerową liczbą kryształów many (których to liczba wzrasta o 1 na początku każdej tury, aż do maksimum 10 i odnawia się po zakończeniu tury). Na początku gry dochodzi do pierwszego dobrania kart, gdzie pierwszemu i drugiemu graczowi zostają zaprezentowane odpowiednio 3 i 4 karty, z możliwością odrzucenia części z nich i dobrania innych z talii. Gracz zaczynający drugi otrzymuje ponadto kartę "Moneta" - zaklęcie o koszcie 0 dodające graczowi jednorazowo 1 kryształ many do końca tury.
 
 Na początku każdej tury gracz, który ma rozgrywać daną turę dobiera jedną kartę. Tury rozgrywane są przez graczy naprzemiennie i kończą się, gdy zostanie naciśnięty przycisk zakończenia tury (co w sytuacji nie posiadania wystarczających środków na zagranie żadnych kart pozostaje jedynym możliwym zagraniem).
 
@@ -77,9 +71,19 @@ Gra kończy się, gdy punkty zdrowia któregokolwiek z bohaterów spadną do 0 i
 
 ## Dotychczasowe eksperymenty przeprowadzane w tej dziedzinie
 
-Powstało wiele prac naukowych skupiających się na wykorzystaniu wszelkiego rodzaju AI, a zwłaszcza algorytmów opartych na ewolucji zarówno do tworzenia talii: [Playtesting używający metod ewolucyjnych do testowania potencjalnych talii](https://www.sciencedirect.com/science/article/pii/S0950705118301953), [Tworzenie talii metodą ewolucyjną](https://ieeexplore.ieee.org/abstract/document/7860426), kontrolowania agentów grających: [Podejmowanie decyzji algorytmem ewolucyjnym](https://www.scitepress.org/Papers/2023/117839/117839.pdf), czy też balansu gry: [Ewoluowanie Mety](https://ieeexplore.ieee.org/abstract/document/8847966).
+Powstało wiele prac naukowych skupiających się na wykorzystaniu wszelkiego rodzaju AI, a zwłaszcza algorytmów opartych na ewolucji zarówno do tworzenia talii:
+- [Playtesting używający metod ewolucyjnych do testowania potencjalnych talii](https://www.sciencedirect.com/science/article/pii/S0950705118301953) - zastosowanie metod ewolucyjnych z zaproponowaną przez autorów metodą "smart mutation", która stara się zastąpić kartę w talii kartami o podobnym koszcie, używając symulatora [MetaStone](https://github.com/demilich1/metastone) do rozgrywania meczy,
+- [Tworzenie talii metodą ewolucyjną](https://ieeexplore.ieee.org/abstract/document/7860426),
 
-Moją uwagę szczególnie przykuło podejście opisane w [Optimizing Hearthstone agents using an evolutionary algorithm](https://www.sciencedirect.com/science/article/pii/S0950705119304356), jako że wydało mi się być dość naturalne do zaprezentowanego problemu. Metodę wykorzystaną przez autorów tej pracy można streścić następująco: ekstrahują z obecnego stanu gry kluczowe wartości i wykorzystują w ten sposób powstały wektor jako wejście do prostego algorytmu ewolucyjnego realizującego problem regresji poprzez ważoną sumę podanych mu wartości, gdzie osobniki stanowią wektory wag owej sumy. Wynik jest następnie przekazywany do prostego agenta, wybierającego akcję o najwyższym wyniku. Do ewaluacji agentów stosują oni metodę koewolucyjną współzawodniczą, polegająco na tym że wszyscy agenci z różnych grup (po grupie na talię) rozgrywają mecze przeciwko sobie, które są oceniane zgodnie z następującym schematem: {1: zwycięstwo, 0: w przeciwnym przypadku}, a łączna suma zdobytych punktów jest używana jako funkcja oceny danego osobnika.
+kontrolowania agentów grających:
+- [Podejmowanie decyzji algorytmem ewolucyjnym](https://www.scitepress.org/Papers/2023/117839/117839.pdf) - użycie algorytmu RHEA (Rolling Horizon Evolutionary Algorithm) (gdzie osobnik reprezentowany jest przez ciąg akcji wykonanych, a oceniany jest stan osiągnięty po ich wykonaniu), do wyboru sekwencji akcji wykonywanych przez agenta grającego
+
+czy też balansu gry:
+- [Ewoluowanie Mety](https://ieeexplore.ieee.org/abstract/document/8847966) - użycie algorytmu ewolucyjnego do dokonania zmian statystyk kart, tak aby (dla rozważanego zestawu talii), zmniejszyć dominację talii silnych, a wzmocnić z kolei te słabsze, w celu uzyskania bardziej fair schematu rozgrywki.
+
+Moją uwagę szczególnie przykuło podejście opisane w [Optimizing Hearthstone agents using an evolutionary algorithm](https://www.sciencedirect.com/science/article/pii/S0950705119304356), jako że wydało mi się być dość naturalne do zaprezentowanego problemu.
+
+Metodę wykorzystaną przez autorów tej pracy można streścić następująco: autorzy ekstrahują z obecnego stanu gry kluczowe wartości i wykorzystują w ten sposób powstały wektor jako wejście do prostego algorytmu ewolucyjnego realizującego problem regresji poprzez ważoną sumę podanych mu wartości, gdzie osobniki stanowią wektory wag owej sumy. Wynik jest następnie przekazywany do prostego agenta, wybierającego akcję o najwyższym wyniku. Do ewaluacji agentów stosują oni metodę koewolucyjną współzawodniczą, polegająco na tym że wszyscy agenci z różnych grup (po grupie na talię) rozgrywają mecze przeciwko sobie, które są oceniane zgodnie z następującym schematem: {1: zwycięstwo, 0: w przeciwnym przypadku}, a łączna suma zdobytych punktów jest używana jako funkcja oceny danego osobnika.
 
 ## Planowane działania
 
@@ -94,34 +98,17 @@ Całościowy wektor wejściowy sieci składałby się z następujących części
     - pancerz
     - siła ataku
     - pozostała wytrzymałość broni
-    - ilość sekretów nałożonych na bohatera
+    - liczba sekretów nałożonych na bohatera
 - odnośnie stronników na polu
     - zdrowie
     - atak
     - słowa kluczowe (dla każdego 1 jeżeli posiada, 0  w przeciwnym przypadku)
 - globalnie
-    - ilość kart w ręce
-    - ilość kart w talii
+    - liczba kart w ręce
+    - liczba kart w talii
     - posiadana mana
 
 Wyżej wymienione części są zduplikowane dla oponenta i odpowiednio odejmowane od łącznej oceny stanu gry (jako że korzyść przeciwnika stanowi naszą niekorzyść).
-
-Istnieją ponadto cechy których ocena nie jest możliwa dla obydwu stron.
-- odnośnie stronników w ręce
-    - zdrowie
-    - atak
-    - słowa kluczowe
-    - koszt many
-
-- odnośnie zaklęć w ręce
-    - koszt
-
-- odnośnie broni w ręce
-    - wytrzymałość
-    - atak
-    - koszt
-
-Ocena tych cech wykonywana jest jedynie dla gracza rozgrywającego turę, nie dla jego przeciwnika, jako że te informacje nie powinny być możliwe do pozyskania dla prawdziwego gracza (nie mamy wglądu w rękę przeciwnika).
 
 #### Metoda działania agenta (w schemacie optymalizacji pojedynczej akcji)
 
@@ -138,6 +125,54 @@ Do akcji zalicza się:
 #### Ocena agenta
 
 Wstępnie, nie planuję zmieniać metody oceny agentów w porównaniu z oryginalną pracą (tj. {zwycięstwo: 1, remis lub porażka: 0}, każdy gra na każdego), chyba że czas obliczeń algorythm okaże się być niewspółmierny do obserwowanej poprawy działania, wtedy rozważę ograniczenie oceny do rozgrywania meczy na k najlepszych osobników z każdej populacji.
+
+## NEAT - krótki opis
+
+Mówiąc ogólnie NEAT jest metodą tworzenia sztucznych sieci neuronowych, która dokonuje modyfikacji swoich parametrów nie przez wsteczną propagację gradientów, a przez ewolucję populacji sieci.
+
+Zaczyna on od sieci o możliwie uproszczonej strukturze tj. wszystkie wejścia bezpośrednio połączone z wszystkimi wyjściami, a następnie rozwija sieć poprzez mutację, krzyżowanie i reprodukcję.
+
+#### Reprezentacja sieci
+
+Każdy genom sieci składa się z listy połączeń między neuronami (gdzie połączenie może być aktywne, bądź nieaktywne), opatrzonych tzw. "numerami innowacji", które określają kiedy w historii populacji doszło po raz pierwszy do wytworzenia takiego połączenia i służą nam między innymi do unikania problemu "Competing Conventions" - tj. dwie sieci mogą mieć inną strukturę genomu (kolejność połączeń), lecz reprezentować taką samą sieć, co przy krzyżowaniu mogłoby spowodować znaczącą utratę informacji z sieci.
+
+#### Mutacja
+
+W NEAT występują trzy główne typy mutacji:
+- mutacja wagi połączenia (dokonujemy losowej perturbacji wagi)
+- dodanie połączenia między dwoma neuronami
+- dodanie nowego neuronu - dzieje się to poprzez wybór losowego połączenia i następnie dokonanie jego podziału na 2 nowe, gdzie pierwsze ma wagę 1 i łączy oryginalne wejście z nowym neuronem, a drugie wagę oryginalnego połączenia i łączy nowy neuron z oryginalnym wyjściem. Oryginalne połączenie pozostaje w genomie, lecz staje się nieaktywne.
+
+Mutacje modyfikujące topologię sieci powinny występować rzadziej od tych dotyczących wag, aby uniknąć nadmiernego rozrastania się sieci.
+
+#### Krzyżowanie
+
+Dwoje osobników krzyżuje się w następujący sposób
+- dzieli się ich geny na dwie kategorie: występujące w obydwu osobnikach i występujące wyłącznie w jednym z nich
+- geny wspólne przekazywane są do potomka losowo z któregokolwiek z rodziców
+- geny nie będące wspólnymi odziedzicza się z rodzica, który ma lepszą wartość funkcji oceny osobników
+
+#### Ochrona innowacji
+
+Rozwój topologii sieci może spowodować, że nowo powstały osobnik będzie radził sobie gorzej od tych już istniejących i zginie zanim "rozwinie swój potencjał". Tym samym, aby temu zapobiec osobników dzieli się na "gatunki". Podział ten jest określany przez następujący wzór na dystans między osobnikami:
+$\delta = \frac{c_1E}{N} + \frac{c_2D}{N} + c_3 \cdot \overline{W}$, gdzie
+$E$ - liczba genów nadmiarowych (niewspólnych znajdujących sie za najwyższym elementem wspólnym dwóch osobników),
+$D$ - liczba genów rozłącznych (niewspólnych znajdujących się przed najwyższym elementem wspólnym dwóch osobników),
+$N$ - długość dłuższego z dwóch rozważanych genomów,
+$\overline{W}$ - różnica wag między wspólnymi genami osobników
+$c_1, c_2, c_3$ - stałe.
+
+Wszystkie osobniki, których dystans od reprezetanta gatunku jest mniejszy od granicznej wartości $\delta_t$, zaliczane są do tego samego gatunku co on. Proces wybierania reprezentantów i sprawdzania przynależności do gatunku kontunuowany jest, aż każdy osobnik nie zostanie przypisany do swojego gatunku.
+
+Wtedy można zdefiniować ważoną funkcję celu:
+$f_i' = \frac{f_i}{\sum_{j=1}^n{sh(\delta(i, j))}}$, gdzie
+$f_i$ - oryginalna wartość funkcji celu osobnika,
+$sh(x)$ - 0 jeżeli $x$ większy od $\delta_t$, 1 w przeciwnym przypadku.
+Zapobiega ona nadmiernemu rozrastaniu się "dobrych" gatunków przez zmniejszanie wartości funkcji celu w zależności od rozmiaru gatunku.
+
+#### Reprodukcja
+
+Każdy z gatunków tworzy swoje potomstwo osobno poprzez wpierw usunięcie osobników o najniższych wartościach funkcji celu, a następnie stworzenie nowego pokolenia z potomków starego.
 
 ## Technologie
 

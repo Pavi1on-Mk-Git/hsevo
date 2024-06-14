@@ -26,7 +26,7 @@ void Game::check_winner()
     else if(first_player_dead)
         _winner = 1;
     else if(second_player_dead)
-        _winner = 2;
+        _winner = 0;
 }
 
 void Game::switch_active_player()

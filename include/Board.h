@@ -4,20 +4,19 @@
 #include <memory>
 #include <vector>
 
-#include "Card.h"
+#include "Minion.h"
 
 class Board
 {
 private:
-    std::vector<std::unique_ptr<Card>> _board;
+    std::vector<Minion> _board;
 public:
-    static const unsigned int MAX_BOARD_SIZE;
+    static constexpr unsigned int MAX_BOARD_SIZE = 7;
 
     Board();
-    Board(const Board& board);
-    void add_card(std::unique_ptr<Card> card, unsigned int position);
+    void add_minion(const Minion& minion, unsigned int position);
     unsigned int minion_count();
-    std::unique_ptr<Card>& get_minion(unsigned int position);
+    Minion& get_minion(unsigned int position);
     void remove_dead_minions();
 };
 

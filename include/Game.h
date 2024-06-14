@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "EndTurnAction.h"
+#include "GameStateInput.h"
 #include "HitHeroAction.h"
 #include "PlayCardAction.h"
 #include "Player.h"
@@ -29,13 +30,15 @@ private:
     void draw(unsigned int amount);
     void draw();
     std::vector<std::unique_ptr<Action>> get_possible_actions();
+    PlayerStateInput get_player_state(unsigned int player_index);
 public:
     Game(
         const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
         std::ranlux24_base& random_engine
     );
     std::optional<unsigned int> run();
-    Game copy();
+    Game copy() const;
+    GameStateInput get_state();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);
     void do_action(const TradeAction& action);

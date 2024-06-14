@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include <algorithm>
+
 Game::Game(
     const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
     std::ranlux24_base& random_engine
@@ -51,7 +53,6 @@ void Game::mulligan()
     switch_active_player();
 
     draw(second_draw_amount);
-    // TODO add The Coin to hand
     switch_active_player();
 }
 
@@ -64,6 +65,9 @@ void Game::do_turn()
         return;
 
     current_player().state.mana = ++current_player().state.mana_crystals;
+
+    for(auto minion_index = 0u; minion_index < current_player().state.board.minion_count(); ++minion_index)
+        current_player().state.board.get_minion(minion_index).active = true;
 
     _turn_ended = false;
 
@@ -118,6 +122,9 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     for(auto current_board_position = 0u; current_board_position < current_player().state.board.minion_count();
         ++current_board_position)
     {
+        if(!current_player().state.board.get_minion(current_board_position).active)
+            continue;
+
         possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
 
         for(auto opponent_board_position = 0u; opponent_board_position < opponent().state.board.minion_count();
@@ -128,6 +135,27 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     possible_actions.push_back(std::make_unique<EndTurnAction>());
 
     return possible_actions;
+}
+
+PlayerStateInput Game::get_player_state(unsigned int player_index)
+{
+    HeroStateInput hero_state{static_cast<unsigned int>(_players.at(player_index).state.health)};
+    std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_states;
+
+    auto board_size = _players.at(player_index).state.board.minion_count();
+    for(auto minion_index = 0u; minion_index < board_size; ++minion_index)
+    {
+        auto& curr_minion = _players.at(player_index).state.board.get_minion(minion_index);
+        minion_states.at(minion_index
+        ) = MinionStateInput{static_cast<unsigned int>(curr_minion.health), curr_minion.attack};
+    }
+    for(auto empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE - board_size;
+        ++empty_space_index)
+        minion_states.at(empty_space_index) = MinionStateInput();
+
+    return PlayerStateInput{
+        hero_state, minion_states, _players.at(player_index).state.hand.size(), board_size,
+        _players.at(player_index).state.mana};
 }
 
 std::optional<unsigned int> Game::run()
@@ -141,9 +169,14 @@ std::optional<unsigned int> Game::run()
     return _winner;
 }
 
-Game Game::copy()
+Game Game::copy() const
 {
     return Game(*this);
+}
+
+GameStateInput Game::get_state()
+{
+    return GameStateInput{{get_player_state(_active_player), get_player_state(1 - _active_player)}};
 }
 
 void Game::do_action(const EndTurnAction& action)
@@ -155,7 +188,7 @@ void Game::do_action(const EndTurnAction& action)
 void Game::do_action(const PlayCardAction& action)
 {
     auto played_card = std::move(current_player().state.hand.remove_card(action.hand_position));
-    current_player().state.board.add_card(std::move(played_card), action.board_position);
+    current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     current_player().state.mana -= action.card_cost;
 }
 
@@ -164,8 +197,8 @@ void Game::do_action(const TradeAction& action)
     auto& first_minion = current_player().state.board.get_minion(action.first_target);
     auto& second_minion = opponent().state.board.get_minion(action.second_target);
 
-    first_minion->health -= second_minion->attack;
-    second_minion->health -= first_minion->attack;
+    first_minion.health -= second_minion.attack;
+    second_minion.health -= first_minion.attack;
 
     current_player().state.board.remove_dead_minions();
     opponent().state.board.remove_dead_minions();
@@ -173,5 +206,5 @@ void Game::do_action(const TradeAction& action)
 
 void Game::do_action(const HitHeroAction& action)
 {
-    opponent().state.health -= current_player().state.board.get_minion(action.position)->attack;
+    opponent().state.health -= current_player().state.board.get_minion(action.position).attack;
 }

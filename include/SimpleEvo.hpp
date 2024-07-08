@@ -39,13 +39,16 @@ public:
     void mutate()
     {
         std::uniform_real_distribution random_uniform(0., 1.);
+        auto random_evo_coeff_a = random_uniform(_random_engine.get()),
+             random_evo_coeff_b = random_uniform(_random_engine.get());
+
         std::transform(
             mutation_strengths_.begin(), mutation_strengths_.end(), mutation_strengths_.begin(),
             [&](double strength) {
                 return std::max(
                     strength * std::exp(
-                                   random_uniform(_random_engine.get()) / std::sqrt(2. * std::sqrt(InSize)) +
-                                   random_uniform(_random_engine.get()) / std::sqrt(2. * InSize)
+                                   random_evo_coeff_a / std::sqrt(2. * std::sqrt(InSize)) +
+                                   random_evo_coeff_b / std::sqrt(2. * InSize)
                                ),
                     1e-5
                 );

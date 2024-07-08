@@ -1,14 +1,19 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <optional>
-
 #include "EndTurnAction.h"
 #include "GameStateInput.h"
 #include "HitHeroAction.h"
 #include "PlayCardAction.h"
 #include "Player.h"
 #include "TradeAction.h"
+
+enum class GameResult
+{
+    PLAYER_1,
+    PLAYER_2,
+    TIE,
+};
 
 class Game
 {
@@ -17,7 +22,7 @@ private:
     std::array<Player, 2> players_;
     unsigned int active_player_;
     bool game_ended_;
-    std::optional<unsigned int> winner_;
+    GameResult winner_;
     bool turn_ended_;
 
     void check_winner();
@@ -36,7 +41,7 @@ public:
         const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
         std::ranlux24_base& random_engine
     );
-    std::optional<unsigned int> run();
+    GameResult run();
     Game copy() const;
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);

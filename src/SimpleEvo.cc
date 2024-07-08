@@ -22,12 +22,17 @@ std::vector<unsigned int> score_member(
         {
             auto game = Game(players.at(i), players.at(j), random_engine);
             auto winner = game.run();
-            if(winner.has_value())
+
+            switch(winner)
             {
-                if(*winner == 0)
-                    scores.at(i)++;
-                else
-                    scores.at(j)++;
+            case GameResult::PLAYER_1:
+                scores.at(i)++;
+                break;
+            case GameResult::PLAYER_2:
+                scores.at(j)++;
+                break;
+            default:
+                break;
             }
         }
     }

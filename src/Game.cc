@@ -22,11 +22,11 @@ void Game::check_winner()
         return;
 
     if(first_player_dead && second_player_dead)
-        winner_ = std::nullopt;
+        winner_ = GameResult::TIE;
     else if(first_player_dead)
-        winner_ = 1;
+        winner_ = GameResult::PLAYER_2;
     else if(second_player_dead)
-        winner_ = 0;
+        winner_ = GameResult::PLAYER_1;
 }
 
 void Game::switch_active_player()
@@ -158,7 +158,7 @@ PlayerStateInput Game::get_player_state(unsigned int player_index)
         players_.at(player_index).state.mana};
 }
 
-std::optional<unsigned int> Game::run()
+GameResult Game::run()
 {
     active_player_ = _random_engine() % 2;
 

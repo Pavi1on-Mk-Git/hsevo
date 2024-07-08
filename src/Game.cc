@@ -187,7 +187,7 @@ void Game::do_action(const EndTurnAction& action)
 
 void Game::do_action(const PlayCardAction& action)
 {
-    auto played_card = std::move(current_player().state.hand.remove_card(action.hand_position));
+    auto played_card = current_player().state.hand.remove_card(action.hand_position);
     current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     current_player().state.mana -= action.card_cost;
 }

@@ -156,18 +156,27 @@ Dwoje osobników krzyżuje się w następujący sposób
 
 Rozwój topologii sieci może spowodować, że nowo powstały osobnik będzie radził sobie gorzej od tych już istniejących i zginie zanim "rozwinie swój potencjał". Tym samym, aby temu zapobiec osobników dzieli się na "gatunki". Podział ten jest określany przez następujący wzór na dystans między osobnikami:
 $\delta = \frac{c_1E}{N} + \frac{c_2D}{N} + c_3 \cdot \overline{W}$, gdzie
+
 $E$ - liczba genów nadmiarowych (niewspólnych znajdujących sie za najwyższym elementem wspólnym dwóch osobników),
+
 $D$ - liczba genów rozłącznych (niewspólnych znajdujących się przed najwyższym elementem wspólnym dwóch osobników),
+
 $N$ - długość dłuższego z dwóch rozważanych genomów,
+
 $\overline{W}$ - różnica wag między wspólnymi genami osobników
+
 $c_1, c_2, c_3$ - stałe.
 
 Wszystkie osobniki, których dystans od reprezetanta gatunku jest mniejszy od granicznej wartości $\delta_t$, zaliczane są do tego samego gatunku co on. Proces wybierania reprezentantów i sprawdzania przynależności do gatunku kontunuowany jest, aż każdy osobnik nie zostanie przypisany do swojego gatunku.
 
 Wtedy można zdefiniować ważoną funkcję celu:
+
 $f_i' = \frac{f_i}{\sum_{j=1}^n{sh(\delta(i, j))}}$, gdzie
+
 $f_i$ - oryginalna wartość funkcji celu osobnika,
+
 $sh(x)$ - 0 jeżeli $x$ większy od $\delta_t$, 1 w przeciwnym przypadku.
+
 Zapobiega ona nadmiernemu rozrastaniu się "dobrych" gatunków przez zmniejszanie wartości funkcji celu w zależności od rozmiaru gatunku.
 
 #### Reprodukcja
@@ -179,3 +188,10 @@ Każdy z gatunków tworzy swoje potomstwo osobno poprzez wpierw usunięcie osobn
 Jako główny język implementacji gry planuję użyć C++, ze względu na szybkość jego działania, wsparcie dla paradygmatów programowania obiektowego (przydatnych do tworzenia hierarchii kart) i moją osobistą znajomość jego działania.
 
 Do zaimplementowania samego algorytmu NEAT rozważam wykorzystanie gotowej biblioteki, jeżeli uda się w stosunkowo prosty sposób dostosować ją do funkcjonowania na kilku populacjach jednocześnie z "wspólną" funkcją oceny. W przeciwnym wypadku zaimplementuję ów algorytm własnoręcznie w C++.
+
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>

@@ -14,11 +14,11 @@ class Game
 {
 private:
     std::ranlux24_base& _random_engine;
-    std::array<Player, 2> _players;
-    unsigned int _active_player;
-    bool _game_ended;
-    std::optional<unsigned int> _winner;
-    bool _turn_ended;
+    std::array<Player, 2> players_;
+    unsigned int active_player_;
+    bool game_ended_;
+    std::optional<unsigned int> winner_;
+    bool turn_ended_;
 
     void check_winner();
     void switch_active_player();

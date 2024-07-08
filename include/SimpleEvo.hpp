@@ -16,23 +16,23 @@ class SimpleEvo
 private:
     static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
     std::reference_wrapper<std::ranlux24_base> _random_engine;
-    std::array<double, InSize> _weights;
-    std::array<double, InSize> _mutation_strengths;
+    std::array<double, InSize> weights_;
+    std::array<double, InSize> mutation_strengths_;
 public:
     SimpleEvo(double init_mutation_strength, std::ranlux24_base& random_engine): _random_engine(random_engine)
     {
         std::uniform_real_distribution random_uniform(MIN_WEIGHT, MAX_WEIGHT);
-        std::generate(_weights.begin(), _weights.end(), [&random_uniform, this]() {
+        std::generate(weights_.begin(), weights_.end(), [&random_uniform, this]() {
             return random_uniform(_random_engine.get());
         });
-        std::fill(_mutation_strengths.begin(), _mutation_strengths.end(), init_mutation_strength);
+        std::fill(mutation_strengths_.begin(), mutation_strengths_.end(), init_mutation_strength);
     }
 
     double score_vec(const std::array<double, InSize>& input_vec) const
     {
         double score = 0.;
         for(auto i = 0u; i < InSize; ++i)
-            score += _weights.at(i) * input_vec.at(i);
+            score += weights_.at(i) * input_vec.at(i);
         return score;
     }
 
@@ -40,7 +40,7 @@ public:
     {
         std::uniform_real_distribution random_uniform(0., 1.);
         std::transform(
-            _mutation_strengths.begin(), _mutation_strengths.end(), _mutation_strengths.begin(),
+            mutation_strengths_.begin(), mutation_strengths_.end(), mutation_strengths_.begin(),
             [&](const auto& strength) {
                 return std::max(
                     strength * std::exp(
@@ -54,9 +54,9 @@ public:
 
         for(auto weight_index = 0u; weight_index < InSize; ++weight_index)
         {
-            std::uniform_real_distribution random_uniform_mutating(0., _mutation_strengths.at(weight_index));
-            _weights.at(weight_index
-            ) = std::clamp(_weights.at(weight_index) + random_uniform_mutating(_random_engine.get()), 0., 1.);
+            std::uniform_real_distribution random_uniform_mutating(0., mutation_strengths_.at(weight_index));
+            weights_.at(weight_index
+            ) = std::clamp(weights_.at(weight_index) + random_uniform_mutating(_random_engine.get()), 0., 1.);
         }
     }
 

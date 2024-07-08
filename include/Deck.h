@@ -12,7 +12,7 @@ class Deck
 {
 private:
     std::ranlux24_base& _random_engine;
-    std::vector<std::unique_ptr<Card>> _deck;
+    std::vector<std::unique_ptr<Card>> deck_;
 public:
     Deck(const DeckList& decklist, std::ranlux24_base& random_engine);
     Deck(const Deck& deck);

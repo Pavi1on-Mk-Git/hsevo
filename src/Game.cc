@@ -7,41 +7,41 @@ Game::Game(
     std::ranlux24_base& random_engine
 ):
     _random_engine(random_engine),
-    _players({Player(first_player, random_engine), Player(second_player, random_engine)}), _game_ended(false),
-    _turn_ended(false)
+    players_({Player(first_player, random_engine), Player(second_player, random_engine)}), game_ended_(false),
+    turn_ended_(false)
 {}
 
 void Game::check_winner()
 {
-    bool first_player_dead = _players.at(0).state.health <= 0;
-    bool second_player_dead = _players.at(1).state.health <= 0;
+    bool first_player_dead = players_.at(0).state.health <= 0;
+    bool second_player_dead = players_.at(1).state.health <= 0;
 
     if(first_player_dead || second_player_dead)
-        _game_ended = true;
+        game_ended_ = true;
     else
         return;
 
     if(first_player_dead && second_player_dead)
-        _winner = std::nullopt;
+        winner_ = std::nullopt;
     else if(first_player_dead)
-        _winner = 1;
+        winner_ = 1;
     else if(second_player_dead)
-        _winner = 0;
+        winner_ = 0;
 }
 
 void Game::switch_active_player()
 {
-    _active_player = 1 - _active_player;
+    active_player_ = 1 - active_player_;
 }
 
 Player& Game::current_player()
 {
-    return _players.at(_active_player);
+    return players_.at(active_player_);
 }
 
 Player& Game::opponent()
 {
-    return _players.at(1 - _active_player);
+    return players_.at(1 - active_player_);
 }
 
 static constexpr auto first_draw_amount = 3;
@@ -61,7 +61,7 @@ void Game::do_turn()
     draw();
 
     check_winner();
-    if(_game_ended)
+    if(game_ended_)
         return;
 
     current_player().state.mana = ++current_player().state.mana_crystals;
@@ -69,16 +69,16 @@ void Game::do_turn()
     for(auto minion_index = 0u; minion_index < current_player().state.board.minion_count(); ++minion_index)
         current_player().state.board.get_minion(minion_index).active = true;
 
-    _turn_ended = false;
+    turn_ended_ = false;
 
-    while(!_turn_ended)
+    while(!turn_ended_)
     {
         auto chosen_action = current_player().logic->choose_action(*this, get_possible_actions());
 
         chosen_action->apply(*this);
 
         check_winner();
-        if(_game_ended)
+        if(game_ended_)
             return;
     }
 
@@ -139,13 +139,13 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
 
 PlayerStateInput Game::get_player_state(unsigned int player_index)
 {
-    HeroStateInput hero_state{static_cast<unsigned int>(_players.at(player_index).state.health)};
+    HeroStateInput hero_state{static_cast<unsigned int>(players_.at(player_index).state.health)};
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_states;
 
-    auto board_size = _players.at(player_index).state.board.minion_count();
+    auto board_size = players_.at(player_index).state.board.minion_count();
     for(auto minion_index = 0u; minion_index < board_size; ++minion_index)
     {
-        auto& curr_minion = _players.at(player_index).state.board.get_minion(minion_index);
+        auto& curr_minion = players_.at(player_index).state.board.get_minion(minion_index);
         minion_states.at(minion_index
         ) = MinionStateInput{static_cast<unsigned int>(curr_minion.health), curr_minion.attack};
     }
@@ -154,19 +154,19 @@ PlayerStateInput Game::get_player_state(unsigned int player_index)
         minion_states.at(empty_space_index) = MinionStateInput();
 
     return PlayerStateInput{
-        hero_state, minion_states, _players.at(player_index).state.hand.size(), board_size,
-        _players.at(player_index).state.mana};
+        hero_state, minion_states, players_.at(player_index).state.hand.size(), board_size,
+        players_.at(player_index).state.mana};
 }
 
 std::optional<unsigned int> Game::run()
 {
-    _active_player = _random_engine() % 2;
+    active_player_ = _random_engine() % 2;
 
     mulligan();
-    while(!_game_ended)
+    while(!game_ended_)
         do_turn();
 
-    return _winner;
+    return winner_;
 }
 
 Game Game::copy() const
@@ -176,13 +176,13 @@ Game Game::copy() const
 
 GameStateInput Game::get_state()
 {
-    return GameStateInput{{get_player_state(_active_player), get_player_state(1 - _active_player)}};
+    return GameStateInput{{get_player_state(active_player_), get_player_state(1 - active_player_)}};
 }
 
 void Game::do_action(const EndTurnAction& action)
 {
     static_cast<void>(action);
-    _turn_ended = true;
+    turn_ended_ = true;
 }
 
 void Game::do_action(const PlayCardAction& action)

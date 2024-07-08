@@ -9,8 +9,8 @@
 class PlayerState
 {
 private:
-    unsigned int _max_health;
-    unsigned int _fatigue_dmg;
+    unsigned int max_health_;
+    unsigned int fatigue_dmg_;
 public:
     int health;
     unsigned int mana_crystals, mana;

@@ -9,7 +9,7 @@
 class Board
 {
 private:
-    std::vector<Minion> _board;
+    std::vector<Minion> board_;
 public:
     static constexpr unsigned int MAX_BOARD_SIZE = 7;
 

@@ -24,7 +24,7 @@ void Deck::shuffle()
 
 static const auto FATIGUE_DRAW = nullptr;
 
-std::tuple<std::vector<std::unique_ptr<Card>>, unsigned int> Deck::draw(unsigned int amount)
+std::tuple<std::vector<std::unique_ptr<Card>>, unsigned> Deck::draw(unsigned amount)
 {
     std::vector<std::unique_ptr<Card>> drawn_cards;
     int actual_amount = std::min<std::size_t>(amount, deck_.size());

@@ -2,7 +2,7 @@
 
 #include "Game.h"
 
-HitHeroAction::HitHeroAction(unsigned int position): position(position) {}
+HitHeroAction::HitHeroAction(unsigned position): position(position) {}
 
 void HitHeroAction::apply(Game& game)
 {

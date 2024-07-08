@@ -6,10 +6,10 @@
 struct Card
 {
     const std::string name;
-    const unsigned int base_mana_cost, base_attack, base_health;
-    unsigned int mana_cost, attack;
+    const unsigned base_mana_cost, base_attack, base_health;
+    unsigned mana_cost, attack;
     int health;
-    Card(const std::string& name, unsigned int base_cost, unsigned int base_attack, unsigned int base_health);
+    Card(const std::string& name, unsigned base_cost, unsigned base_attack, unsigned base_health);
 };
 
 #endif

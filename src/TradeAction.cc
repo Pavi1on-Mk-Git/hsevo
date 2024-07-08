@@ -2,7 +2,7 @@
 
 #include "Game.h"
 
-TradeAction::TradeAction(unsigned int first_target, unsigned int second_target):
+TradeAction::TradeAction(unsigned first_target, unsigned second_target):
     first_target(first_target), second_target(second_target)
 {}
 

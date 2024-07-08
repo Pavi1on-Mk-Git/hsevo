@@ -7,7 +7,7 @@ std::array<std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3>, 2> GameStateIn
     std::array<std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3>, 2> result;
     std::transform(players.begin(), players.end(), result.begin(), [](const PlayerStateInput& player) {
         std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3> result_element;
-        auto result_element_index = 0u;
+        unsigned result_element_index = 0;
         result_element.at(result_element_index++) = player.hero.health;
         for(const auto& minion: player.minions)
         {

@@ -7,17 +7,17 @@ Board::Board()
     board_.reserve(MAX_BOARD_SIZE);
 }
 
-void Board::add_minion(const Minion& minion, unsigned int position)
+void Board::add_minion(const Minion& minion, unsigned position)
 {
     board_.insert(board_.begin() + position, std::move(minion));
 }
 
-unsigned int Board::minion_count()
+unsigned Board::minion_count()
 {
     return board_.size();
 }
 
-Minion& Board::get_minion(unsigned int position)
+Minion& Board::get_minion(unsigned position)
 {
     return board_.at(position);
 }

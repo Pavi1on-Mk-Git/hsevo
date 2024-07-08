@@ -20,7 +20,7 @@ class Game
 private:
     std::ranlux24_base& _random_engine;
     std::array<Player, 2> players_;
-    unsigned int active_player_;
+    unsigned active_player_;
     bool game_ended_;
     GameResult winner_;
     bool turn_ended_;
@@ -32,10 +32,10 @@ private:
 
     void mulligan();
     void do_turn();
-    void draw(unsigned int amount);
+    void draw(unsigned amount);
     void draw();
     std::vector<std::unique_ptr<Action>> get_possible_actions();
-    PlayerStateInput get_player_state(unsigned int player_index);
+    PlayerStateInput get_player_state(unsigned player_index);
 public:
     Game(
         const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,

@@ -6,8 +6,8 @@
 struct Minion
 {
     std::string name;
-    unsigned int base_attack, base_health;
-    unsigned int attack;
+    unsigned base_attack, base_health;
+    unsigned attack;
     int health;
     bool active;
     Minion(const Card& card);

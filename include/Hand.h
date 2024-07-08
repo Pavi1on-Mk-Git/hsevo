@@ -13,9 +13,9 @@ private:
 public:
     void add_cards(std::vector<std::unique_ptr<Card>> cards);
     void add_cards(std::unique_ptr<Card> card);
-    std::unique_ptr<Card> remove_card(unsigned int position);
-    unsigned int size();
-    std::unique_ptr<Card>& get_card(unsigned int position);
+    std::unique_ptr<Card> remove_card(unsigned position);
+    unsigned size();
+    std::unique_ptr<Card>& get_card(unsigned position);
     Hand();
     Hand(const Hand& hand);
 };

@@ -8,7 +8,7 @@
 
 int main()
 {
-    auto SEED = 42u;
+    int SEED = 42;
     auto random_engine = std::ranlux24_base(SEED);
 
     auto best_evo = SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>::evolve(

@@ -5,8 +5,8 @@
 
 struct TradeAction: Action
 {
-    unsigned int first_target, second_target;
-    TradeAction(unsigned int first_target, unsigned int second_target);
+    unsigned first_target, second_target;
+    TradeAction(unsigned first_target, unsigned second_target);
     void apply(Game& game);
 };
 

@@ -2,7 +2,7 @@
 
 #include "Game.h"
 
-PlayCardAction::PlayCardAction(unsigned int hand_position, unsigned int board_position, unsigned int card_cost):
+PlayCardAction::PlayCardAction(unsigned hand_position, unsigned board_position, unsigned card_cost):
     hand_position(hand_position), board_position(board_position), card_cost(card_cost)
 {}
 

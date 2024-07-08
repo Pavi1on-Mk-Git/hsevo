@@ -10,7 +10,7 @@
 #include "Board.h"
 #include "decklists.h"
 
-template <unsigned int InSize>
+template <unsigned InSize>
 class SimpleEvo
 {
 private:
@@ -31,7 +31,7 @@ public:
     double score_vec(const std::array<double, InSize>& input_vec) const
     {
         double score = 0.;
-        for(auto i = 0u; i < InSize; ++i)
+        for(unsigned i = 0; i < InSize; ++i)
             score += weights_.at(i) * input_vec.at(i);
         return score;
     }
@@ -41,7 +41,7 @@ public:
         std::uniform_real_distribution random_uniform(0., 1.);
         std::transform(
             mutation_strengths_.begin(), mutation_strengths_.end(), mutation_strengths_.begin(),
-            [&](const auto& strength) {
+            [&](double strength) {
                 return std::max(
                     strength * std::exp(
                                    random_uniform(_random_engine.get()) / std::sqrt(2. * std::sqrt(InSize)) +
@@ -52,7 +52,7 @@ public:
             }
         );
 
-        for(auto weight_index = 0u; weight_index < InSize; ++weight_index)
+        for(unsigned weight_index = 0; weight_index < InSize; ++weight_index)
         {
             std::uniform_real_distribution random_uniform_mutating(0., mutation_strengths_.at(weight_index));
             weights_.at(weight_index
@@ -61,7 +61,7 @@ public:
     }
 
     static std::vector<SimpleEvo<InSize>> init_population(
-        unsigned int population_size, double init_mutation_strength, std::ranlux24_base& random_engine
+        unsigned population_size, double init_mutation_strength, std::ranlux24_base& random_engine
     )
     {
         std::vector<SimpleEvo<InSize>> population;
@@ -72,18 +72,18 @@ public:
         return population;
     }
 
-    static std::vector<std::pair<SimpleEvo<InSize>, unsigned int>> mutate_population(
-        const std::vector<SimpleEvo<InSize>>& population, unsigned int mutants_size,
-        std::function<std::vector<unsigned int>(std::vector<SimpleEvo<InSize>>)> scoring_func,
+    static std::vector<std::pair<SimpleEvo<InSize>, unsigned>> mutate_population(
+        const std::vector<SimpleEvo<InSize>>& population, unsigned mutants_size,
+        std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)> scoring_func,
         std::ranlux24_base& random_engine
     )
     {
         std::vector<SimpleEvo<InSize>> mutants;
         mutants.reserve(mutants_size + population.size());
-        std::uniform_int_distribution<unsigned int> random_uniform(0, population.size() - 1);
-        for(auto mutant_id = 0u; mutant_id < mutants_size; ++mutant_id)
+        std::uniform_int_distribution<unsigned> random_uniform(0, population.size() - 1);
+        for(unsigned mutant_id = 0; mutant_id < mutants_size; ++mutant_id)
         {
-            auto to_mutate = random_uniform(random_engine);
+            unsigned to_mutate = random_uniform(random_engine);
             auto mutant = population.at(to_mutate);
             mutant.mutate();
             mutants.push_back(mutant);
@@ -93,19 +93,19 @@ public:
 
         auto scores = scoring_func(mutants);
 
-        std::vector<std::pair<SimpleEvo<InSize>, unsigned int>> mutants_with_scores;
+        std::vector<std::pair<SimpleEvo<InSize>, unsigned>> mutants_with_scores;
 
         std::transform(
             mutants.begin(), mutants.end(), scores.begin(), std::back_inserter(mutants_with_scores),
-            [](const auto& member, const auto& score) { return std::make_pair(member, score); }
+            [](const auto& member, unsigned score) { return std::make_pair(member, score); }
         );
 
         return mutants_with_scores;
     }
 
-    static std::pair<SimpleEvo<InSize>, unsigned int> evolve(
-        unsigned int mu, unsigned int lambda, double init_mutation_strength,
-        std::function<std::vector<unsigned int>(std::vector<SimpleEvo<InSize>>)> scoring_func, unsigned int iterations,
+    static std::pair<SimpleEvo<InSize>, unsigned> evolve(
+        unsigned mu, unsigned lambda, double init_mutation_strength,
+        std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)> scoring_func, unsigned iterations,
         std::ranlux24_base& random_engine
     )
     {
@@ -115,7 +115,7 @@ public:
 
         auto best_member = std::make_pair(SimpleEvo<InSize>(init_mutation_strength, random_engine), 0);
 
-        for(auto iteration = 0u; iteration < iterations; ++iteration)
+        for(unsigned iteration = 0; iteration < iterations; ++iteration)
         {
             auto mutants_with_scores = mutate_population(population, lambda, scoring_func, random_engine);
             std::nth_element(

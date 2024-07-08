@@ -14,7 +14,7 @@ std::unique_ptr<Action> EvoPlayerLogic::choose_action(const Game& game, std::vec
     std::vector<double> action_scores;
     for(const auto& action: actions)
     {
-        auto game_copy = game.copy();
+        Game game_copy = game.copy();
         action->apply(game_copy);
 
         auto inputs = game_copy.get_state().get_evo_input();

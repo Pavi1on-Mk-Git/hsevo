@@ -9,17 +9,17 @@
 class PlayerState
 {
 private:
-    unsigned int max_health_;
-    unsigned int fatigue_dmg_;
+    unsigned max_health_;
+    unsigned fatigue_dmg_;
 public:
     int health;
-    unsigned int mana_crystals, mana;
+    unsigned mana_crystals, mana;
     Deck deck;
     Hand hand;
     Board board;
 
     PlayerState(DeckList decklist, std::ranlux24_base& random_engine);
-    void fatigue(unsigned int count);
+    void fatigue(unsigned count);
 };
 
 #endif

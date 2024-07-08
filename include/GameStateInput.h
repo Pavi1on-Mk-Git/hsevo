@@ -7,19 +7,19 @@
 
 struct HeroStateInput
 {
-    unsigned int health;
+    unsigned health;
 };
 
 struct MinionStateInput
 {
-    unsigned int health, attack;
+    unsigned health, attack;
 };
 
 struct PlayerStateInput
 {
     HeroStateInput hero;
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minions;
-    unsigned int hand_size, deck_size, mana;
+    unsigned hand_size, deck_size, mana;
 };
 
 struct GameStateInput

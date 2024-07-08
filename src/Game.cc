@@ -44,7 +44,7 @@ Player& Game::opponent()
     return players_.at(1 - active_player_);
 }
 
-static const unsigned int FIRST_DRAW_AMOUNT = 3;
+static const unsigned FIRST_DRAW_AMOUNT = 3;
 
 void Game::mulligan()
 {
@@ -65,7 +65,7 @@ void Game::do_turn()
 
     current_player().state.mana = ++current_player().state.mana_crystals;
 
-    for(auto minion_index = 0u; minion_index < current_player().state.board.minion_count(); ++minion_index)
+    for(unsigned minion_index = 0; minion_index < current_player().state.board.minion_count(); ++minion_index)
         current_player().state.board.get_minion(minion_index).active = true;
 
     turn_ended_ = false;
@@ -84,7 +84,7 @@ void Game::do_turn()
     switch_active_player();
 }
 
-void Game::draw(unsigned int amount)
+void Game::draw(unsigned amount)
 {
     auto [drawn_cards, fatigue_count] = current_player().state.deck.draw(amount);
     current_player().state.hand.add_cards(std::move(drawn_cards));
@@ -103,22 +103,22 @@ void Game::draw()
 std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
 {
     std::vector<std::unique_ptr<Action>> possible_actions;
-    for(auto hand_position = 0u; hand_position < current_player().state.hand.size(); ++hand_position)
+    for(unsigned hand_position = 0; hand_position < current_player().state.hand.size(); ++hand_position)
     {
-        auto minion_count = current_player().state.board.minion_count();
+        unsigned minion_count = current_player().state.board.minion_count();
         if(minion_count == Board::MAX_BOARD_SIZE)
             break;
 
-        auto card_cost = current_player().state.hand.get_card(hand_position)->mana_cost;
+        unsigned card_cost = current_player().state.hand.get_card(hand_position)->mana_cost;
 
         if(card_cost > current_player().state.mana)
             continue;
 
-        for(auto board_position = 0u; board_position <= minion_count; ++board_position)
+        for(unsigned board_position = 0; board_position <= minion_count; ++board_position)
             possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position, card_cost));
     }
 
-    for(auto current_board_position = 0u; current_board_position < current_player().state.board.minion_count();
+    for(unsigned current_board_position = 0; current_board_position < current_player().state.board.minion_count();
         ++current_board_position)
     {
         if(!current_player().state.board.get_minion(current_board_position).active)
@@ -126,7 +126,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
 
         possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
 
-        for(auto opponent_board_position = 0u; opponent_board_position < opponent().state.board.minion_count();
+        for(unsigned opponent_board_position = 0; opponent_board_position < opponent().state.board.minion_count();
             ++opponent_board_position)
             possible_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position));
     }
@@ -136,19 +136,19 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     return possible_actions;
 }
 
-PlayerStateInput Game::get_player_state(unsigned int player_index)
+PlayerStateInput Game::get_player_state(unsigned player_index)
 {
-    HeroStateInput hero_state{static_cast<unsigned int>(players_.at(player_index).state.health)};
+    HeroStateInput hero_state{static_cast<unsigned>(players_.at(player_index).state.health)};
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_states;
 
-    auto board_size = players_.at(player_index).state.board.minion_count();
-    for(auto minion_index = 0u; minion_index < board_size; ++minion_index)
+    unsigned board_size = players_.at(player_index).state.board.minion_count();
+    for(unsigned minion_index = 0; minion_index < board_size; ++minion_index)
     {
         auto& curr_minion = players_.at(player_index).state.board.get_minion(minion_index);
         minion_states.at(minion_index
-        ) = MinionStateInput{static_cast<unsigned int>(curr_minion.health), curr_minion.attack};
+        ) = MinionStateInput{static_cast<unsigned>(curr_minion.health), curr_minion.attack};
     }
-    for(auto empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE - board_size;
+    for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE - board_size;
         ++empty_space_index)
         minion_states.at(empty_space_index) = MinionStateInput();
 

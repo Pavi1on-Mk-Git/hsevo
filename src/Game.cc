@@ -44,15 +44,14 @@ Player& Game::opponent()
     return players_.at(1 - active_player_);
 }
 
-static constexpr auto first_draw_amount = 3;
-static constexpr auto second_draw_amount = 4;
+static const unsigned int FIRST_DRAW_AMOUNT = 3;
 
 void Game::mulligan()
 {
-    draw(first_draw_amount);
+    draw(FIRST_DRAW_AMOUNT);
     switch_active_player();
 
-    draw(second_draw_amount);
+    draw(FIRST_DRAW_AMOUNT + 1);
     switch_active_player();
 }
 

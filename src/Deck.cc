@@ -22,7 +22,7 @@ void Deck::shuffle()
     std::shuffle(deck_.begin(), deck_.end(), _random_engine);
 }
 
-static const auto fatigue_draw = nullptr;
+static const auto FATIGUE_DRAW = nullptr;
 
 std::tuple<std::vector<std::unique_ptr<Card>>, unsigned int> Deck::draw(unsigned int amount)
 {
@@ -38,7 +38,7 @@ std::tuple<std::vector<std::unique_ptr<Card>>, unsigned int> Deck::draw(unsigned
 std::unique_ptr<Card> Deck::draw()
 {
     if(deck_.empty())
-        return fatigue_draw;
+        return FATIGUE_DRAW;
 
     auto card = std::move(deck_.front());
     deck_.erase(deck_.begin());

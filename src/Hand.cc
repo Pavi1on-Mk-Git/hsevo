@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-static constexpr auto MAX_HAND_SIZE = 10;
+static const unsigned int MAX_HAND_SIZE = 10;
 
 Hand::Hand()
 {

@@ -2,7 +2,9 @@
 
 #include <algorithm>
 
-Deck::Deck(const DeckList& decklist, std::ranlux24_base& random_engine): _random_engine(random_engine)
+#include "Rng.h"
+
+Deck::Deck(const DeckList& decklist)
 {
     std::transform(decklist.begin(), decklist.end(), std::back_inserter(deck_), [](const auto& card) {
         return std::make_unique<Card>(card);
@@ -10,7 +12,7 @@ Deck::Deck(const DeckList& decklist, std::ranlux24_base& random_engine): _random
     shuffle();
 }
 
-Deck::Deck(const Deck& deck): _random_engine(deck._random_engine)
+Deck::Deck(const Deck& deck)
 {
     std::transform(deck.deck_.begin(), deck.deck_.end(), std::back_inserter(deck_), [](const auto& card) {
         return std::make_unique<Card>(*card);
@@ -19,7 +21,7 @@ Deck::Deck(const Deck& deck): _random_engine(deck._random_engine)
 
 void Deck::shuffle()
 {
-    std::shuffle(deck_.begin(), deck_.end(), _random_engine);
+    std::shuffle(deck_.begin(), deck_.end(), Rng::instance()->generator());
 }
 
 static const auto FATIGUE_DRAW = nullptr;

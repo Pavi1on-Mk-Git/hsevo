@@ -18,7 +18,6 @@ enum class GameResult
 class Game
 {
 private:
-    std::ranlux24_base& _random_engine;
     std::array<Player, 2> players_;
     unsigned active_player_;
     bool game_ended_;
@@ -37,10 +36,7 @@ private:
     std::vector<std::unique_ptr<Action>> get_possible_actions();
     PlayerStateInput get_player_state(unsigned player_index);
 public:
-    Game(
-        const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
-        std::ranlux24_base& random_engine
-    );
+    Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player);
     GameResult run();
     Game copy() const;
     GameStateInput get_state();

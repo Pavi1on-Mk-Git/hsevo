@@ -9,11 +9,10 @@
 int main()
 {
     int SEED = 42;
-    auto random_engine = std::ranlux24_base(SEED);
+    Rng::instance()->seed(SEED);
 
     auto best_evo = SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>::evolve(
-        10, 10, 0.0001, [&](const auto& population) { return score_member(population, ogre_deck, random_engine); }, 20,
-        random_engine
+        10, 10, 0.0001, [&](const auto& population) { return score_member(population, ogre_deck); }, 20
     );
 
     std::cout << best_evo.second << std::endl;

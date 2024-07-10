@@ -8,8 +8,7 @@
 
 struct RandomPlayerLogic: PlayerLogic
 {
-    std::ranlux24_base& random_engine;
-    RandomPlayerLogic(const DeckList& decklist, std::ranlux24_base& random_engine);
+    RandomPlayerLogic(const DeckList& decklist);
     std::unique_ptr<Action> choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
         const override;
 };

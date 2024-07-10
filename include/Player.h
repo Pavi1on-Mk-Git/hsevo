@@ -8,7 +8,7 @@ struct Player
 {
     const std::unique_ptr<PlayerLogic>& logic;
     PlayerState state;
-    Player(const std::unique_ptr<PlayerLogic>& logic, std::ranlux24_base& random_engine);
+    Player(const std::unique_ptr<PlayerLogic>& logic);
 };
 
 #endif

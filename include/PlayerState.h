@@ -18,7 +18,7 @@ public:
     Hand hand;
     Board board;
 
-    PlayerState(DeckList decklist, std::ranlux24_base& random_engine);
+    PlayerState(DeckList decklist);
     void fatigue(unsigned count);
 };
 

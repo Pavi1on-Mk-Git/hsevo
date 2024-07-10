@@ -2,13 +2,10 @@
 
 #include <algorithm>
 
-Game::Game(
-    const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player,
-    std::ranlux24_base& random_engine
-):
-    _random_engine(random_engine),
-    players_({Player(first_player, random_engine), Player(second_player, random_engine)}), game_ended_(false),
-    turn_ended_(false)
+#include "Rng.h"
+
+Game::Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player):
+    players_({first_player, second_player}), game_ended_(false), turn_ended_(false)
 {}
 
 void Game::check_winner()
@@ -159,7 +156,7 @@ PlayerStateInput Game::get_player_state(unsigned player_index)
 
 GameResult Game::run()
 {
-    active_player_ = _random_engine() % 2;
+    active_player_ = Rng::instance()->uniform_int(0, 1);
 
     mulligan();
     while(!game_ended_)

@@ -2,9 +2,9 @@
 
 static const unsigned DEFAULT_MAX_HEALTH = 30;
 
-PlayerState::PlayerState(DeckList decklist, std::ranlux24_base& random_engine):
+PlayerState::PlayerState(DeckList decklist):
     max_health_(DEFAULT_MAX_HEALTH), fatigue_dmg_(0), health(DEFAULT_MAX_HEALTH), mana_crystals(0), mana(0),
-    deck(decklist, random_engine)
+    deck(decklist)
 {}
 
 void PlayerState::fatigue(unsigned count)

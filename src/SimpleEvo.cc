@@ -4,8 +4,7 @@
 #include "Game.h"
 
 std::vector<unsigned> score_member(
-    const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const DeckList& decklist,
-    std::ranlux24_base& random_engine
+    const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const DeckList& decklist
 )
 {
     std::vector<unsigned> scores;
@@ -20,7 +19,7 @@ std::vector<unsigned> score_member(
     {
         for(unsigned j = 0; j < players.size(); ++j)
         {
-            auto game = Game(players.at(i), players.at(j), random_engine);
+            auto game = Game(players.at(i), players.at(j));
             auto winner = game.run();
 
             switch(winner)

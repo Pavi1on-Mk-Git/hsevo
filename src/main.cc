@@ -2,9 +2,9 @@
 #include <iostream>
 #include <random>
 
-#include "Board.h"
-#include "SimpleEvo.hpp"
-#include "decklists.h"
+#include "ai/SimpleEvo.hpp"
+#include "logic/Board.h"
+#include "logic/decklists.h"
 
 int main()
 {

@@ -118,7 +118,8 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     for(unsigned current_board_position = 0; current_board_position < current_player().state.board.minion_count();
         ++current_board_position)
     {
-        if(!current_player().state.board.get_minion(current_board_position).active)
+        auto& current_minion = current_player().state.board.get_minion(current_board_position);
+        if(!current_minion.active || current_minion.keywords & CANT_ATTACK)
             continue;
 
         possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));

@@ -2,6 +2,7 @@
 #define MINION_H
 
 #include "logic/Card.h"
+#include "logic/MinionKeywords.h"
 
 struct Minion
 {
@@ -10,6 +11,7 @@ struct Minion
     unsigned attack;
     int health;
     bool active;
+    MinionKeywords keywords;
     Minion(const Card& card);
 };
 

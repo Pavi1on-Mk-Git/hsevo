@@ -115,6 +115,25 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
             possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position, card_cost));
     }
 
+    auto attack_actions = get_attack_actions();
+    std::move(attack_actions.begin(), attack_actions.end(), std::back_inserter(possible_actions));
+
+    possible_actions.push_back(std::make_unique<EndTurnAction>());
+
+    return possible_actions;
+}
+
+std::vector<std::unique_ptr<Action>> Game::get_attack_actions()
+{
+    std::vector<std::unique_ptr<Action>> attack_actions;
+
+    std::vector<unsigned> taunt_minion_positions;
+
+    for(unsigned opponent_board_position = 0; opponent_board_position < opponent().state.board.minion_count();
+        ++opponent_board_position)
+        if(opponent().state.board.get_minion(opponent_board_position).keywords & TAUNT)
+            taunt_minion_positions.push_back(opponent_board_position);
+
     for(unsigned current_board_position = 0; current_board_position < current_player().state.board.minion_count();
         ++current_board_position)
     {
@@ -122,16 +141,21 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
         if(!current_minion.active || current_minion.keywords & CANT_ATTACK)
             continue;
 
-        possible_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
+        if(taunt_minion_positions.empty())
+        {
+            attack_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
 
-        for(unsigned opponent_board_position = 0; opponent_board_position < opponent().state.board.minion_count();
-            ++opponent_board_position)
-            possible_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position));
+            for(unsigned opponent_board_position = 0; opponent_board_position < opponent().state.board.minion_count();
+                ++opponent_board_position)
+                attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position)
+                );
+        }
+        else
+            for(auto taunt_minion_position: taunt_minion_positions)
+                attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, taunt_minion_position));
     }
 
-    possible_actions.push_back(std::make_unique<EndTurnAction>());
-
-    return possible_actions;
+    return attack_actions;
 }
 
 PlayerStateInput Game::get_player_state(unsigned player_index)

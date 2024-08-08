@@ -2,19 +2,11 @@
 
 #include "logic/Game.h"
 
-const Card BOULDERFIST_OGRE("Boulderfist Ogre", 6, 6, 7);
-const Card ANCIENT_WATCHER("Ancient Watcher", 2, 4, 5, CANT_ATTACK);
+/*
+General on_play / create_play_actions functions
+*/
 
-void sunfury_protector_on_play(Game& game, std::vector<OnPlayArg> args)
-{
-    auto position_played = std::get<unsigned>(args.at(0));
-
-    for(unsigned board_position = std::max(position_played - 1, 0u);
-        board_position < std::min(game.current_player().state.hand.size(), position_played + 1); ++board_position)
-        game.current_player().state.board.get_minion(board_position).keywords |= TAUNT;
-}
-
-std::vector<std::unique_ptr<PlayCardAction>> sunfury_protector_create_play_actions(
+std::vector<std::unique_ptr<PlayCardAction>> single_arg_self_play_position_create_play_actions(
     const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
 )
 {
@@ -32,9 +24,18 @@ std::vector<std::unique_ptr<PlayCardAction>> sunfury_protector_create_play_actio
     return play_self_actions;
 }
 
-const Card SUNFURY_PROTECTOR(
-    "Sunfury Protector", 2, 2, 3, sunfury_protector_on_play, sunfury_protector_create_play_actions
-);
+/*
+Concrete on_play / create_play_actions functions for specific cards
+*/
+
+void sunfury_protector_on_play(Game& game, std::vector<OnPlayArg> args)
+{
+    auto position_played = std::get<unsigned>(args.at(0));
+
+    for(unsigned board_position = std::max(position_played - 1, 0u);
+        board_position < std::min(game.current_player().state.hand.size(), position_played + 1); ++board_position)
+        game.current_player().state.board.get_minion(board_position).keywords |= TAUNT;
+}
 
 void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
 {
@@ -72,6 +73,33 @@ std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_ac
     return play_self_actions;
 }
 
+void defender_of_argus_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
+{
+    auto position_played = std::get<unsigned>(args.at(0));
+
+    for(unsigned board_position = std::max(position_played - 1, 0u);
+        board_position < std::min(game.current_player().state.hand.size(), position_played + 1); ++board_position)
+    {
+        auto& current_minion = game.current_player().state.board.get_minion(board_position);
+        current_minion.keywords |= TAUNT;
+        current_minion.attack++;
+        current_minion.health++;
+        current_minion.max_health++;
+    }
+}
+
+/*
+Card definitions
+*/
+
+const Card BOULDERFIST_OGRE("Boulderfist Ogre", 6, 6, 7);
+const Card ANCIENT_WATCHER("Ancient Watcher", 2, 4, 5, CANT_ATTACK);
+const Card SUNFURY_PROTECTOR(
+    "Sunfury Protector", 2, 2, 3, sunfury_protector_on_play, single_arg_self_play_position_create_play_actions
+);
 const Card EARTHEN_RING_FARSEER(
     "Earthen Ring, Farseer", 3, 3, 3, earthen_ring_farseer_on_play, earthen_ring_farseer_create_play_actions
+);
+const Card DEFENDER_OF_ARGUS(
+    "Defender of Argus", 4, 2, 3, defender_of_argus_farseer_on_play, single_arg_self_play_position_create_play_actions
 );

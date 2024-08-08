@@ -3,21 +3,33 @@
 
 #include "logic/Card.h"
 
-extern const Card BOULDERFIST_OGRE;
-extern const Card ANCIENT_WATCHER;
+/*
+General on_play / create_play_actions functions
+*/
 
-void sunfury_protector_on_play(Game& game, std::vector<OnPlayArg> args);
-std::vector<std::unique_ptr<PlayCardAction>> sunfury_protector_create_play_actions(
+std::vector<std::unique_ptr<PlayCardAction>> single_arg_self_play_position_create_play_actions(
     const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
 );
 
-extern const Card SUNFURY_PROTECTOR;
+/*
+Concrete on_play / create_play_actions functions for specific cards
+*/
 
+void sunfury_protector_on_play(Game& game, std::vector<OnPlayArg> args);
 void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args);
 std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_actions(
     const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
 );
+void defender_of_argus_farseer_on_play(Game& game, std::vector<OnPlayArg> args);
 
+/*
+Card declarations
+*/
+
+extern const Card BOULDERFIST_OGRE;
+extern const Card ANCIENT_WATCHER;
+extern const Card SUNFURY_PROTECTOR;
 extern const Card EARTHEN_RING_FARSEER;
+extern const Card DEFENDER_OF_ARGUS;
 
 #endif

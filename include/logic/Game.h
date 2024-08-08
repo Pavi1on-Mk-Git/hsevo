@@ -26,7 +26,6 @@ private:
 
     void check_winner();
     void switch_active_player();
-    Player& opponent();
 
     void mulligan();
     void do_turn();
@@ -40,6 +39,7 @@ public:
     GameResult run();
     Game copy() const;
     Player& current_player();
+    Player& opponent();
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);

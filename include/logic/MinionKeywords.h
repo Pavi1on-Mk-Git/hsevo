@@ -1,9 +1,6 @@
 #ifndef MINION_KEYWORDS_H
 #define MINION_KEYWORDS_H
 
-#include <cstdint>
-#include <type_traits>
-
 enum MinionKeywords
 {
     NO_KEYWORDS = 0,

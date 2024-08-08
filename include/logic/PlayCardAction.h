@@ -6,7 +6,7 @@
 
 #include "logic/Action.h"
 
-using OnPlayArg = std::variant<unsigned>;
+using OnPlayArg = std::variant<unsigned, bool>;
 
 struct PlayCardAction: Action
 {

@@ -13,4 +13,11 @@ std::vector<std::unique_ptr<PlayCardAction>> sunfury_protector_create_play_actio
 
 extern const Card SUNFURY_PROTECTOR;
 
+void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args);
+std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_actions(
+    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+);
+
+extern const Card EARTHEN_RING_FARSEER;
+
 #endif

@@ -26,7 +26,6 @@ private:
 
     void check_winner();
     void switch_active_player();
-    Player& current_player();
     Player& opponent();
 
     void mulligan();
@@ -40,6 +39,7 @@ public:
     Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player);
     GameResult run();
     Game copy() const;
+    Player& current_player();
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);

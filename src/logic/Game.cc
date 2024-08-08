@@ -102,17 +102,9 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     std::vector<std::unique_ptr<Action>> possible_actions;
     for(unsigned hand_position = 0; hand_position < current_player().state.hand.size(); ++hand_position)
     {
-        unsigned minion_count = current_player().state.board.minion_count();
-        if(minion_count == Board::MAX_BOARD_SIZE)
-            break;
-
-        unsigned card_cost = current_player().state.hand.get_card(hand_position)->mana_cost;
-
-        if(card_cost > current_player().state.mana)
-            continue;
-
-        for(unsigned board_position = 0; board_position <= minion_count; ++board_position)
-            possible_actions.push_back(std::make_unique<PlayCardAction>(hand_position, board_position, card_cost));
+        auto& current_card = current_player().state.hand.get_card(hand_position);
+        auto play_card_actions = current_card->create_play_actions_func(current_card, *this, hand_position);
+        std::move(play_card_actions.begin(), play_card_actions.end(), std::back_inserter(possible_actions));
     }
 
     auto attack_actions = get_attack_actions();

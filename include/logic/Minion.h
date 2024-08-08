@@ -7,7 +7,7 @@
 struct Minion
 {
     std::string name;
-    unsigned base_attack, base_health;
+    unsigned max_health;
     unsigned attack;
     int health;
     bool active;

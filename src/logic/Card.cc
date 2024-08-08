@@ -32,9 +32,8 @@ Card::Card(
     const MinionKeywords& keywords
 ):
     name(name),
-    base_mana_cost(base_cost), base_attack(base_attack), base_health(base_health), mana_cost(base_cost),
-    attack(base_attack), health(base_health), on_play_func(on_play_func),
-    create_play_actions_func(create_play_actions_func), keywords(keywords)
+    base_health(base_health), mana_cost(base_cost), attack(base_attack), health(base_health),
+    on_play_func(on_play_func), create_play_actions_func(create_play_actions_func), keywords(keywords)
 {}
 
 Card::Card(
@@ -42,7 +41,6 @@ Card::Card(
     const MinionKeywords& keywords
 ):
     name(name),
-    base_mana_cost(base_cost), base_attack(base_attack), base_health(base_health), mana_cost(base_cost),
-    attack(base_attack), health(base_health), on_play_func(default_on_play),
-    create_play_actions_func(default_create_play_actions), keywords(keywords)
+    base_health(base_health), mana_cost(base_cost), attack(base_attack), health(base_health),
+    on_play_func(default_on_play), create_play_actions_func(default_create_play_actions), keywords(keywords)
 {}

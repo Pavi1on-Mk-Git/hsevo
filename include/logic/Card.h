@@ -18,7 +18,7 @@ std::vector<std::unique_ptr<PlayCardAction>> default_create_play_actions(
 struct Card
 {
     const std::string name;
-    const unsigned base_mana_cost, base_attack, base_health;
+    const unsigned base_health;
     unsigned mana_cost, attack;
     int health;
 

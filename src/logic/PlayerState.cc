@@ -12,3 +12,8 @@ void PlayerState::fatigue(unsigned count)
     health -= count * (2 * fatigue_dmg_ + count + 1) / 2; // sum of an arithmetic sequence
     fatigue_dmg_ += count;
 }
+
+void PlayerState::restore_health(unsigned amount)
+{
+    health = std::min(max_health_, health + amount);
+}

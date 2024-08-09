@@ -5,8 +5,9 @@
 #include <vector>
 
 #include "logic/Action.h"
+#include "logic/TargetType.h"
 
-using OnPlayArg = std::variant<unsigned, bool>;
+using OnPlayArg = std::variant<unsigned, TargetType>;
 
 struct PlayCardAction: Action
 {

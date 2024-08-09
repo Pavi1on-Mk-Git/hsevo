@@ -20,6 +20,7 @@ public:
 
     PlayerState(DeckList decklist);
     void fatigue(unsigned count);
+    void restore_health(unsigned amount);
 };
 
 #endif

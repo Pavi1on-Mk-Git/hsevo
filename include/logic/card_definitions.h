@@ -20,7 +20,7 @@ void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args);
 std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_actions(
     const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
 );
-void defender_of_argus_farseer_on_play(Game& game, std::vector<OnPlayArg> args);
+void defender_of_argus_on_play(Game& game, std::vector<OnPlayArg> args);
 
 /*
 Card declarations

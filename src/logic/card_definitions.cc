@@ -31,10 +31,16 @@ Concrete on_play / create_play_actions functions for specific cards
 
 void sunfury_protector_on_play(Game& game, std::vector<OnPlayArg> args)
 {
-    auto position_played = std::get<unsigned>(args.at(0));
+    const auto position_played = std::get<unsigned>(args.at(0));
 
-    for(unsigned board_position = std::max(position_played - 1, 0u);
-        board_position < std::min(game.current_player().state.hand.size(), position_played + 1); ++board_position)
+    std::vector<unsigned> neighbour_positions;
+
+    if(position_played >= 1)
+        neighbour_positions.push_back(position_played - 1);
+    if(position_played + 1 < game.current_player().state.board.minion_count())
+        neighbour_positions.push_back(position_played + 1);
+
+    for(unsigned board_position: neighbour_positions)
         game.current_player().state.board.get_minion(board_position).keywords |= TAUNT;
 }
 
@@ -42,7 +48,7 @@ const unsigned EARTHEN_RING_FARSEER_HEAL_AMOUNT = 3;
 
 void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
 {
-    auto target_type = std::get<TargetType>(args.at(0));
+    const auto target_type = std::get<TargetType>(args.at(0));
 
     switch(target_type)
     {
@@ -53,7 +59,7 @@ void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
         game.opponent().state.restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
         return;
     default:
-        auto target_position = std::get<unsigned>(args.at(1));
+        const auto target_position = std::get<unsigned>(args.at(1));
         if(target_type == TargetType::ALLY_MINION)
             game.current_player()
                 .state.board.get_minion(target_position)
@@ -104,10 +110,16 @@ std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_ac
 
 void defender_of_argus_on_play(Game& game, std::vector<OnPlayArg> args)
 {
-    auto position_played = std::get<unsigned>(args.at(0));
+    const auto position_played = std::get<unsigned>(args.at(0));
 
-    for(unsigned board_position = std::max(position_played - 1, 0u);
-        board_position < std::min(game.current_player().state.hand.size(), position_played + 1); ++board_position)
+    std::vector<unsigned> neighbour_positions;
+
+    if(position_played >= 1)
+        neighbour_positions.push_back(position_played - 1);
+    if(position_played + 1 < game.current_player().state.board.minion_count())
+        neighbour_positions.push_back(position_played + 1);
+
+    for(unsigned board_position: neighbour_positions)
     {
         auto& current_minion = game.current_player().state.board.get_minion(board_position);
         current_minion.keywords |= TAUNT;
@@ -124,6 +136,15 @@ void leeroy_jenkins_on_play(Game& game, std::vector<OnPlayArg> args)
     static_cast<void>(args);
     for(unsigned i = 0; i < WHELP_COUNT; ++i)
         game.opponent().state.board.add_minion(Minion(WHELP), game.opponent().state.board.minion_count());
+}
+
+void twilight_drake_on_play(Game& game, std::vector<OnPlayArg> args)
+{
+    const auto position_played = std::get<unsigned>(args.at(0));
+    auto& self = game.current_player().state.board.get_minion(position_played);
+    const auto hand_size = game.current_player().state.hand.size();
+    self.health += hand_size;
+    self.max_health += hand_size;
 }
 
 /*
@@ -143,6 +164,9 @@ const Card DEFENDER_OF_ARGUS(
 );
 
 const Card LEEROY_JENKINS("Leeroy Jenkins", 4, 6, 2, leeroy_jenkins_on_play, default_create_play_actions, CHARGE);
+const Card TWILIGHT_DRAKE(
+    "Twilight Drake", 4, 4, 1, twilight_drake_on_play, single_arg_self_play_position_create_play_actions
+);
 
 /*
 Token definitions

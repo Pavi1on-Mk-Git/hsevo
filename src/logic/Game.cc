@@ -203,6 +203,7 @@ void Game::do_action(const PlayCardAction& action)
     auto played_card = current_player().state.hand.remove_card(action.hand_position);
     current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     current_player().state.mana -= action.card_cost;
+    played_card->on_play_func(*this, action.args);
 }
 
 void Game::do_action(const TradeAction& action)

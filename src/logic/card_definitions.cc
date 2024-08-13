@@ -52,13 +52,14 @@ void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
     case TargetType::ENEMY_HERO:
         game.opponent().state.restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
         return;
-    case TargetType::ALLY_MINION:
+    default:
         auto target_position = std::get<unsigned>(args.at(1));
-        game.current_player().state.board.get_minion(target_position).restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
-        return;
-    case TargetType::ENEMY_MINION:
-        auto target_position = std::get<unsigned>(args.at(1));
-        game.opponent().state.board.get_minion(target_position).restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
+        if(target_type == TargetType::ALLY_MINION)
+            game.current_player()
+                .state.board.get_minion(target_position)
+                .restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
+        else if(target_type == TargetType::ENEMY_MINION)
+            game.opponent().state.board.get_minion(target_position).restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT);
         return;
     }
 }
@@ -116,6 +117,15 @@ void defender_of_argus_on_play(Game& game, std::vector<OnPlayArg> args)
     }
 }
 
+const unsigned WHELP_COUNT = 2;
+
+void leeroy_jenkins_on_play(Game& game, std::vector<OnPlayArg> args)
+{
+    static_cast<void>(args);
+    for(unsigned i = 0; i < WHELP_COUNT; ++i)
+        game.opponent().state.board.add_minion(Minion(WHELP), game.opponent().state.board.minion_count());
+}
+
 /*
 Card definitions
 */
@@ -131,3 +141,11 @@ const Card EARTHEN_RING_FARSEER(
 const Card DEFENDER_OF_ARGUS(
     "Defender of Argus", 4, 2, 3, defender_of_argus_on_play, single_arg_self_play_position_create_play_actions
 );
+
+const Card LEEROY_JENKINS("Leeroy Jenkins", 4, 6, 2, leeroy_jenkins_on_play, default_create_play_actions, CHARGE);
+
+/*
+Token definitions
+*/
+
+const Card WHELP("Whelp", 1, 1, 1);

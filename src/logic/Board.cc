@@ -13,6 +13,11 @@ void Board::add_minion(const Minion& minion, unsigned position)
         board_.insert(board_.begin() + position, std::move(minion));
 }
 
+void Board::transform_minion(const Minion& new_minion, unsigned position)
+{
+    board_.at(position) = new_minion;
+}
+
 unsigned Board::minion_count() const
 {
     return board_.size();

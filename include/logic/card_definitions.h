@@ -23,6 +23,10 @@ std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_ac
 void defender_of_argus_on_play(Game& game, std::vector<OnPlayArg> args);
 void leeroy_jenkins_on_play(Game& game, std::vector<OnPlayArg> args);
 void twilight_drake_on_play(Game& game, std::vector<OnPlayArg> args);
+void faceless_manipulator_on_play(Game& game, std::vector<OnPlayArg> args);
+std::vector<std::unique_ptr<PlayCardAction>> faceless_manipulator_create_play_actions(
+    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+);
 
 /*
 Card declarations
@@ -35,6 +39,7 @@ extern const Card EARTHEN_RING_FARSEER;
 extern const Card DEFENDER_OF_ARGUS;
 extern const Card LEEROY_JENKINS;
 extern const Card TWILIGHT_DRAKE;
+extern const Card FACELESS_MANIPULATOR;
 
 /*
 Token declarations

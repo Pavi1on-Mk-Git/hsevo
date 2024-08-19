@@ -88,10 +88,14 @@ std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_ac
         ));
 
         for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
+        {
+            if(target_position == board_position)
+                continue;
             play_self_actions.push_back(std::make_unique<PlayCardAction>(
                 hand_position, board_position, self->mana_cost,
                 std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
             ));
+        }
 
         play_self_actions.push_back(std::make_unique<PlayCardAction>(
             hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_HERO}
@@ -147,6 +151,42 @@ void twilight_drake_on_play(Game& game, std::vector<OnPlayArg> args)
     self.max_health += hand_size;
 }
 
+void faceless_manipulator_on_play(Game& game, std::vector<OnPlayArg> args)
+{
+    const auto position_played = std::get<unsigned>(args[0]);
+    const auto target_position = std::get<unsigned>(args[1]);
+
+    auto& board = game.current_player().state.board;
+
+    auto target_copy = board.get_minion(target_position);
+
+    board.transform_minion(target_copy, position_played);
+}
+
+std::vector<std::unique_ptr<PlayCardAction>> faceless_manipulator_create_play_actions(
+    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+)
+{
+    std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
+
+    unsigned current_minion_count = game.current_player().state.board.minion_count();
+    if(current_minion_count == Board::MAX_BOARD_SIZE || self->mana_cost > game.current_player().state.mana)
+        return {};
+
+
+    for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
+        for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
+        {
+            if(target_position == board_position)
+                continue;
+            play_self_actions.push_back(std::make_unique<PlayCardAction>(
+                hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{board_position, target_position}
+            ));
+        }
+
+    return play_self_actions;
+}
+
 /*
 Card definitions
 */
@@ -166,6 +206,9 @@ const Card DEFENDER_OF_ARGUS(
 const Card LEEROY_JENKINS("Leeroy Jenkins", 4, 6, 2, leeroy_jenkins_on_play, default_create_play_actions, CHARGE);
 const Card TWILIGHT_DRAKE(
     "Twilight Drake", 4, 4, 1, twilight_drake_on_play, single_arg_self_play_position_create_play_actions
+);
+const Card FACELESS_MANIPULATOR(
+    "Faceless Manipulator", 5, 3, 3, faceless_manipulator_on_play, faceless_manipulator_create_play_actions
 );
 
 /*

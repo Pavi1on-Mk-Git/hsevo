@@ -80,7 +80,7 @@ public:
         mutants.reserve(mutants_size + population.size());
         for(unsigned mutant_id = 0; mutant_id < mutants_size; ++mutant_id)
         {
-            unsigned to_mutate = Rng::instance()->uniform_int(0, population.size() - 1);
+            const unsigned to_mutate = Rng::instance()->uniform_int(0, population.size() - 1);
             auto mutant = population.at(to_mutate);
             mutant.mutate();
             mutants.push_back(mutant);
@@ -134,7 +134,7 @@ public:
     }
 };
 
-std::vector<unsigned int> score_member(
+std::vector<unsigned> score_member(
     const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const DeckList& decklist
 );
 

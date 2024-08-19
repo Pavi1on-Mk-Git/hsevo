@@ -5,7 +5,7 @@
 
 struct HitHeroAction: Action
 {
-    unsigned position;
+    const unsigned position;
     HitHeroAction(unsigned position);
     void apply(Game& game);
 };

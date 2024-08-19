@@ -40,6 +40,8 @@ public:
     Game copy() const;
     Player& current_player();
     Player& opponent();
+    const Player& current_player() const;
+    const Player& opponent() const;
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayCardAction& action);

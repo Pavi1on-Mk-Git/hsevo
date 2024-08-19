@@ -36,7 +36,7 @@ std::unique_ptr<Card> Hand::remove_card(unsigned position)
     return to_return;
 }
 
-unsigned Hand::size()
+unsigned Hand::size() const
 {
     return hand_.size();
 }

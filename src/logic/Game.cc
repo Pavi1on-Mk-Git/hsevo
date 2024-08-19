@@ -41,6 +41,16 @@ Player& Game::opponent()
     return players_.at(1 - active_player_);
 }
 
+const Player& Game::current_player() const
+{
+    return players_.at(active_player_);
+}
+
+const Player& Game::opponent() const
+{
+    return players_.at(1 - active_player_);
+}
+
 static const unsigned FIRST_DRAW_AMOUNT = 3;
 
 void Game::mulligan()
@@ -155,7 +165,7 @@ PlayerStateInput Game::get_player_state(unsigned player_index)
     HeroStateInput hero_state{static_cast<unsigned>(players_.at(player_index).state.health)};
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_states;
 
-    unsigned board_size = players_.at(player_index).state.board.minion_count();
+    const unsigned board_size = players_.at(player_index).state.board.minion_count();
     for(unsigned minion_index = 0; minion_index < board_size; ++minion_index)
     {
         auto& curr_minion = players_.at(player_index).state.board.get_minion(minion_index);

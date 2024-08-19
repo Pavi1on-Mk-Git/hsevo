@@ -8,18 +8,20 @@ General on_play / create_play_actions functions
 */
 
 std::vector<std::unique_ptr<PlayCardAction>> single_arg_self_play_position_create_play_actions(
-    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+    const std::unique_ptr<Card>& self, const Game& game, unsigned hand_position
 )
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    unsigned minion_count = game.current_player().state.board.minion_count();
-    if(minion_count == Board::MAX_BOARD_SIZE || self->mana_cost > game.current_player().state.mana)
+    const unsigned minion_count = game.current_player().state.board.minion_count();
+    const unsigned mana_cost = self->mana_cost(self, game);
+
+    if(minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().state.mana)
         return {};
 
     for(unsigned board_position = 0; board_position <= minion_count; ++board_position)
         play_self_actions.push_back(std::make_unique<PlayCardAction>(
-            hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{board_position}
+            hand_position, board_position, mana_cost, std::vector<OnPlayArg>{board_position}
         ));
 
     return play_self_actions;
@@ -71,20 +73,22 @@ void earthen_ring_farseer_on_play(Game& game, std::vector<OnPlayArg> args)
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_actions(
-    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+    const std::unique_ptr<Card>& self, const Game& game, unsigned hand_position
 )
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    unsigned current_minion_count = game.current_player().state.board.minion_count();
-    if(current_minion_count == Board::MAX_BOARD_SIZE || self->mana_cost > game.current_player().state.mana)
+    const unsigned current_minion_count = game.current_player().state.board.minion_count();
+    const unsigned mana_cost = self->mana_cost(self, game);
+
+    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().state.mana)
         return {};
 
 
     for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
     {
         play_self_actions.push_back(std::make_unique<PlayCardAction>(
-            hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_HERO}
+            hand_position, board_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_HERO}
         ));
 
         for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
@@ -92,19 +96,19 @@ std::vector<std::unique_ptr<PlayCardAction>> earthen_ring_farseer_create_play_ac
             if(target_position == board_position)
                 continue;
             play_self_actions.push_back(std::make_unique<PlayCardAction>(
-                hand_position, board_position, self->mana_cost,
+                hand_position, board_position, mana_cost,
                 std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
             ));
         }
 
         play_self_actions.push_back(std::make_unique<PlayCardAction>(
-            hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_HERO}
+            hand_position, board_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_HERO}
         ));
 
         for(unsigned target_position = 0; target_position <= game.opponent().state.board.minion_count();
             ++target_position)
             play_self_actions.push_back(std::make_unique<PlayCardAction>(
-                hand_position, board_position, self->mana_cost,
+                hand_position, board_position, mana_cost,
                 std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}
             ));
     }
@@ -164,13 +168,15 @@ void faceless_manipulator_on_play(Game& game, std::vector<OnPlayArg> args)
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> faceless_manipulator_create_play_actions(
-    const std::unique_ptr<Card>& self, Game& game, unsigned hand_position
+    const std::unique_ptr<Card>& self, const Game& game, unsigned hand_position
 )
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    unsigned current_minion_count = game.current_player().state.board.minion_count();
-    if(current_minion_count == Board::MAX_BOARD_SIZE || self->mana_cost > game.current_player().state.mana)
+    const unsigned current_minion_count = game.current_player().state.board.minion_count();
+    const unsigned mana_cost = self->mana_cost(self, game);
+
+    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().state.mana)
         return {};
 
 
@@ -180,11 +186,27 @@ std::vector<std::unique_ptr<PlayCardAction>> faceless_manipulator_create_play_ac
             if(target_position == board_position)
                 continue;
             play_self_actions.push_back(std::make_unique<PlayCardAction>(
-                hand_position, board_position, self->mana_cost, std::vector<OnPlayArg>{board_position, target_position}
+                hand_position, board_position, mana_cost, std::vector<OnPlayArg>{board_position, target_position}
             ));
         }
 
     return play_self_actions;
+}
+
+/*
+Special mana cost functions
+*/
+
+unsigned mountain_giant_mana_cost(const std::unique_ptr<Card>& self, const Game& game)
+{
+    const unsigned current_player_hand_size = game.current_player().state.hand.size();
+    return self->mana_cost_ > current_player_hand_size ? self->mana_cost_ - current_player_hand_size : 0;
+}
+
+unsigned molten_giant_mana_cost(const std::unique_ptr<Card>& self, const Game& game)
+{
+    const unsigned current_player_health = game.current_player().state.health;
+    return self->mana_cost_ > current_player_health ? self->mana_cost_ - current_player_health : 0;
 }
 
 /*
@@ -210,6 +232,9 @@ const Card TWILIGHT_DRAKE(
 const Card FACELESS_MANIPULATOR(
     "Faceless Manipulator", 5, 3, 3, faceless_manipulator_on_play, faceless_manipulator_create_play_actions
 );
+
+const Card MOUNTAIN_GIANT("Mountain Giant", 12, 8, 8, mountain_giant_mana_cost);
+const Card MOLTEN_GIANT("Molten Giant", 20, 8, 8, molten_giant_mana_cost);
 
 /*
 Token definitions

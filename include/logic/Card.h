@@ -10,10 +10,10 @@
 
 struct Card;
 
-unsigned default_mana_cost(const std::unique_ptr<Card>& self, const Game& game);
+unsigned default_mana_cost(const Card& self, const Game& game);
 void default_on_play(Game& game, std::vector<OnPlayArg> args);
 std::vector<std::unique_ptr<PlayCardAction>> default_create_play_actions(
-    const std::unique_ptr<Card>& self, const Game& game, unsigned hand_position
+    const Card& self, const Game& game, unsigned hand_position
 );
 
 struct Card
@@ -23,20 +23,18 @@ struct Card
     unsigned attack;
     int health;
 
-    const std::function<unsigned(const std::unique_ptr<Card>&, const Game&)> mana_cost;
-    const std::function<void(Game&, std::vector<OnPlayArg>)> on_play_func;
-    const std::function<
-        std::vector<std::unique_ptr<PlayCardAction>>(const std::unique_ptr<Card>&, const Game&, unsigned)>
-        create_play_actions_func;
+    const std::function<unsigned(const Card&, const Game&)> mana_cost;
+    const std::function<void(Game&, std::vector<OnPlayArg>)> on_play;
+    const std::function<std::vector<std::unique_ptr<PlayCardAction>>(const Card&, const Game&, unsigned)>
+        create_play_actions;
 
     MinionKeywords keywords;
 
     Card(
         const std::string& name, unsigned base_cost, unsigned base_attack, unsigned base_health,
-        const std::function<void(Game&, std::vector<OnPlayArg>)>& on_play_func,
-        const std::function<
-            std::vector<std::unique_ptr<PlayCardAction>>(const std::unique_ptr<Card>&, const Game&, unsigned)>&
-            create_play_actions_func,
+        const std::function<void(Game&, std::vector<OnPlayArg>)>& on_play,
+        const std::function<std::vector<std::unique_ptr<PlayCardAction>>(const Card&, const Game&, unsigned)>&
+            create_play_actions,
         const MinionKeywords& keywords = NO_KEYWORDS
     );
 
@@ -47,8 +45,7 @@ struct Card
 
     Card(
         const std::string& name, unsigned base_cost, unsigned base_attack, unsigned base_health,
-        const std::function<unsigned(const std::unique_ptr<Card>&, const Game&)> mana_cost,
-        const MinionKeywords& keywords = NO_KEYWORDS
+        const std::function<unsigned(const Card&, const Game&)> mana_cost, const MinionKeywords& keywords = NO_KEYWORDS
     );
 };
 

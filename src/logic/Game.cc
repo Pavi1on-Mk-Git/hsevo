@@ -113,7 +113,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     for(unsigned hand_position = 0; hand_position < current_player().state.hand.size(); ++hand_position)
     {
         auto& current_card = current_player().state.hand.get_card(hand_position);
-        auto play_card_actions = current_card->create_play_actions_func(current_card, *this, hand_position);
+        auto play_card_actions = current_card->create_play_actions(*current_card, *this, hand_position);
         std::move(play_card_actions.begin(), play_card_actions.end(), std::back_inserter(possible_actions));
     }
 
@@ -213,7 +213,7 @@ void Game::do_action(const PlayCardAction& action)
     auto played_card = current_player().state.hand.remove_card(action.hand_position);
     current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     current_player().state.mana -= action.card_cost;
-    played_card->on_play_func(*this, action.args);
+    played_card->on_play(*this, action.args);
 }
 
 void Game::do_action(const TradeAction& action)

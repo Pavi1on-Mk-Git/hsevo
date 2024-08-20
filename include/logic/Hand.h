@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "logic/Card.h"
+#include "logic/cards/Card.h"
 
 class Hand
 {

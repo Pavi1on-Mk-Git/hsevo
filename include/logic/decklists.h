@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "logic/card_definitions.h"
+#include "logic/cards/Card.h"
 
 using DeckList = std::vector<Card>;
 

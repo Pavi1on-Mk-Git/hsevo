@@ -113,7 +113,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     for(unsigned hand_position = 0; hand_position < current_player().state.hand.size(); ++hand_position)
     {
         auto& current_card = current_player().state.hand.get_card(hand_position);
-        auto play_card_actions = current_card->create_play_actions(*current_card, *this, hand_position);
+        auto play_card_actions = current_card->create_play_actions(*this, hand_position);
         std::move(play_card_actions.begin(), play_card_actions.end(), std::back_inserter(possible_actions));
     }
 

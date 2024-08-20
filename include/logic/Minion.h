@@ -1,8 +1,8 @@
 #ifndef MINION_H
 #define MINION_H
 
-#include "logic/Card.h"
 #include "logic/MinionKeywords.h"
+#include "logic/cards/Card.h"
 
 struct Minion
 {

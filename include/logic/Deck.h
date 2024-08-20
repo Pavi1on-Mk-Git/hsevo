@@ -5,7 +5,7 @@
 #include <random>
 #include <vector>
 
-#include "logic/Card.h"
+#include "logic/cards/Card.h"
 #include "logic/decklists.h"
 
 class Deck

@@ -6,6 +6,8 @@
 struct Whelp: public Card
 {
     Whelp(): Card("Whelp", 1, 1, 1) {}
+
+    CLONE
 };
 
 

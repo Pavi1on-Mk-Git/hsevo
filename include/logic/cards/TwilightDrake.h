@@ -7,6 +7,8 @@ struct TwilightDrake: public SingleArgSelfPlayPositionCard
 {
     TwilightDrake(): SingleArgSelfPlayPositionCard("Twilight Drake", 4, 4, 1) {}
 
+    CLONE
+
     void on_play(Game& game, std::vector<OnPlayArg> args) override;
 };
 

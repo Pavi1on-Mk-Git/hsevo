@@ -2,7 +2,7 @@
 
 #include "utils/Rng.h"
 
-RandomPlayerLogic::RandomPlayerLogic(const DeckList& decklist): PlayerLogic(decklist) {}
+RandomPlayerLogic::RandomPlayerLogic(const Decklist& decklist): PlayerLogic(decklist) {}
 
 std::unique_ptr<Action> RandomPlayerLogic::choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
     const

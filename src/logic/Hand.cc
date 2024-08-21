@@ -12,9 +12,8 @@ Hand::Hand()
 Hand::Hand(const Hand& hand)
 {
     hand_.reserve(MAX_HAND_SIZE);
-    std::transform(hand.hand_.begin(), hand.hand_.end(), std::back_inserter(hand_), [](const auto& card) {
-        return std::make_unique<Card>(*card);
-    });
+    for(const auto& card: hand.hand_)
+        hand_.push_back(card->clone());
 }
 
 void Hand::add_cards(std::vector<std::unique_ptr<Card>> cards)

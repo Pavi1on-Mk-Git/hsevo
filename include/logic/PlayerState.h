@@ -18,7 +18,7 @@ public:
     Hand hand;
     Board board;
 
-    PlayerState(DeckList decklist);
+    PlayerState(const Decklist& decklist);
     void fatigue(unsigned count);
     void restore_health(unsigned amount);
 };

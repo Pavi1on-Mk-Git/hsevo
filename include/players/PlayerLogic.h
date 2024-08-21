@@ -8,9 +8,9 @@
 
 struct PlayerLogic
 {
-    const DeckList& decklist;
+    const Decklist& decklist;
 
-    PlayerLogic(const DeckList& decklist): decklist(decklist) {}
+    PlayerLogic(const Decklist& decklist): decklist(decklist) {}
 
     virtual std::unique_ptr<Action> choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
         const = 0;

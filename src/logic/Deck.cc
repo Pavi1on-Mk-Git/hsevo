@@ -4,19 +4,18 @@
 
 #include "utils/Rng.h"
 
-Deck::Deck(const DeckList& decklist)
+Deck::Deck(const Decklist& decklist)
 {
-    std::transform(decklist.begin(), decklist.end(), std::back_inserter(deck_), [](const auto& card) {
-        return std::make_unique<Card>(card);
-    });
+    for(const auto& [card, amount]: decklist)
+        for(unsigned i = 0; i < amount; ++i)
+            deck_.push_back(card->clone());
     shuffle();
 }
 
 Deck::Deck(const Deck& deck)
 {
-    std::transform(deck.deck_.begin(), deck.deck_.end(), std::back_inserter(deck_), [](const auto& card) {
-        return std::make_unique<Card>(*card);
-    });
+    for(const auto& card: deck.deck_)
+        deck_.push_back(card->clone());
 }
 
 void Deck::shuffle()

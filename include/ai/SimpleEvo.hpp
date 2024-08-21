@@ -135,7 +135,7 @@ public:
 };
 
 std::vector<unsigned> score_member(
-    const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const DeckList& decklist
+    const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const Decklist& decklist
 );
 
 #endif

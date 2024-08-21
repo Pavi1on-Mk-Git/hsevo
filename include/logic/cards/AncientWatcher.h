@@ -6,6 +6,8 @@
 struct AncientWatcher: public Card
 {
     AncientWatcher(): Card("Ancient Watcher", 2, 4, 5, CANT_ATTACK) {}
+
+    CLONE
 };
 
 #endif

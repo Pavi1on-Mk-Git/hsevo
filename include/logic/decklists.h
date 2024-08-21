@@ -5,8 +5,8 @@
 
 #include "logic/cards/Card.h"
 
-using DeckList = std::vector<Card>;
+using Decklist = std::vector<std::pair<std::unique_ptr<Card>, unsigned>>;
 
-extern const DeckList ogre_deck;
+Decklist ogre_deck();
 
 #endif

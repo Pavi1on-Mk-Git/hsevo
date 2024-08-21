@@ -6,6 +6,8 @@
 struct BoulderfistOgre: public Card
 {
     BoulderfistOgre(): Card("Boulderfist Ogre", 6, 6, 7) {}
+
+    CLONE
 };
 
 #endif

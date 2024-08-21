@@ -7,6 +7,8 @@ struct FacelessManipulator: public Card
 {
     FacelessManipulator(): Card("Faceless Manipulator", 5, 3, 3) {}
 
+    CLONE
+
     void on_play(Game& game, std::vector<OnPlayArg> args) override;
     std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position) override;
 };

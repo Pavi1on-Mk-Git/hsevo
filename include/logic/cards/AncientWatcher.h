@@ -1,11 +1,11 @@
 #ifndef ANCIENT_WATCHER_H
 #define ANCIENT_WATCHER_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct AncientWatcher: public Card
+struct AncientWatcher: public MinionCard
 {
-    AncientWatcher(): Card("Ancient Watcher", 2, 4, 5, CANT_ATTACK) {}
+    AncientWatcher(): MinionCard("Ancient Watcher", 2, 4, 5, CANT_ATTACK) {}
 
     CLONE
 };

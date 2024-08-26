@@ -1,11 +1,11 @@
 #ifndef WHELP_H
 #define WHELP_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct Whelp: public Card
+struct Whelp: public MinionCard
 {
-    Whelp(): Card("Whelp", 1, 1, 1) {}
+    Whelp(): MinionCard("Whelp", 1, 1, 1) {}
 
     CLONE
 };

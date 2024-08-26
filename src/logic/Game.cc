@@ -208,11 +208,13 @@ void Game::do_action(const EndTurnAction& action)
     turn_ended_ = true;
 }
 
-void Game::do_action(const PlayCardAction& action)
+void Game::do_action(const PlayMinionAction& action)
 {
-    auto played_card = current_player().state.hand.remove_card(action.hand_position);
-    current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     current_player().state.mana -= action.card_cost;
+
+    auto* played_card = static_cast<MinionCard*>(current_player().state.hand.remove_card(action.hand_position).release()
+    );
+    current_player().state.board.add_minion(Minion(*played_card), action.board_position);
     played_card->on_play(*this, action.args);
 }
 

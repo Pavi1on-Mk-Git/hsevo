@@ -1,11 +1,11 @@
 #ifndef EARTHEN_RING_FARSEER_H
 #define EARTHEN_RING_FARSEER_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct EarthenRingFarseer: public Card
+struct EarthenRingFarseer: public MinionCard
 {
-    EarthenRingFarseer(): Card("Earthen Ring Farseer", 3, 3, 3) {}
+    EarthenRingFarseer(): MinionCard("Earthen Ring Farseer", 3, 3, 3) {}
 
     CLONE
 

@@ -9,15 +9,16 @@
 
 using OnPlayArg = std::variant<unsigned, TargetType>;
 
-struct PlayCardAction: Action
+class PlayCardAction: public Action
 {
-    const unsigned hand_position, board_position, card_cost;
+protected:
+    PlayCardAction(unsigned hand_position, unsigned card_cost, const std::vector<OnPlayArg>& args = {});
+public:
+    const unsigned hand_position, card_cost;
     std::vector<OnPlayArg> args;
 
-    PlayCardAction(
-        unsigned hand_position, unsigned board_position, unsigned card_cost, const std::vector<OnPlayArg>& args = {}
-    );
-    void apply(Game& game);
+    virtual ~PlayCardAction() = default;
 };
+
 
 #endif

@@ -10,7 +10,7 @@ Board::Board()
 void Board::add_minion(const Minion& minion, unsigned position)
 {
     if(minion_count() < MAX_BOARD_SIZE)
-        board_.insert(board_.begin() + position, std::move(minion));
+        board_.insert(board_.begin() + position, minion);
 }
 
 void Board::transform_minion(const Minion& new_minion, unsigned position)

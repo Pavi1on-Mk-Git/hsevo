@@ -1,11 +1,11 @@
 #ifndef BOULDERFIST_OGRE_H
 #define BOULDERFIST_OGRE_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct BoulderfistOgre: public Card
+struct BoulderfistOgre: public MinionCard
 {
-    BoulderfistOgre(): Card("Boulderfist Ogre", 6, 6, 7) {}
+    BoulderfistOgre(): MinionCard("Boulderfist Ogre", 6, 6, 7) {}
 
     CLONE
 };

@@ -1,11 +1,11 @@
 #ifndef FACELESS_MANIPULATOR_H
 #define FACELESS_MANIPULATOR_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct FacelessManipulator: public Card
+struct FacelessManipulator: public MinionCard
 {
-    FacelessManipulator(): Card("Faceless Manipulator", 5, 3, 3) {}
+    FacelessManipulator(): MinionCard("Faceless Manipulator", 5, 3, 3) {}
 
     CLONE
 

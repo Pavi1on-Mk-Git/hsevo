@@ -4,7 +4,7 @@
 #include "ai/GameStateInput.h"
 #include "logic/EndTurnAction.h"
 #include "logic/HitHeroAction.h"
-#include "logic/PlayCardAction.h"
+#include "logic/PlayMinionAction.h"
 #include "logic/Player.h"
 #include "logic/TradeAction.h"
 
@@ -44,7 +44,7 @@ public:
     const Player& opponent() const;
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);
-    void do_action(const PlayCardAction& action);
+    void do_action(const PlayMinionAction& action);
     void do_action(const TradeAction& action);
     void do_action(const HitHeroAction& action);
 };

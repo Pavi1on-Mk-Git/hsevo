@@ -32,8 +32,8 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
         {
             if(target_position == board_position)
                 continue;
-            play_self_actions.push_back(std::make_unique<PlayCardAction>(
-                hand_position, board_position, mana_cost, std::vector<OnPlayArg>{board_position, target_position}
+            play_self_actions.push_back(std::make_unique<PlayMinionAction>(
+                hand_position, mana_cost, board_position, std::vector<OnPlayArg>{board_position, target_position}
             ));
         }
 

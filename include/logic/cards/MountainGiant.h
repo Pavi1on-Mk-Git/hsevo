@@ -1,11 +1,11 @@
 #ifndef MOUNTAIN_GIANT_H
 #define MOUNTAIN_GIANT_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct MountainGiant: public Card
+struct MountainGiant: public MinionCard
 {
-    MountainGiant(): Card("Mountain Giant", 12, 8, 8) {}
+    MountainGiant(): MinionCard("Mountain Giant", 12, 8, 8) {}
 
     CLONE
 

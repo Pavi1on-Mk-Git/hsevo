@@ -1,11 +1,11 @@
 #ifndef LEEROY_JENKINS_H
 #define LEEROY_JENKINS_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct LeeroyJenkins: public Card
+struct LeeroyJenkins: public MinionCard
 {
-    LeeroyJenkins(): Card("Leeroy Jenkins", 4, 6, 2, CHARGE) {}
+    LeeroyJenkins(): MinionCard("Leeroy Jenkins", 4, 6, 2, CHARGE) {}
 
     CLONE
 

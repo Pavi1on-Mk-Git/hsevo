@@ -2,7 +2,7 @@
 #define MINION_H
 
 #include "logic/MinionKeywords.h"
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
 struct Minion
 {
@@ -12,7 +12,7 @@ struct Minion
     int health;
     bool active;
     MinionKeywords keywords;
-    Minion(const Card& card);
+    Minion(const MinionCard& card);
     void restore_health(unsigned amount);
 };
 

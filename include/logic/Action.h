@@ -5,6 +5,7 @@ struct Game;
 
 struct Action
 {
+    virtual ~Action() = default;
     virtual void apply(Game& game) = 0;
 };
 

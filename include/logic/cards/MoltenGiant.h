@@ -1,11 +1,11 @@
 #ifndef MOLTEN_GIANT_H
 #define MOLTEN_GIANT_H
 
-#include "logic/cards/Card.h"
+#include "logic/cards/MinionCard.h"
 
-struct MoltenGiant: public Card
+struct MoltenGiant: public MinionCard
 {
-    MoltenGiant(): Card("Molten Giant", 20, 8, 8) {}
+    MoltenGiant(): MinionCard("Molten Giant", 20, 8, 8) {}
 
     CLONE
 

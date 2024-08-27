@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-Card::Card(const std::string& name, unsigned base_cost): mana_cost_(base_cost), name(name) {}
+Card::Card(std::string_view name, unsigned base_cost): mana_cost_(base_cost), name(name) {}
 
 unsigned Card::mana_cost(const Game& game) const
 {

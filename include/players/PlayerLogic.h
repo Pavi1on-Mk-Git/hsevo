@@ -6,12 +6,14 @@
 #include "logic/Action.h"
 #include "logic/decklists.h"
 
-struct PlayerLogic
+class PlayerLogic
 {
+protected:
+    PlayerLogic(const Decklist& decklist): decklist(decklist) {}
+public:
     const Decklist& decklist;
 
-    PlayerLogic(const Decklist& decklist): decklist(decklist) {}
-
+    virtual ~PlayerLogic() = default;
     virtual std::unique_ptr<Action> choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
         const = 0;
 };

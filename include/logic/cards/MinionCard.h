@@ -11,7 +11,7 @@ class MinionCard: public Card
 {
 protected:
     MinionCard(
-        const std::string& name, unsigned base_cost, unsigned base_attack, unsigned base_health,
+        std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health,
         const MinionKeywords& keywords = NO_KEYWORDS
     );
 public:

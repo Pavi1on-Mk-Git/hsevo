@@ -3,7 +3,7 @@
 #include "logic/Game.h"
 
 MinionCard::MinionCard(
-    const std::string& name, unsigned base_cost, unsigned base_attack, unsigned base_health,
+    std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health,
     const MinionKeywords& keywords
 ):
     Card(name, base_cost),

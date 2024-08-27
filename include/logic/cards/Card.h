@@ -10,7 +10,7 @@ class Card
 {
 protected:
     const unsigned mana_cost_;
-    Card(const std::string& name, unsigned base_cost);
+    Card(std::string_view name, unsigned base_cost);
 public:
     const std::string name;
 

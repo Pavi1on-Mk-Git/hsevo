@@ -5,7 +5,7 @@
 
 struct TwilightDrake: public SingleArgSelfPlayPositionCard
 {
-    TwilightDrake(): SingleArgSelfPlayPositionCard("Twilight Drake", 4, 4, 1) {}
+    TwilightDrake(): SingleArgSelfPlayPositionCard("Twilight Drake", 4, 4, 1, Tribe::DRAGON) {}
 
     CLONE
 

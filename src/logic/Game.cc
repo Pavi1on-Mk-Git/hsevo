@@ -218,6 +218,14 @@ void Game::do_action(const PlayMinionAction& action)
     played_card->on_play(*this, action.args);
 }
 
+void Game::do_action(const PlaySpellAction& action)
+{
+    current_player().state.mana -= action.card_cost;
+
+    auto played_card = current_player().state.hand.remove_card(action.hand_position);
+    played_card->on_play(*this, action.args);
+}
+
 void Game::do_action(const TradeAction& action)
 {
     auto& first_minion = current_player().state.board.get_minion(action.first_target);

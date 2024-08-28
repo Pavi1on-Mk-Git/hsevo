@@ -12,6 +12,7 @@ struct Minion
     int health;
     bool active;
     MinionKeywords keywords;
+    Tribe tribe;
     Minion(const MinionCard& card);
     void restore_health(unsigned amount);
 };

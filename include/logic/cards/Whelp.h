@@ -5,7 +5,7 @@
 
 struct Whelp: public MinionCard
 {
-    Whelp(): MinionCard("Whelp", 1, 1, 1) {}
+    Whelp(): MinionCard("Whelp", 1, 1, 1, Tribe::DRAGON) {}
 
     CLONE
 };

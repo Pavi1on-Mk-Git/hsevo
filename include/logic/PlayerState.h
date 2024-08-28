@@ -5,6 +5,7 @@
 #include "logic/Board.h"
 #include "logic/Deck.h"
 #include "logic/Hand.h"
+#include "logic/Tribe.h"
 
 class PlayerState
 {
@@ -14,11 +15,12 @@ private:
 public:
     int health;
     unsigned mana_crystals, mana;
+    Tribe tribe;
     Deck deck;
     Hand hand;
     Board board;
 
-    PlayerState(const Decklist& decklist);
+    PlayerState(const Decklist& decklist, const Tribe& tribe = Tribe::NONE);
     void fatigue(unsigned count);
     void restore_health(unsigned amount);
 };

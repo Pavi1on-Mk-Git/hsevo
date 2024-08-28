@@ -2,12 +2,23 @@
 
 #include "logic/Game.h"
 
+MinionCard::MinionCard(std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health)
+{}
+
 MinionCard::MinionCard(
     std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health,
     const MinionKeywords& keywords
 ):
     Card(name, base_cost),
     base_attack(base_attack), base_health(base_health), keywords(keywords)
+{}
+
+MinionCard::MinionCard(
+    std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe
+):
+    Card(name, base_cost),
+    base_attack(base_attack), base_health(base_health), tribe(tribe)
 {}
 
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)

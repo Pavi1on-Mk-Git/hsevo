@@ -5,6 +5,7 @@
 #include "logic/EndTurnAction.h"
 #include "logic/HitHeroAction.h"
 #include "logic/PlayMinionAction.h"
+#include "logic/PlaySpellAction.h"
 #include "logic/Player.h"
 #include "logic/TradeAction.h"
 
@@ -45,6 +46,7 @@ public:
     GameStateInput get_state();
     void do_action(const EndTurnAction& action);
     void do_action(const PlayMinionAction& action);
+    void do_action(const PlaySpellAction& action);
     void do_action(const TradeAction& action);
     void do_action(const HitHeroAction& action);
 };

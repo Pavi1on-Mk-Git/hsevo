@@ -18,6 +18,7 @@ public:
     void transform_minion(const Minion& new_minion, unsigned position);
     unsigned minion_count() const;
     Minion& get_minion(unsigned position);
+    const Minion& get_minion(unsigned position) const;
     void remove_dead_minions();
 };
 

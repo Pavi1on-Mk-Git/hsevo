@@ -28,6 +28,11 @@ Minion& Board::get_minion(unsigned position)
     return board_.at(position);
 }
 
+const Minion& Board::get_minion(unsigned position) const
+{
+    return board_.at(position);
+}
+
 void Board::remove_dead_minions()
 {
     auto new_end = std::remove_if(board_.begin(), board_.end(), [](const auto& minion) { return minion.health <= 0; });

@@ -2,9 +2,9 @@
 
 static const unsigned DEFAULT_MAX_HEALTH = 30;
 
-PlayerState::PlayerState(const Decklist& decklist):
+PlayerState::PlayerState(const Decklist& decklist, const Tribe& tribe):
     max_health_(DEFAULT_MAX_HEALTH), fatigue_dmg_(0), health(DEFAULT_MAX_HEALTH), mana_crystals(0), mana(0),
-    deck(decklist)
+    tribe(tribe), deck(decklist)
 {}
 
 void PlayerState::fatigue(unsigned count)

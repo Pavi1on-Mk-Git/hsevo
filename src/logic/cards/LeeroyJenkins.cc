@@ -6,10 +6,10 @@
 const unsigned WHELP_COUNT = 2;
 const auto WHELP = std::make_unique<Whelp>();
 
-void LeeroyJenkins::on_play(Game& game, std::vector<OnPlayArg> args)
+void LeeroyJenkins::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     static_cast<void>(args);
 
     for(unsigned i = 0; i < WHELP_COUNT; ++i)
-        game.opponent().state.board.add_minion(Minion(*WHELP), game.opponent().state.board.minion_count());
+        game.opponent().hero.board.add_minion(Minion(*WHELP), game.opponent().hero.board.minion_count());
 }

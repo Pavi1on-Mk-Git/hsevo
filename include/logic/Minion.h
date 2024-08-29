@@ -1,20 +1,16 @@
 #ifndef MINION_H
 #define MINION_H
 
+#include "logic/Entity.h"
 #include "logic/MinionKeywords.h"
 #include "logic/cards/MinionCard.h"
 
-struct Minion
+struct Minion: public Entity
 {
-    std::string name;
-    unsigned max_health;
     unsigned attack;
-    int health;
     bool active;
     MinionKeywords keywords;
-    Tribe tribe;
     Minion(const MinionCard& card);
-    void restore_health(unsigned amount);
 };
 
 

@@ -5,7 +5,7 @@
 std::array<std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3>, 2> GameStateInput::get_evo_input() const
 {
     std::array<std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3>, 2> result;
-    std::transform(players.begin(), players.end(), result.begin(), [](const PlayerStateInput& player) {
+    std::transform(players.begin(), players.end(), result.begin(), [](const HeroInput& player) {
         std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3> result_element;
         unsigned result_element_index = 0;
         result_element.at(result_element_index++) = player.hero.health;

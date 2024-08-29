@@ -9,7 +9,7 @@ struct SacrificialPact: public Card
 
     CLONE
 
-    void on_play(Game& game, std::vector<OnPlayArg> args) override;
+    void on_play(Game& game, const std::vector<OnPlayArg>& args) override;
     std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position) override;
 };
 

@@ -11,7 +11,7 @@ unsigned Card::mana_cost(const Game& game) const
     return mana_cost_;
 }
 
-void Card::on_play(Game& game, std::vector<OnPlayArg> args)
+void Card::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     static_cast<void>(game);
     static_cast<void>(args);

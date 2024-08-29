@@ -9,7 +9,7 @@ struct SunfuryProtector: public SingleArgSelfPlayPositionCard
 
     CLONE
 
-    void on_play(Game& game, std::vector<OnPlayArg> args) override;
+    void on_play(Game& game, const std::vector<OnPlayArg>& args) override;
 };
 
 

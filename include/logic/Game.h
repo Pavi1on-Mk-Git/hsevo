@@ -34,7 +34,7 @@ private:
     void draw();
     std::vector<std::unique_ptr<Action>> get_possible_actions();
     std::vector<std::unique_ptr<Action>> get_attack_actions();
-    PlayerStateInput get_player_state(unsigned player_index);
+    HeroInput get_hero_state(unsigned player_index);
 public:
     Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player);
     GameResult run();

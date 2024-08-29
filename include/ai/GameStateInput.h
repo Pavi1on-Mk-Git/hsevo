@@ -15,7 +15,7 @@ struct MinionStateInput
     unsigned health, attack;
 };
 
-struct PlayerStateInput
+struct HeroInput
 {
     HeroStateInput hero;
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minions;
@@ -24,7 +24,7 @@ struct PlayerStateInput
 
 struct GameStateInput
 {
-    std::array<PlayerStateInput, 2> players;
+    std::array<HeroInput, 2> players;
     std::array<std::array<double, 1 + 2 * Board::MAX_BOARD_SIZE + 3>, 2> get_evo_input() const;
 };
 

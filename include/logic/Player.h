@@ -6,9 +6,9 @@
 
 struct Player
 {
-    const std::unique_ptr<PlayerLogic>& logic;
+    std::shared_ptr<PlayerLogic> logic;
     Hero hero;
-    Player(const std::unique_ptr<PlayerLogic>& logic);
+    Player(std::shared_ptr<PlayerLogic> logic);
 };
 
 #endif

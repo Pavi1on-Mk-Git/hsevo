@@ -5,7 +5,7 @@
 
 struct EndTurnAction: Action
 {
-    void apply(Game& game);
+    std::vector<Game> apply(Game& game) const;
 };
 
 #endif

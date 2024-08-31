@@ -40,7 +40,7 @@ unsigned Hand::size() const
     return hand_.size();
 }
 
-std::unique_ptr<Card>& Hand::get_card(unsigned position)
+const std::unique_ptr<Card>& Hand::get_card(unsigned position) const
 {
     return hand_.at(position);
 }

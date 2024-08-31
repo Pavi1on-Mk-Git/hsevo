@@ -29,26 +29,26 @@ private:
     void switch_active_player();
 
     void mulligan();
-    void do_turn();
     void draw(unsigned amount);
     void draw();
-    std::vector<std::unique_ptr<Action>> get_possible_actions();
-    std::vector<std::unique_ptr<Action>> get_attack_actions();
-    HeroInput get_hero_state(unsigned player_index);
+    std::vector<std::unique_ptr<Action>> get_possible_actions() const;
+    std::vector<std::unique_ptr<Action>> get_attack_actions() const;
+    HeroInput get_hero_state(unsigned player_index) const;
 public:
-    Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player);
-    GameResult run();
-    Game copy() const;
+    Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
     Player& current_player();
     Player& opponent();
     const Player& current_player() const;
     const Player& opponent() const;
-    GameStateInput get_state();
-    void do_action(const EndTurnAction& action);
-    void do_action(const PlayMinionAction& action);
-    void do_action(const PlaySpellAction& action);
-    void do_action(const TradeAction& action);
-    void do_action(const HitHeroAction& action);
+    GameStateInput get_state() const;
+    std::vector<Game> do_action(const EndTurnAction& action);
+    std::vector<Game> do_action(const PlayMinionAction& action);
+    std::vector<Game> do_action(const PlaySpellAction& action);
+    std::vector<Game> do_action(const TradeAction& action);
+    std::vector<Game> do_action(const HitHeroAction& action);
+
+    friend GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
+    friend void do_turn(Game& game);
 };
 
 #endif

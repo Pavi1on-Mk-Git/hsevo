@@ -6,7 +6,7 @@ PlaySpellAction::PlaySpellAction(unsigned hand_position, unsigned card_cost, con
     PlayCardAction(hand_position, card_cost, args)
 {}
 
-void PlaySpellAction::apply(Game& game)
+std::vector<Game> PlaySpellAction::apply(Game& game) const
 {
-    game.do_action(*this);
+    return game.do_action(*this);
 }

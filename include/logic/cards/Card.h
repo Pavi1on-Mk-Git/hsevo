@@ -16,7 +16,7 @@ public:
 
     virtual ~Card() = default;
     virtual unsigned mana_cost(const Game& game) const;
-    virtual void on_play(Game& game, const std::vector<OnPlayArg>& args);
+    virtual std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args);
     virtual std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(
         const Game& game, unsigned hand_position
     ) = 0;

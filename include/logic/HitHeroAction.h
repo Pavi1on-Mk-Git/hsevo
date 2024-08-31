@@ -6,8 +6,9 @@
 struct HitHeroAction: Action
 {
     const unsigned position;
+
     HitHeroAction(unsigned position);
-    void apply(Game& game);
+    std::vector<Game> apply(Game& game) const;
 };
 
 #endif

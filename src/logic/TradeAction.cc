@@ -6,7 +6,7 @@ TradeAction::TradeAction(unsigned first_target, unsigned second_target):
     first_target(first_target), second_target(second_target)
 {}
 
-void TradeAction::apply(Game& game)
+std::vector<Game> TradeAction::apply(Game& game) const
 {
-    game.do_action(*this);
+    return game.do_action(*this);
 }

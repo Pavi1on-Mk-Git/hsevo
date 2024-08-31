@@ -11,7 +11,7 @@ struct PlayMinionAction: public PlayCardAction
     PlayMinionAction(
         unsigned hand_position, unsigned card_cost, unsigned board_position, const std::vector<OnPlayArg>& args = {}
     );
-    void apply(Game& game);
+    std::vector<Game> apply(Game& game) const;
 };
 
 #endif

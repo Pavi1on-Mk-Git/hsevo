@@ -4,9 +4,9 @@
 
 const unsigned EARTHEN_RING_FARSEER_HEAL_AMOUNT = 3;
 
-void EarthenRingFarseer::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> EarthenRingFarseer::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    apply_to_entity(game, args, [](Entity& entity) { entity.restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT); });
+    return apply_to_entity(game, args, [](Entity& entity) { entity.restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT); });
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_actions(

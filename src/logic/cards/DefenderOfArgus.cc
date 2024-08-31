@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-void DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     const auto position_played = std::get<unsigned>(args.at(0));
 
@@ -21,4 +21,6 @@ void DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args)
         current_minion.health++;
         current_minion.max_health++;
     }
+
+    return {game};
 }

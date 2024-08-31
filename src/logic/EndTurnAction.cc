@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-void EndTurnAction::apply(Game& game)
+std::vector<Game> EndTurnAction::apply(Game& game) const
 {
-    game.do_action(*this);
+    return game.do_action(*this);
 }

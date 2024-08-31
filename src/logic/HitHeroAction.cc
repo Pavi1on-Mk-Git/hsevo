@@ -4,7 +4,7 @@
 
 HitHeroAction::HitHeroAction(unsigned position): position(position) {}
 
-void HitHeroAction::apply(Game& game)
+std::vector<Game> HitHeroAction::apply(Game& game) const
 {
-    game.do_action(*this);
+    return game.do_action(*this);
 }

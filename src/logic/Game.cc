@@ -4,7 +4,7 @@
 
 #include "utils/Rng.h"
 
-Game::Game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player):
+Game::Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player):
     players_({first_player, second_player}), game_ended_(false), turn_ended_(false)
 {}
 
@@ -62,35 +62,6 @@ void Game::mulligan()
     switch_active_player();
 }
 
-void Game::do_turn()
-{
-    draw();
-
-    check_winner();
-    if(game_ended_)
-        return;
-
-    current_player().hero.mana = ++current_player().hero.mana_crystals;
-
-    for(unsigned minion_index = 0; minion_index < current_player().hero.board.minion_count(); ++minion_index)
-        current_player().hero.board.get_minion(minion_index).active = true;
-
-    turn_ended_ = false;
-
-    while(!turn_ended_)
-    {
-        auto chosen_action = current_player().logic->choose_action(*this, get_possible_actions());
-
-        chosen_action->apply(*this);
-
-        check_winner();
-        if(game_ended_)
-            return;
-    }
-
-    switch_active_player();
-}
-
 void Game::draw(unsigned amount)
 {
     auto [drawn_cards, fatigue_count] = current_player().hero.deck.draw(amount);
@@ -107,7 +78,7 @@ void Game::draw()
         current_player().hero.fatigue(1);
 }
 
-std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
+std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
 {
     std::vector<std::unique_ptr<Action>> possible_actions;
     for(unsigned hand_position = 0; hand_position < current_player().hero.hand.size(); ++hand_position)
@@ -125,7 +96,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions()
     return possible_actions;
 }
 
-std::vector<std::unique_ptr<Action>> Game::get_attack_actions()
+std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 {
     std::vector<std::unique_ptr<Action>> attack_actions;
 
@@ -160,7 +131,7 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions()
     return attack_actions;
 }
 
-HeroInput Game::get_hero_state(unsigned player_index)
+HeroInput Game::get_hero_state(unsigned player_index) const
 {
     HeroStateInput hero_hero{static_cast<unsigned>(players_.at(player_index).hero.health)};
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_heros;
@@ -180,52 +151,55 @@ HeroInput Game::get_hero_state(unsigned player_index)
         players_.at(player_index).hero.mana};
 }
 
-GameResult Game::run()
-{
-    active_player_ = Rng::instance()->uniform_int(0, 1);
-
-    mulligan();
-    while(!game_ended_)
-        do_turn();
-
-    return winner_;
-}
-
-Game Game::copy() const
-{
-    return Game(*this);
-}
-
-GameStateInput Game::get_state()
+GameStateInput Game::get_state() const
 {
     return GameStateInput{{get_hero_state(active_player_), get_hero_state(1 - active_player_)}};
 }
 
-void Game::do_action(const EndTurnAction& action)
+std::vector<Game> Game::do_action(const EndTurnAction& action)
 {
     static_cast<void>(action);
+
     turn_ended_ = true;
+
+    return {*this};
 }
 
-void Game::do_action(const PlayMinionAction& action)
+std::vector<Game> Game::do_action(const PlayMinionAction& action)
 {
     current_player().hero.mana -= action.card_cost;
 
     auto* played_card = static_cast<MinionCard*>(current_player().hero.hand.remove_card(action.hand_position).release()
     );
     current_player().hero.board.add_minion(Minion(*played_card), action.board_position);
-    played_card->on_play(*this, action.args);
+
+    auto new_states = played_card->on_play(*this, action.args);
+
+    std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
+        game.current_player().hero.board.remove_dead_minions();
+        game.opponent().hero.board.remove_dead_minions();
+    });
+
+    return new_states;
 }
 
-void Game::do_action(const PlaySpellAction& action)
+std::vector<Game> Game::do_action(const PlaySpellAction& action)
 {
     current_player().hero.mana -= action.card_cost;
 
     auto played_card = current_player().hero.hand.remove_card(action.hand_position);
-    played_card->on_play(*this, action.args);
+
+    auto new_states = played_card->on_play(*this, action.args);
+
+    std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
+        game.current_player().hero.board.remove_dead_minions();
+        game.opponent().hero.board.remove_dead_minions();
+    });
+
+    return new_states;
 }
 
-void Game::do_action(const TradeAction& action)
+std::vector<Game> Game::do_action(const TradeAction& action)
 {
     auto& first_minion = current_player().hero.board.get_minion(action.first_target);
     auto& second_minion = opponent().hero.board.get_minion(action.second_target);
@@ -235,9 +209,13 @@ void Game::do_action(const TradeAction& action)
 
     current_player().hero.board.remove_dead_minions();
     opponent().hero.board.remove_dead_minions();
+
+    return {*this};
 }
 
-void Game::do_action(const HitHeroAction& action)
+std::vector<Game> Game::do_action(const HitHeroAction& action)
 {
     opponent().hero.health -= current_player().hero.board.get_minion(action.position).attack;
+
+    return {*this};
 }

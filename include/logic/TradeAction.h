@@ -7,7 +7,7 @@ struct TradeAction: Action
 {
     const unsigned first_target, second_target;
     TradeAction(unsigned first_target, unsigned second_target);
-    void apply(Game& game);
+    std::vector<Game> apply(Game& game) const;
 };
 
 #endif

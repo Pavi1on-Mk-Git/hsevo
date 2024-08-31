@@ -1,12 +1,15 @@
 #include "players/RandomPlayerLogic.h"
 
+#include "logic/Game.h"
 #include "utils/Rng.h"
 
 RandomPlayerLogic::RandomPlayerLogic(const Decklist& decklist): PlayerLogic(decklist) {}
 
-std::unique_ptr<Action> RandomPlayerLogic::choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
-    const
+Game RandomPlayerLogic::choose_and_apply_action(Game& game, std::vector<std::unique_ptr<Action>> actions) const
 {
-    static_cast<void>(game);
-    return std::move(actions.at(Rng::instance()->uniform_int(0, actions.size())));
+    auto& action = actions.at(Rng::instance()->uniform_int(0, actions.size() - 1));
+
+    auto new_states = action->apply(game);
+
+    return new_states.at(Rng::instance()->uniform_int(0, new_states.size() - 1));
 }

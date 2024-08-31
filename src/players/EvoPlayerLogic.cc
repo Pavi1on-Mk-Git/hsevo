@@ -8,22 +8,39 @@ EvoPlayerLogic::EvoPlayerLogic(const Decklist& decklist, SimpleEvo<1 + 2 * Board
     PlayerLogic(decklist), evo(evo)
 {}
 
-std::unique_ptr<Action> EvoPlayerLogic::choose_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
-    const
+double EvoPlayerLogic::add_game_score(double sum, const Game& game) const
 {
-    std::vector<double> action_scores;
-    for(const auto& action: actions)
-    {
-        Game game_copy = game.copy();
-        action->apply(game_copy);
+    auto inputs = game.get_state().get_evo_input();
+    return sum + evo.score_vec(inputs.at(0)) - evo.score_vec(inputs.at(1));
+}
 
-        auto inputs = game_copy.get_state().get_evo_input();
-        action_scores.push_back(evo.score_vec(inputs.at(0)) - evo.score_vec(inputs.at(1)));
-    }
+double EvoPlayerLogic::average_of_states(const std::vector<Game>& states) const
+{
+    return std::accumulate(
+               states.begin(), states.end(), 0.,
+               [this](double sum, const Game& game) { return add_game_score(sum, game); }
+           ) /
+           states.size();
+}
 
-    auto best_element_index = std::distance(
-        action_scores.begin(), std::max_element(action_scores.begin(), action_scores.end())
+Game EvoPlayerLogic::choose_and_apply_action(Game& game, std::vector<std::unique_ptr<Action>> actions) const
+{
+    std::vector<std::vector<Game>> states_for_action;
+
+    std::transform(
+        actions.begin(), actions.end(), std::back_inserter(states_for_action),
+        [&game](const std::unique_ptr<Action>& action) {
+            Game game_copy(game);
+            return action->apply(game_copy);
+        }
     );
 
-    return std::move(actions.at(best_element_index));
+    auto best_action = std::max_element(
+        states_for_action.begin(), states_for_action.end(),
+        [this](const std::vector<Game>& first_states, const std::vector<Game>& second_states) {
+            return average_of_states(first_states) < average_of_states(second_states);
+        }
+    );
+
+    return best_action->at(Rng::instance()->uniform_int(0, best_action->size() - 1));
 }

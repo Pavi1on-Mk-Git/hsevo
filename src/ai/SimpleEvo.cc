@@ -1,6 +1,6 @@
 #include "ai/SimpleEvo.hpp"
 
-#include "logic/Game.h"
+#include "logic/run_game.h"
 #include "players/EvoPlayerLogic.h"
 
 std::vector<unsigned> score_member(
@@ -11,16 +11,15 @@ std::vector<unsigned> score_member(
     for(unsigned member_index = 0; member_index < population.size(); ++member_index)
         scores.push_back(0);
 
-    std::vector<std::unique_ptr<PlayerLogic>> players;
+    std::vector<std::shared_ptr<PlayerLogic>> players;
     for(const auto& member: population)
-        players.push_back(std::make_unique<EvoPlayerLogic>(decklist, member));
+        players.push_back(std::make_shared<EvoPlayerLogic>(decklist, member));
 
     for(unsigned i = 0; i < players.size(); ++i)
     {
         for(unsigned j = 0; j < players.size(); ++j)
         {
-            auto game = Game(players.at(i), players.at(j));
-            auto winner = game.run();
+            auto winner = run_game(players.at(i), players.at(j));
 
             switch(winner)
             {

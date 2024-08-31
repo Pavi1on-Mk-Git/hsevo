@@ -2,9 +2,9 @@
 
 #include "logic/Game.h"
 
-void SacrificialPact::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> SacrificialPact::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
+    return apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> SacrificialPact::create_play_actions(

@@ -9,7 +9,7 @@ PlayMinionAction::PlayMinionAction(
     board_position(board_position)
 {}
 
-void PlayMinionAction::apply(Game& game)
+std::vector<Game> PlayMinionAction::apply(Game& game) const
 {
-    game.do_action(*this);
+    return game.do_action(*this);
 }

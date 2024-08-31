@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-void FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     const auto position_played = std::get<unsigned>(args[0]);
     const auto target_position = std::get<unsigned>(args[1]);
@@ -12,6 +12,8 @@ void FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args
     auto target_copy = board.get_minion(target_position);
 
     board.transform_minion(target_copy, position_played);
+
+    return {game};
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_actions(

@@ -22,6 +22,6 @@ public:
     void restore_health(unsigned amount);
 };
 
-std::vector<Game> apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func);
+void apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func);
 
 #endif

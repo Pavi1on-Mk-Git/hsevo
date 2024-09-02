@@ -5,17 +5,19 @@
 
 std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    auto after_dmg_states = apply_to_entity(game, args, [](Entity& entity) { entity.health -= 4; });
+    apply_to_entity(game, args, [](Entity& entity) { entity.health -= 4; });
+
+    auto& hand = game.current_player().hero.hand;
 
     std::vector<Game> post_discard_states;
+    post_discard_states.reserve(hand.size());
 
-    for(auto& state: after_dmg_states)
-        for(unsigned hand_position = 0; hand_position < state.current_player().hero.hand.size(); ++hand_position)
-        {
-            Game state_copy(state);
-            state_copy.current_player().hero.hand.remove_card(hand_position);
-            post_discard_states.push_back(state_copy);
-        }
+    for(unsigned hand_position = 0; hand_position < hand.size(); ++hand_position)
+    {
+        Game game_copy(game);
+        game_copy.current_player().hero.hand.remove_card(hand_position);
+        post_discard_states.push_back(game_copy);
+    }
 
     return post_discard_states;
 }

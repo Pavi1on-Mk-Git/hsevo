@@ -4,7 +4,8 @@
 
 std::vector<Game> SacrificialPact::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    return apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
+    apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
+    return {game};
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> SacrificialPact::create_play_actions(

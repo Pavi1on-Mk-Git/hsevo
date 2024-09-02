@@ -11,7 +11,7 @@ void Entity::restore_health(unsigned amount)
     health = std::min(max_health, health + amount);
 }
 
-std::vector<Game> apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func)
+void apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func)
 {
     const auto target_type = std::get<TargetType>(args.at(0));
 
@@ -31,6 +31,4 @@ std::vector<Game> apply_to_entity(Game& game, const std::vector<OnPlayArg>& args
             func(game.opponent().hero.board.get_minion(target_position));
         break;
     }
-
-    return {game};
 }

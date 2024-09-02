@@ -29,8 +29,6 @@ private:
     void switch_active_player();
 
     void mulligan();
-    void draw(unsigned amount);
-    void draw();
     std::vector<std::unique_ptr<Action>> get_possible_actions() const;
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
     HeroInput get_hero_state(unsigned player_index) const;
@@ -41,6 +39,8 @@ public:
     const Player& current_player() const;
     const Player& opponent() const;
     GameStateInput get_state() const;
+    void draw(unsigned amount);
+    void draw();
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);
     std::vector<Game> do_action(const PlaySpellAction& action);

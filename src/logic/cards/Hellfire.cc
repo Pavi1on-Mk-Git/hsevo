@@ -6,6 +6,8 @@ const unsigned HELLFIRE_DMG = 3;
 
 std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
+    static_cast<void>(args);
+
     auto deal_dmg = [](Entity& entity) { entity.health -= HELLFIRE_DMG; };
 
     auto deal_to_all = [&deal_dmg](Hero& hero) {
@@ -22,9 +24,9 @@ std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>& ar
 
 std::vector<std::unique_ptr<PlayCardAction>> Hellfire::create_play_actions(const Game& game, unsigned hand_position)
 {
-    return {
-        std::make_unique<PlayCardAction>(
-            hand_position, game.current_player().hero.hand.get_card(hand_position)->mana_cost(game)
-        ),
-    };
+    std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
+
+    play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, this->mana_cost(game)));
+
+    return play_self_actions;
 }

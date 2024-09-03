@@ -20,6 +20,7 @@ public:
     Minion& get_minion(unsigned position);
     const Minion& get_minion(unsigned position) const;
     void remove_dead_minions();
+    void trigger_end_of_turn();
 };
 
 #endif

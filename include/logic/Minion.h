@@ -9,6 +9,7 @@ struct Minion: public Entity
 {
     unsigned attack;
     bool active;
+    bool will_die_horribly;
     MinionKeywords keywords;
     Minion(const MinionCard& card);
 };

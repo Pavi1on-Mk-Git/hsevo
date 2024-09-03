@@ -22,5 +22,9 @@ coverage:
 	@ genhtml -q ./build/bin/test_coverage.info --output-directory ./build/bin/coverage 2> /dev/null
 	@ $(BROWSER) ./build/bin/coverage/index.html
 
+profile:
+	@ valgrind --log-file="./build/bin/profiling/profile.out" --tool=callgrind ./build/bin/hsevo
+	@ kcachegrind ./build/bin/profiling/profile.out
+
 %:
 	@$(MAKE) --no-print-directory -C build $@

@@ -1,11 +1,11 @@
-#ifndef MORTAL_COIL_H
-#define MORTAL_COIL_H
+#ifndef SIPHON_SOUL_H
+#define SIPHON_SOUL_H
 
 #include "logic/cards/SingleArgTargetMinionCard.h"
 
-struct MortalCoil: public SingleArgTargetMinionCard
+struct SiphonSoul: public SingleArgTargetMinionCard
 {
-    MortalCoil(): SingleArgTargetMinionCard("Mortal Coil", 1) {}
+    SiphonSoul(): SingleArgTargetMinionCard("Siphon Soul", 6) {}
 
     CLONE
 

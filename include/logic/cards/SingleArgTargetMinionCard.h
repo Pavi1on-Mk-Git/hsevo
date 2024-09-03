@@ -1,9 +1,9 @@
-#ifndef SINGLE_ARG_TARGET_FRIENDLY_CARD_H
-#define SINGLE_ARG_TARGET_FRIENDLY_CARD_H
+#ifndef SINGLE_ARG_TARGET_MINION_CARD_H
+#define SINGLE_ARG_TARGET_MINION_CARD_H
 
 #include "logic/cards/Card.h"
 
-class SingleArgTargetFriendlyCard: public Card
+class SingleArgTargetMinionCard: public Card
 {
 protected:
     using Card::Card;

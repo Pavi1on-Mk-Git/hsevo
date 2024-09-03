@@ -1,8 +1,8 @@
-#include "logic/cards/SingleArgTargetFriendlyCard.h"
+#include "logic/cards/SingleArgTargetFriendlyMinionCard.h"
 
 #include "logic/Game.h"
 
-std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetFriendlyCard::create_play_actions(
+std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetFriendlyMinionCard::create_play_actions(
     const Game& game, unsigned hand_position
 )
 {

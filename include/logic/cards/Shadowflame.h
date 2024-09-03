@@ -1,11 +1,11 @@
 #ifndef SHADOWFLAME_H
 #define SHADOWFLAME_H
 
-#include "logic/cards/SingleArgTargetFriendlyCard.h"
+#include "logic/cards/SingleArgTargetFriendlyMinionCard.h"
 
-struct Shadowflame: public SingleArgTargetFriendlyCard
+struct Shadowflame: public SingleArgTargetFriendlyMinionCard
 {
-    Shadowflame(): SingleArgTargetFriendlyCard("Shadowflame", 4) {}
+    Shadowflame(): SingleArgTargetFriendlyMinionCard("Shadowflame", 4) {}
 
     CLONE
 

@@ -1,11 +1,11 @@
 #ifndef POWER_OVERWHELMING_H
 #define POWER_OVERWHELMING_H
 
-#include "logic/cards/SingleArgTargetFriendlyCard.h"
+#include "logic/cards/SingleArgTargetFriendlyMinionCard.h"
 
-struct PowerOverwhelming: public SingleArgTargetFriendlyCard
+struct PowerOverwhelming: public SingleArgTargetFriendlyMinionCard
 {
-    PowerOverwhelming(): SingleArgTargetFriendlyCard("Power Overwhelming", 1) {}
+    PowerOverwhelming(): SingleArgTargetFriendlyMinionCard("Power Overwhelming", 1) {}
 
     CLONE
 

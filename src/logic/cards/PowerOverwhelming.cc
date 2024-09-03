@@ -4,7 +4,7 @@
 
 std::vector<Game> PowerOverwhelming::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    auto target_position = std::get<unsigned>(args.at(0));
+    const auto target_position = std::get<unsigned>(args.at(0));
 
     auto& minion = game.current_player().hero.board.get_minion(target_position);
     minion.attack += 4;

@@ -6,7 +6,7 @@ const unsigned SHADOWFLAME_DMG = 4;
 
 std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    auto target_position = std::get<unsigned>(args.at(0));
+    const auto target_position = std::get<unsigned>(args.at(0));
 
     game.current_player().hero.board.get_minion(target_position).health = 0;
 

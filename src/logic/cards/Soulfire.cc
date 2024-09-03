@@ -3,9 +3,11 @@
 #include "logic/Entity.h"
 #include "logic/Game.h"
 
+const unsigned SOULFIRE_DMG = 4;
+
 std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
-    apply_to_entity(game, args, [](Entity& entity) { entity.health -= 4; });
+    apply_to_entity(game, args, [](Entity& entity) { entity.health -= SOULFIRE_DMG; });
 
     auto& hand = game.current_player().hero.hand;
 

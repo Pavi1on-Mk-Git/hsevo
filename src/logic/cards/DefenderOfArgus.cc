@@ -2,6 +2,8 @@
 
 #include "logic/Game.h"
 
+const unsigned DEFENDER_OF_ARGUS_BUFF_AMOUNT = 1;
+
 std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     const auto position_played = std::get<unsigned>(args.at(0));
@@ -17,9 +19,9 @@ std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayA
     {
         auto& current_minion = game.current_player().hero.board.get_minion(board_position);
         current_minion.keywords |= TAUNT;
-        current_minion.attack++;
-        current_minion.health++;
-        current_minion.max_health++;
+        current_minion.attack += DEFENDER_OF_ARGUS_BUFF_AMOUNT;
+        current_minion.health += DEFENDER_OF_ARGUS_BUFF_AMOUNT;
+        current_minion.max_health += DEFENDER_OF_ARGUS_BUFF_AMOUNT;
     }
 
     return {game};

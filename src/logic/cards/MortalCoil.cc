@@ -3,10 +3,12 @@
 #include "logic/Entity.h"
 #include "logic/Game.h"
 
+const unsigned MORTAL_COIL_DMG = 1;
+
 std::vector<Game> MortalCoil::on_play(Game& game, const std::vector<OnPlayArg>& args)
 {
     apply_to_entity(game, args, [&game](Entity& entity) {
-        entity.health -= 1;
+        entity.health -= MORTAL_COIL_DMG;
         if(entity.health == 0)
             game.draw();
     });

@@ -13,7 +13,7 @@ class Deck
 private:
     std::vector<std::unique_ptr<Card>> deck_;
 public:
-    Deck(const Decklist& decklist);
+    Deck(const DecklistDeck& decklist);
     Deck(const Deck& deck);
     Deck& operator=(Deck&& other) = default;
     void shuffle();

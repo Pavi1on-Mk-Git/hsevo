@@ -7,7 +7,7 @@ struct PowerOverwhelming: public SingleArgTargetFriendlyMinionCard
 {
     PowerOverwhelming(): SingleArgTargetFriendlyMinionCard("Power Overwhelming", 1) {}
 
-    CLONE
+    CLONE_CARD
 
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
 };

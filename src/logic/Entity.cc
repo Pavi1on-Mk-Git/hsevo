@@ -18,17 +18,17 @@ void apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::functi
     switch(target_type)
     {
     case TargetType::ALLY_HERO:
-        func(game.current_player().hero);
+        func(*game.current_player().hero);
         break;
     case TargetType::ENEMY_HERO:
-        func(game.opponent().hero);
+        func(*game.opponent().hero);
         break;
     default:
         const auto target_position = std::get<unsigned>(args.at(1));
         if(target_type == TargetType::ALLY_MINION)
-            func(game.current_player().hero.board.get_minion(target_position));
+            func(game.current_player().board.get_minion(target_position));
         else if(target_type == TargetType::ENEMY_MINION)
-            func(game.opponent().hero.board.get_minion(target_position));
+            func(game.opponent().board.get_minion(target_position));
         break;
     }
 }

@@ -7,7 +7,7 @@ struct AncientWatcher: public MinionCard
 {
     AncientWatcher(): MinionCard("Ancient Watcher", 2, 4, 5, CANT_ATTACK) {}
 
-    CLONE
+    CLONE_CARD
 };
 
 #endif

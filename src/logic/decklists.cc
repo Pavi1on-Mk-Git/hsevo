@@ -1,12 +1,14 @@
 #include "logic/decklists.h"
 
 #include "logic/cards/BoulderfistOgre.h"
+#include "logic/heroes/GulDan.h"
 
 Decklist ogre_deck()
 {
-    Decklist decklist;
+    std::unique_ptr<Hero> hero = std::make_unique<GulDan>();
 
-    decklist.emplace_back(std::make_unique<BoulderfistOgre>(), 30);
+    DecklistDeck deck;
+    deck.emplace_back(std::make_unique<BoulderfistOgre>(), 30);
 
-    return decklist;
+    return Decklist(std::move(hero), std::move(deck));
 }

@@ -10,14 +10,14 @@ std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>& ar
 
     auto deal_dmg = [](Entity& entity) { entity.health -= HELLFIRE_DMG; };
 
-    auto deal_to_all = [&deal_dmg](Hero& hero) {
-        deal_dmg(hero);
-        for(unsigned target_position = 0; target_position < hero.board.minion_count(); ++target_position)
-            deal_dmg(hero.board.get_minion(target_position));
+    auto deal_to_all = [&deal_dmg](Player& player) {
+        deal_dmg(*player.hero);
+        for(unsigned target_position = 0; target_position < player.board.minion_count(); ++target_position)
+            deal_dmg(player.board.get_minion(target_position));
     };
 
-    deal_to_all(game.current_player().hero);
-    deal_to_all(game.opponent().hero);
+    deal_to_all(game.current_player());
+    deal_to_all(game.opponent());
 
     return {game};
 }

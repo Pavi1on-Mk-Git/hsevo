@@ -7,7 +7,7 @@ struct MountainGiant: public MinionCard
 {
     MountainGiant(): MinionCard("Mountain Giant", 12, 8, 8) {}
 
-    CLONE
+    CLONE_CARD
 
     unsigned mana_cost(const Game& game) const override;
 };

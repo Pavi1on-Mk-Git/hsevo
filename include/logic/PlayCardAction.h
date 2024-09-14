@@ -12,7 +12,7 @@ protected:
     PlayCardAction(unsigned hand_position, unsigned card_cost, const std::vector<OnPlayArg>& args = {});
 public:
     const unsigned hand_position, card_cost;
-    const std::vector<OnPlayArg>& args;
+    const std::vector<OnPlayArg> args;
 
     virtual ~PlayCardAction() = default;
 };

@@ -3,6 +3,7 @@
 
 #include "ai/GameStateInput.h"
 #include "logic/EndTurnAction.h"
+#include "logic/HeroPowerAction.h"
 #include "logic/HitHeroAction.h"
 #include "logic/PlayMinionAction.h"
 #include "logic/PlaySpellAction.h"
@@ -46,6 +47,7 @@ public:
     std::vector<Game> do_action(const PlaySpellAction& action);
     std::vector<Game> do_action(const TradeAction& action);
     std::vector<Game> do_action(const HitHeroAction& action);
+    std::vector<Game> do_action(const HeroPowerAction& action);
 
     friend GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
     friend void do_turn(Game& game);

@@ -7,7 +7,7 @@ struct MoltenGiant: public MinionCard
 {
     MoltenGiant(): MinionCard("Molten Giant", 20, 8, 8) {}
 
-    CLONE
+    CLONE_CARD
 
     unsigned mana_cost(const Game& game) const override;
 };

@@ -16,10 +16,10 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    const unsigned current_minion_count = game.current_player().hero.board.minion_count();
+    const unsigned current_minion_count = game.current_player().board.minion_count();
     const unsigned mana_cost = this->mana_cost(game);
 
-    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().hero.mana)
+    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().mana)
         return {};
 
 
@@ -43,8 +43,7 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
             hand_position, mana_cost, board_position, std::vector<OnPlayArg>{TargetType::ENEMY_HERO}
         ));
 
-        for(unsigned target_position = 0; target_position <= game.opponent().hero.board.minion_count();
-            ++target_position)
+        for(unsigned target_position = 0; target_position <= game.opponent().board.minion_count(); ++target_position)
             play_self_actions.push_back(std::make_unique<PlayMinionAction>(
                 hand_position, mana_cost, board_position,
                 std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}

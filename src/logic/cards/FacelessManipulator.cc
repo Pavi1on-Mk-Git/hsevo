@@ -7,7 +7,7 @@ std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnP
     const auto position_played = std::get<unsigned>(args[0]);
     const auto target_position = std::get<unsigned>(args[1]);
 
-    auto& board = game.current_player().hero.board;
+    auto& board = game.current_player().board;
 
     auto target_copy = board.get_minion(target_position);
 
@@ -22,10 +22,10 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    const unsigned current_minion_count = game.current_player().hero.board.minion_count();
+    const unsigned current_minion_count = game.current_player().board.minion_count();
     const unsigned mana_cost = this->mana_cost(game);
 
-    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().hero.mana)
+    if(current_minion_count == Board::MAX_BOARD_SIZE || mana_cost > game.current_player().mana)
         return {};
 
 

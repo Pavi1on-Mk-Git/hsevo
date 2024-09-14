@@ -10,16 +10,15 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetMinionCard::create_p
 
     const unsigned mana_cost = this->mana_cost(game);
 
-    if(mana_cost > game.current_player().hero.mana)
+    if(mana_cost > game.current_player().mana)
         return {};
 
-    for(unsigned target_position = 0; target_position <= game.current_player().hero.board.minion_count();
-        ++target_position)
+    for(unsigned target_position = 0; target_position <= game.current_player().board.minion_count(); ++target_position)
         play_self_actions.push_back(std::make_unique<PlaySpellAction>(
             hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
         ));
 
-    for(unsigned target_position = 0; target_position <= game.opponent().hero.board.minion_count(); ++target_position)
+    for(unsigned target_position = 0; target_position <= game.opponent().board.minion_count(); ++target_position)
         play_self_actions.push_back(std::make_unique<PlaySpellAction>(
             hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}
         ));

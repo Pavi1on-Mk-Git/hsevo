@@ -4,7 +4,7 @@
 
 #include "utils/Rng.h"
 
-Deck::Deck(const Decklist& decklist)
+Deck::Deck(const DecklistDeck& decklist)
 {
     for(const auto& [card, amount]: decklist)
         for(unsigned i = 0; i < amount; ++i)

@@ -7,7 +7,7 @@ struct LeeroyJenkins: public MinionCard
 {
     LeeroyJenkins(): MinionCard("Leeroy Jenkins", 4, 6, 2, CHARGE) {}
 
-    CLONE
+    CLONE_CARD
 
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
 };

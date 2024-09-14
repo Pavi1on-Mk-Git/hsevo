@@ -7,7 +7,7 @@ struct Shadowflame: public SingleArgTargetFriendlyMinionCard
 {
     Shadowflame(): SingleArgTargetFriendlyMinionCard("Shadowflame", 4) {}
 
-    CLONE
+    CLONE_CARD
 
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
 };

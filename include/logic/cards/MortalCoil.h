@@ -7,7 +7,7 @@ struct MortalCoil: public SingleArgTargetMinionCard
 {
     MortalCoil(): SingleArgTargetMinionCard("Mortal Coil", 1) {}
 
-    CLONE
+    CLONE_CARD
 
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
 };

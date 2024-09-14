@@ -7,7 +7,7 @@ struct BoulderfistOgre: public MinionCard
 {
     BoulderfistOgre(): MinionCard("Boulderfist Ogre", 6, 6, 7) {}
 
-    CLONE
+    CLONE_CARD
 };
 
 #endif

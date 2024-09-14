@@ -23,10 +23,10 @@ void do_turn(Game& game)
     if(game.game_ended_)
         return;
 
-    game.current_player().hero.mana = ++game.current_player().hero.mana_crystals;
+    game.current_player().mana = ++game.current_player().mana_crystals;
 
-    for(unsigned minion_index = 0; minion_index < game.current_player().hero.board.minion_count(); ++minion_index)
-        game.current_player().hero.board.get_minion(minion_index).active = true;
+    for(unsigned minion_index = 0; minion_index < game.current_player().board.minion_count(); ++minion_index)
+        game.current_player().board.get_minion(minion_index).active = true;
 
     game.turn_ended_ = false;
 

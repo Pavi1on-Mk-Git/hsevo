@@ -21,12 +21,3 @@ std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>& ar
 
     return {game};
 }
-
-std::vector<std::unique_ptr<PlayCardAction>> Hellfire::create_play_actions(const Game& game, unsigned hand_position)
-{
-    std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
-
-    play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, this->mana_cost(game)));
-
-    return play_self_actions;
-}

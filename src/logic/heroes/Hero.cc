@@ -1,11 +1,22 @@
 #include "logic/heroes/Hero.h"
 
-static const unsigned DEFAULT_MAX_HEALTH = 30;
-
-Hero::Hero(std::string_view name, std::string_view hero_power_name, unsigned hero_power_mana_cost, const Tribe& tribe):
-    Entity(name, DEFAULT_MAX_HEALTH, tribe), fatigue_dmg_(0), hero_power_name(hero_power_name),
-    hero_power_mana_cost(hero_power_mana_cost), hero_power_active(true), active(true)
+Hero::Hero(
+    std::string_view name, std::string_view hero_power_name, unsigned hero_power_mana_cost, unsigned base_health,
+    const Tribe& tribe
+):
+    Entity(name, base_health, tribe),
+    fatigue_dmg_(0), hero_power_name(hero_power_name), hero_power_mana_cost(hero_power_mana_cost),
+    hero_power_active(true), active(true)
 {}
+
+std::vector<std::unique_ptr<HeroPowerAction>> Hero::create_hero_power_use_actions(const Game& game)
+{
+    static_cast<void>(game);
+
+    std::vector<std::unique_ptr<HeroPowerAction>> actions;
+    actions.push_back(std::make_unique<HeroPowerAction>());
+    return actions;
+}
 
 void Hero::fatigue(unsigned count)
 {

@@ -2,9 +2,11 @@
 #define HERO_H
 
 #include <memory>
+#include <optional>
 
 #include "logic/Entity.h"
 #include "logic/HeroPowerAction.h"
+#include "logic/Weapon.h"
 
 class Hero: public Entity
 {
@@ -19,6 +21,9 @@ public:
     std::string hero_power_name;
     unsigned hero_power_mana_cost;
     bool hero_power_active;
+
+    std::optional<Weapon> weapon;
+    bool active;
 
     virtual ~Hero() = default;
     virtual std::vector<Game> on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args) = 0;

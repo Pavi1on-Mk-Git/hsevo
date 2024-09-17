@@ -136,6 +136,21 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
                 attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, taunt_minion_position));
     }
 
+    if(current_player().hero->active && current_player().hero->weapon)
+    {
+        if(taunt_minion_positions.empty())
+        {
+            attack_actions.push_back(std::make_unique<HeroHitHeroAction>());
+
+            for(unsigned opponent_board_position = 0; opponent_board_position < opponent().board.minion_count();
+                ++opponent_board_position)
+                attack_actions.push_back(std::make_unique<HeroTradeAction>(opponent_board_position));
+        }
+        else
+            for(auto taunt_minion_position: taunt_minion_positions)
+                attack_actions.push_back(std::make_unique<HeroTradeAction>(taunt_minion_position));
+    }
+
     return attack_actions;
 }
 
@@ -239,4 +254,35 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
     });
 
     return new_states;
+}
+
+std::vector<Game> Game::do_action(const HeroTradeAction& action)
+{
+    auto& target_minion = opponent().board.get_minion(action.position);
+
+    target_minion.health -= current_player().hero->weapon->attack;
+    current_player().hero->health -= target_minion.attack;
+
+    if(--current_player().hero->weapon->durability == 0)
+        current_player().hero->weapon = std::nullopt;
+
+    current_player().hero->active = false;
+
+    opponent().board.remove_dead_minions();
+
+    return {*this};
+}
+
+std::vector<Game> Game::do_action(const HeroHitHeroAction& action)
+{
+    static_cast<void>(action);
+
+    opponent().hero->health -= current_player().hero->weapon->attack;
+
+    if(--current_player().hero->weapon->durability == 0)
+        current_player().hero->weapon = std::nullopt;
+
+    current_player().hero->active = false;
+
+    return {*this};
 }

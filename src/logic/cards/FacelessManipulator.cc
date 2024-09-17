@@ -30,7 +30,7 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
 
 
     for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
-        for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
+        for(unsigned target_position = 0; target_position < current_minion_count; ++target_position)
         {
             if(target_position == board_position)
                 continue;

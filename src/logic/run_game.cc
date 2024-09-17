@@ -25,6 +25,7 @@ void do_turn(Game& game)
 
     game.current_player().mana = ++game.current_player().mana_crystals;
     game.current_player().hero->hero_power_active = true;
+    game.current_player().hero->active = true;
 
     for(unsigned minion_index = 0; minion_index < game.current_player().board.minion_count(); ++minion_index)
         game.current_player().board.get_minion(minion_index).active = true;

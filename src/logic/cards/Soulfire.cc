@@ -11,6 +11,9 @@ std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& ar
 
     auto& hand = game.current_player().hand;
 
+    if(hand.size() == 0)
+        return {game};
+
     std::vector<Game> post_discard_states;
     post_discard_states.reserve(hand.size());
 

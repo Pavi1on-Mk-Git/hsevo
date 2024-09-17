@@ -24,7 +24,7 @@ std::vector<std::unique_ptr<PlayCardAction>> SacrificialPact::create_play_action
             std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_HERO})
         );
 
-    for(unsigned target_position = 0; target_position <= game.current_player().board.minion_count(); ++target_position)
+    for(unsigned target_position = 0; target_position < game.current_player().board.minion_count(); ++target_position)
         if(game.current_player().board.get_minion(target_position).tribe == Tribe::DEMON)
             play_self_actions.push_back(std::make_unique<PlaySpellAction>(
                 hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
@@ -35,7 +35,7 @@ std::vector<std::unique_ptr<PlayCardAction>> SacrificialPact::create_play_action
             std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_HERO})
         );
 
-    for(unsigned target_position = 0; target_position <= game.opponent().board.minion_count(); ++target_position)
+    for(unsigned target_position = 0; target_position < game.opponent().board.minion_count(); ++target_position)
         if(game.opponent().board.get_minion(target_position).tribe == Tribe::DEMON)
             play_self_actions.push_back(std::make_unique<PlaySpellAction>(
                 hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}

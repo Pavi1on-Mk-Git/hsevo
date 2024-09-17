@@ -7,7 +7,7 @@ std::vector<Game> LordJaraxxus::on_hero_power_use(Game& game, const std::vector<
 {
     static_cast<void>(args);
 
-    game.current_player().board.add_minion(Minion(Infernal()), game.opponent().board.minion_count());
+    game.current_player().board.add_minion(Minion(Infernal()), game.current_player().board.minion_count());
 
     return {game};
 }

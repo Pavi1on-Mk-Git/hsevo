@@ -21,7 +21,10 @@ std::vector<std::unique_ptr<PlayCardAction>> Card::create_play_actions(const Gam
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
-    play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, this->mana_cost(game)));
+    const unsigned mana_cost = this->mana_cost(game);
+
+    if(game.current_player().mana >= mana_cost)
+        play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, mana_cost));
 
     return play_self_actions;
 }

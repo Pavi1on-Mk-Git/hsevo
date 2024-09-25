@@ -234,6 +234,8 @@ std::vector<Game> Game::do_action(const TradeAction& action)
     first_minion.health -= second_minion.attack;
     second_minion.health -= first_minion.attack;
 
+    first_minion.active = false;
+
     current_player().board.remove_dead_minions();
     opponent().board.remove_dead_minions();
 
@@ -242,7 +244,10 @@ std::vector<Game> Game::do_action(const TradeAction& action)
 
 std::vector<Game> Game::do_action(const HitHeroAction& action)
 {
-    opponent().hero->health -= current_player().board.get_minion(action.position).attack;
+    auto& minion = current_player().board.get_minion(action.position);
+
+    opponent().hero->health -= minion.attack;
+    minion.active = false;
 
     return {*this};
 }

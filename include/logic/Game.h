@@ -24,19 +24,18 @@ class Game
 private:
     std::array<Player, 2> players_;
     unsigned active_player_;
-    bool game_ended_;
-    GameResult winner_;
-    bool turn_ended_;
-
-    void check_winner();
-    void switch_active_player();
 
     void mulligan();
-    std::vector<std::unique_ptr<Action>> get_possible_actions() const;
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
+
     HeroInput get_hero_state(unsigned player_index) const;
 public:
+    bool turn_ended;
+
     Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
+    std::optional<GameResult> check_winner() const;
+    void switch_active_player();
+    std::vector<std::unique_ptr<Action>> get_possible_actions() const;
     Player& current_player();
     Player& opponent();
     const Player& current_player() const;
@@ -52,9 +51,6 @@ public:
     std::vector<Game> do_action(const HeroPowerAction& action);
     std::vector<Game> do_action(const HeroTradeAction& action);
     std::vector<Game> do_action(const HeroHitHeroAction& action);
-
-    friend GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
-    friend void do_turn(Game& game);
 };
 
 #endif

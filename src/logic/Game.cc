@@ -5,25 +5,24 @@
 #include "utils/Rng.h"
 
 Game::Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player):
-    players_({first_player, second_player}), game_ended_(false), turn_ended_(false)
-{}
+    players_({first_player, second_player}), active_player_(Rng::instance()->uniform_int(0, 1)), turn_ended(false)
+{
+    mulligan();
+}
 
-void Game::check_winner()
+std::optional<GameResult> Game::check_winner() const
 {
     bool first_player_dead = players_.at(0).hero->health <= 0;
     bool second_player_dead = players_.at(1).hero->health <= 0;
 
-    if(first_player_dead || second_player_dead)
-        game_ended_ = true;
-    else
-        return;
-
     if(first_player_dead && second_player_dead)
-        winner_ = GameResult::TIE;
+        return GameResult::TIE;
     else if(first_player_dead)
-        winner_ = GameResult::PLAYER_2;
+        return GameResult::PLAYER_2;
     else if(second_player_dead)
-        winner_ = GameResult::PLAYER_1;
+        return GameResult::PLAYER_1;
+    else
+        return std::nullopt;
 }
 
 void Game::switch_active_player()
@@ -182,7 +181,12 @@ std::vector<Game> Game::do_action(const EndTurnAction& action)
 {
     static_cast<void>(action);
 
-    turn_ended_ = true;
+    turn_ended = true;
+
+    current_player().board.trigger_end_of_turn();
+    opponent().board.trigger_end_of_turn();
+    current_player().board.remove_dead_minions();
+    opponent().board.remove_dead_minions();
 
     return {*this};
 }

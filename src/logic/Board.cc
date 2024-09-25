@@ -43,8 +43,8 @@ void Board::remove_dead_minions()
 
 void Board::trigger_end_of_turn()
 {
-    auto new_end = std::remove_if(board_.begin(), board_.end(), [](const Minion& minion) {
-        return minion.will_die_horribly;
+    std::for_each(board_.begin(), board_.end(), [](Minion& minion) {
+        if(minion.will_die_horribly)
+            minion.health = 0;
     });
-    board_.erase(new_end, board_.end());
 }

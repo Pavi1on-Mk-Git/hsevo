@@ -2,7 +2,6 @@
 #define DECK_H
 
 #include <memory>
-#include <random>
 #include <vector>
 
 #include "logic/cards/Card.h"

@@ -5,7 +5,6 @@
 #include <array>
 #include <cmath>
 #include <functional>
-#include <random>
 
 #include "logic/Board.h"
 #include "logic/decklists.h"

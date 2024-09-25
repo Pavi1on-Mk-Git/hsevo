@@ -1,6 +1,5 @@
 #include <array>
 #include <iostream>
-#include <random>
 
 #include "ai/SimpleEvo.hpp"
 #include "logic/Board.h"

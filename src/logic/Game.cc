@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "logic/cards/Coin.h"
 #include "utils/Rng.h"
 
 Game::Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player):
@@ -58,6 +59,7 @@ void Game::mulligan()
     switch_active_player();
 
     draw(FIRST_DRAW_AMOUNT + 1);
+    current_player().hand.add_cards(std::make_unique<Coin>());
     switch_active_player();
 }
 

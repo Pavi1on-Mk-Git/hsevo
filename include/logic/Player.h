@@ -9,6 +9,8 @@
 
 struct Player
 {
+    static constexpr unsigned MAX_MANA = 10;
+
     std::shared_ptr<PlayerLogic> logic;
     std::unique_ptr<Hero> hero;
     unsigned mana_crystals, mana;

@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "logic/Game.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/heroes/GulDan.h"
-#include "logic/run_game.h"
 #include "players/RandomPlayerLogic.h"
 
 TEST_CASE("Initialize game")
@@ -28,7 +28,7 @@ TEST_CASE("Initialize game")
     }
 
     REQUIRE(game.current_player().hand.size() == 3);
-    REQUIRE(game.opponent().hand.size() == 4);
+    REQUIRE(game.opponent().hand.size() == 5);
 }
 
 TEST_CASE("Draw cards")

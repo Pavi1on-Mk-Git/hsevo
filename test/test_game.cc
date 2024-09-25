@@ -72,7 +72,7 @@ TEST_CASE("End turn")
 
     auto actions = game.get_possible_actions();
 
-    (*(actions.end() - 1))->apply(game);
+    auto new_state = (*(actions.end() - 1))->apply(game).at(0);
 
-    REQUIRE(game.turn_ended == true);
+    REQUIRE(new_state.turn_ended == true);
 }

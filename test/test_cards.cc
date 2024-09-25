@@ -3,8 +3,12 @@
 #include "logic/Game.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/BoulderfistOgre.h"
+#include "logic/cards/Coin.h"
+#include "logic/cards/Infernal.h"
 #include "logic/cards/LeeroyJenkins.h"
+#include "logic/cards/SacrificialPact.h"
 #include "logic/heroes/GulDan.h"
+#include "logic/heroes/LordJaraxxus.h"
 #include "players/RandomPlayerLogic.h"
 
 TEST_CASE("Play cards")
@@ -20,9 +24,11 @@ TEST_CASE("Play cards")
 
     auto actions = game.get_possible_actions();
 
-    actions.at(0)->apply(game);
+    auto new_state = actions.at(0)->apply(game).at(0);
 
-    auto& ogre = game.current_player().board.get_minion(0);
+    REQUIRE(new_state.current_player().mana == 0);
+
+    auto& ogre = new_state.current_player().board.get_minion(0);
 
     REQUIRE(ogre.active == false);
     REQUIRE(ogre.attack == 6);
@@ -48,17 +54,19 @@ TEST_CASE("Minion attacks")
 
     SECTION("Attack hero")
     {
-        actions.at(0)->apply(game);
+        auto new_state = actions.at(0)->apply(game).at(0);
 
-        REQUIRE(game.opponent().hero->health == 24);
+        REQUIRE(new_state.opponent().hero->health == 24);
+        REQUIRE(new_state.current_player().board.get_minion(0).active == false);
     }
 
     SECTION("Attack minion")
     {
-        actions.at(1)->apply(game);
+        auto new_state = actions.at(1)->apply(game).at(0);
 
-        REQUIRE(game.opponent().board.get_minion(0).health == 1);
-        REQUIRE(game.current_player().board.get_minion(0).health == 1);
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 1);
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 1);
+        REQUIRE(new_state.current_player().board.get_minion(0).active == false);
     }
 }
 
@@ -104,5 +112,74 @@ TEST_CASE("Keywords")
         game.current_player().board.add_minion(LeeroyJenkins(), 0);
 
         REQUIRE(game.current_player().board.get_minion(0).active == true);
+    }
+}
+
+TEST_CASE("The Coin")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<Coin>(), 1});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    SECTION("Normal use")
+    {
+        auto actions = game.get_possible_actions();
+        REQUIRE(game.current_player().mana == 0);
+        auto new_state = actions.at(0)->apply(game);
+        REQUIRE(game.current_player().mana == 1);
+    }
+
+    SECTION("Full mana use")
+    {
+        game.current_player().mana = 10;
+
+        auto actions = game.get_possible_actions();
+        REQUIRE(game.current_player().mana == 10);
+        auto new_state = actions.at(0)->apply(game);
+        REQUIRE(game.current_player().mana == 10);
+    }
+}
+
+TEST_CASE("Sacrificial Pact")
+{
+    auto hero = std::make_unique<LordJaraxxus>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<SacrificialPact>(), 1});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().board.add_minion(Infernal(), 0);
+    game.opponent().board.add_minion(Infernal(), 0);
+
+    auto actions = game.get_possible_actions();
+
+    SECTION("Kill ally demon")
+    {
+        auto new_state = actions.at(1)->apply(game).at(0);
+        REQUIRE(new_state.current_player().board.minion_count() == 0);
+    }
+
+    SECTION("Kill enemy demon")
+    {
+        auto new_state = actions.at(3)->apply(game).at(0);
+        REQUIRE(new_state.opponent().board.minion_count() == 0);
+    }
+
+    SECTION("Kill yourself")
+    {
+        auto new_state = actions.at(0)->apply(game).at(0);
+        REQUIRE(new_state.current_player().hero->health == 0);
+        REQUIRE(new_state.check_winner());
+    }
+
+    SECTION("Kill your enemy")
+    {
+        auto new_state = actions.at(2)->apply(game).at(0);
+        REQUIRE(new_state.opponent().hero->health == 0);
+        REQUIRE(new_state.check_winner());
     }
 }

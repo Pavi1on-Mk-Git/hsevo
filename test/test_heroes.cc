@@ -14,8 +14,8 @@ TEST_CASE("Gul'Dan")
 
     auto actions = game.get_possible_actions();
 
-    (*(actions.end() - 2))->apply(game);
+    auto new_state = (*(actions.end() - 2))->apply(game).at(0);
 
-    REQUIRE(game.current_player().hero->health == 28);
-    REQUIRE(game.current_player().hand.size() == 4);
+    REQUIRE(new_state.current_player().hero->health == 28);
+    REQUIRE(new_state.current_player().hand.size() == 4);
 }

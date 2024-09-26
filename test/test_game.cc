@@ -14,10 +14,10 @@ TEST_CASE("Initialize game")
     for(const auto& player: {game.current_player(), game.opponent()})
     {
         REQUIRE(player.board.minion_count() == 0);
-        REQUIRE(player.hero->active == true);
+        REQUIRE(player.hero->active);
         REQUIRE(player.hero->health == 30);
         REQUIRE(player.hero->max_health == 30);
-        REQUIRE(player.hero->hero_power_active == true);
+        REQUIRE(player.hero->hero_power_active);
         REQUIRE(player.hero->hero_power_mana_cost == 2);
         REQUIRE(player.hero->hero_power_name == "Life Tap");
         REQUIRE(player.hero->name == "Gul'Dan");
@@ -74,5 +74,5 @@ TEST_CASE("End turn")
 
     auto new_state = (*(actions.end() - 1))->apply(game).at(0);
 
-    REQUIRE(new_state.turn_ended == true);
+    REQUIRE(new_state.turn_ended);
 }

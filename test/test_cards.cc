@@ -6,7 +6,10 @@
 #include "logic/cards/Coin.h"
 #include "logic/cards/Infernal.h"
 #include "logic/cards/LeeroyJenkins.h"
+#include "logic/cards/MortalCoil.h"
+#include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
+#include "logic/cards/Soulfire.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
 #include "players/RandomPlayerLogic.h"
@@ -46,9 +49,9 @@ TEST_CASE("Minion attacks")
     std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
     Game game(logic, logic);
 
-    game.current_player().board.add_minion(Minion(BoulderfistOgre()), 0);
+    game.current_player().board.add_minion(BoulderfistOgre(), 0);
     game.current_player().board.get_minion(0).active = true;
-    game.opponent().board.add_minion(Minion(BoulderfistOgre()), 0);
+    game.opponent().board.add_minion(BoulderfistOgre(), 0);
 
     auto actions = game.get_possible_actions();
 
@@ -111,7 +114,7 @@ TEST_CASE("Keywords")
 
         game.current_player().board.add_minion(LeeroyJenkins(), 0);
 
-        REQUIRE(game.current_player().board.get_minion(0).active == true);
+        REQUIRE(game.current_player().board.get_minion(0).active);
     }
 }
 
@@ -182,4 +185,167 @@ TEST_CASE("Sacrificial Pact")
         REQUIRE(new_state.opponent().hero->health == 0);
         REQUIRE(new_state.check_winner());
     }
+}
+
+TEST_CASE("Soulfire")
+{
+    SECTION("Regular use")
+    {
+        auto hero = std::make_unique<GulDan>();
+        DecklistDeck deck;
+        deck.push_back({std::make_unique<Soulfire>(), 1});
+        deck.push_back({std::make_unique<BoulderfistOgre>(), 5});
+        Decklist decklist(std::move(hero), std::move(deck));
+        auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+        Game game(logic, logic);
+
+        game.draw(3);
+        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+
+        auto actions = game.get_possible_actions();
+
+        SECTION("Target ally hero")
+        {
+            auto new_states = actions.at(0)->apply(game);
+            REQUIRE(new_states.size() == 5);
+            for(unsigned i = 0; i < new_states.size(); ++i)
+            {
+                REQUIRE(new_states.at(i).current_player().hero->health == 26);
+                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+            }
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_states = actions.at(2)->apply(game);
+            REQUIRE(new_states.size() == 5);
+            for(unsigned i = 0; i < new_states.size(); ++i)
+            {
+                REQUIRE(new_states.at(i).opponent().hero->health == 26);
+                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+            }
+        }
+
+        SECTION("Target ally minion")
+        {
+            auto new_states = actions.at(1)->apply(game);
+            REQUIRE(new_states.size() == 5);
+            for(unsigned i = 0; i < new_states.size(); ++i)
+            {
+                REQUIRE(new_states.at(i).current_player().board.get_minion(0).health == 3);
+                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+            }
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_states = actions.at(3)->apply(game);
+            REQUIRE(new_states.size() == 5);
+            for(unsigned i = 0; i < new_states.size(); ++i)
+            {
+                REQUIRE(new_states.at(i).opponent().board.get_minion(0).health == 3);
+                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+            }
+        }
+    }
+
+    SECTION("Empty hand")
+    {
+        auto hero = std::make_unique<GulDan>();
+        DecklistDeck deck;
+        deck.push_back({std::make_unique<Soulfire>(), 1});
+        Decklist decklist(std::move(hero), std::move(deck));
+        auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+        Game game(logic, logic);
+
+        auto actions = game.get_possible_actions();
+
+        REQUIRE(actions.at(0)->apply(game).size() == 1);
+    }
+}
+
+TEST_CASE("Mortal Coil")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<MortalCoil>(), 30});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 1;
+
+    SECTION("Target friendly")
+    {
+        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 6);
+        REQUIRE(new_state.current_player().hand.size() == 2);
+    }
+
+    SECTION("Draw card")
+    {
+        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.get_minion(0).health = 1;
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hand.size() == 3);
+    }
+
+    SECTION("Target enemy")
+    {
+        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 6);
+        REQUIRE(new_state.current_player().hand.size() == 2);
+    }
+
+    SECTION("Draw card")
+    {
+        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+        game.opponent().board.get_minion(0).health = 1;
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hand.size() == 3);
+    }
+}
+
+TEST_CASE("Power Overwhelming")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<PowerOverwhelming>(), 1});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+    game.current_player().mana = 1;
+
+    auto actions = game.get_possible_actions();
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    auto& ogre = game.current_player().board.get_minion(0);
+
+    REQUIRE(ogre.attack == 10);
+    REQUIRE(ogre.max_health == 11);
+    REQUIRE(ogre.health == 11);
+    REQUIRE(ogre.will_die_horribly);
+
+    (*(actions.end() - 1))->apply(game);
+
+    REQUIRE(game.current_player().board.minion_count() == 0);
 }

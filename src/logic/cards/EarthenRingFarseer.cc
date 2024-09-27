@@ -29,7 +29,7 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
             hand_position, mana_cost, board_position, std::vector<OnPlayArg>{TargetType::ALLY_HERO}
         ));
 
-        for(unsigned target_position = 0; target_position < current_minion_count; ++target_position)
+        for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
         {
             if(target_position == board_position)
                 continue;

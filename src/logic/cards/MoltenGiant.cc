@@ -4,6 +4,6 @@
 
 unsigned MoltenGiant::mana_cost(const Game& game) const
 {
-    const unsigned current_player_health = game.current_player().hero->health;
-    return mana_cost_ > current_player_health ? mana_cost_ - current_player_health : 0;
+    const unsigned missing_health = game.current_player().hero->max_health - game.current_player().hero->health;
+    return mana_cost_ > missing_health ? mana_cost_ - missing_health : 0;
 }

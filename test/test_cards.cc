@@ -6,15 +6,21 @@
 #include "logic/cards/Coin.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EarthenRingFarseer.h"
+#include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/Infernal.h"
 #include "logic/cards/LeeroyJenkins.h"
+#include "logic/cards/LordJaraxxusCard.h"
+#include "logic/cards/MoltenGiant.h"
 #include "logic/cards/MortalCoil.h"
+#include "logic/cards/MountainGiant.h"
 #include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
+#include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/SunfuryProtector.h"
+#include "logic/cards/TwilightDrake.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
 #include "players/RandomPlayerLogic.h"
@@ -38,14 +44,14 @@ TEST_CASE("Play cards")
 
     auto& ogre = new_state.current_player().board.get_minion(0);
 
-    REQUIRE(ogre.active == false);
+    REQUIRE_FALSE(ogre.active);
     REQUIRE(ogre.attack == 6);
     REQUIRE(ogre.health == 7);
     REQUIRE(ogre.keywords == MinionKeywords::NO_KEYWORDS);
     REQUIRE(ogre.max_health == 7);
     REQUIRE(ogre.name == "Boulderfist Ogre");
     REQUIRE(ogre.tribe == Tribe::NONE);
-    REQUIRE(ogre.will_die_horribly == false);
+    REQUIRE_FALSE(ogre.will_die_horribly);
 }
 
 TEST_CASE("Minion attacks")
@@ -65,7 +71,7 @@ TEST_CASE("Minion attacks")
         auto new_state = actions.at(0)->apply(game).at(0);
 
         REQUIRE(new_state.opponent().hero->health == 24);
-        REQUIRE(new_state.current_player().board.get_minion(0).active == false);
+        REQUIRE_FALSE(new_state.current_player().board.get_minion(0).active);
     }
 
     SECTION("Attack minion")
@@ -74,7 +80,7 @@ TEST_CASE("Minion attacks")
 
         REQUIRE(new_state.opponent().board.get_minion(0).health == 1);
         REQUIRE(new_state.current_player().board.get_minion(0).health == 1);
-        REQUIRE(new_state.current_player().board.get_minion(0).active == false);
+        REQUIRE_FALSE(new_state.current_player().board.get_minion(0).active);
     }
 }
 
@@ -292,7 +298,7 @@ TEST_CASE("Mortal Coil")
         REQUIRE(new_state.current_player().hand.size() == 2);
     }
 
-    SECTION("Draw card")
+    SECTION("Draw card from ally")
     {
         game.current_player().board.add_minion(BoulderfistOgre(), 0);
         game.current_player().board.get_minion(0).health = 1;
@@ -315,7 +321,7 @@ TEST_CASE("Mortal Coil")
         REQUIRE(new_state.current_player().hand.size() == 2);
     }
 
-    SECTION("Draw card")
+    SECTION("Draw card from enemy")
     {
         game.opponent().board.add_minion(BoulderfistOgre(), 0);
         game.opponent().board.get_minion(0).health = 1;
@@ -579,4 +585,219 @@ TEST_CASE("Shadowflame")
     REQUIRE(new_state.current_player().board.minion_count() == 0);
     REQUIRE(new_state.opponent().board.get_minion(0).health == 1);
     REQUIRE(new_state.opponent().board.get_minion(1).health == 1);
+}
+
+TEST_CASE("Twilight Drake")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<TwilightDrake>(), 5});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 4;
+
+    SECTION("3 card hand")
+    {
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).max_health == 3);
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 3);
+    }
+
+    SECTION("5 card hand")
+    {
+        game.draw(2);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).max_health == 5);
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 5);
+    }
+}
+
+TEST_CASE("Faceless Manipulator")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<FacelessManipulator>(), 1});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 5;
+    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+
+    auto actions = game.get_possible_actions();
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    auto& faceless = new_state.current_player().board.get_minion(0);
+
+    REQUIRE_FALSE(faceless.active);
+    REQUIRE(faceless.attack == 6);
+    REQUIRE(faceless.health == 7);
+    REQUIRE(faceless.keywords == MinionKeywords::NO_KEYWORDS);
+    REQUIRE(faceless.max_health == 7);
+    REQUIRE(faceless.name == "Boulderfist Ogre");
+    REQUIRE(faceless.tribe == Tribe::NONE);
+    REQUIRE_FALSE(faceless.will_die_horribly);
+
+    auto& ogre = new_state.current_player().board.get_minion(1);
+
+    REQUIRE_FALSE(ogre.active);
+    REQUIRE(ogre.attack == 6);
+    REQUIRE(ogre.health == 7);
+    REQUIRE(ogre.keywords == MinionKeywords::NO_KEYWORDS);
+    REQUIRE(ogre.max_health == 7);
+    REQUIRE(ogre.name == "Boulderfist Ogre");
+    REQUIRE(ogre.tribe == Tribe::NONE);
+    REQUIRE_FALSE(ogre.will_die_horribly);
+}
+
+TEST_CASE("Siphon Soul")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<SiphonSoul>(), 1});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 6;
+
+    SECTION("Target friendly")
+    {
+        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hero->health == 30);
+    }
+
+    SECTION("Target enemy")
+    {
+        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hero->health == 30);
+    }
+}
+
+TEST_CASE("Mountain Giant")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<MountainGiant>(), 1});
+    deck.push_back({std::make_unique<BoulderfistOgre>(), 9});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 3;
+
+    REQUIRE(game.get_possible_actions().size() == 2);
+
+    game.draw(7);
+
+    REQUIRE(game.get_possible_actions().size() == 3);
+}
+
+TEST_CASE("Molten Giant")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<MoltenGiant>(), 1});
+    deck.push_back({std::make_unique<BoulderfistOgre>(), 2});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    REQUIRE(game.get_possible_actions().size() == 1);
+
+    game.current_player().hero->health -= 20;
+
+    REQUIRE(game.get_possible_actions().size() == 2);
+}
+
+TEST_CASE("Lord Jaraxxus")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({std::make_unique<LordJaraxxusCard>(), 4});
+    Decklist decklist(std::move(hero), std::move(deck));
+    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
+    Game game(logic, logic);
+
+    game.current_player().mana = 9;
+
+    auto actions = game.get_possible_actions();
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    auto& jaraxxus = game.current_player().hero;
+
+    REQUIRE(jaraxxus->active);
+    REQUIRE(jaraxxus->max_health == 15);
+    REQUIRE(jaraxxus->health == 15);
+    REQUIRE(jaraxxus->hero_power_active);
+    REQUIRE(jaraxxus->hero_power_mana_cost == 2);
+    REQUIRE(jaraxxus->hero_power_name == "INFERNO!");
+    REQUIRE(jaraxxus->name == "Lord Jaraxxus");
+    REQUIRE(jaraxxus->tribe == Tribe::DEMON);
+    REQUIRE(jaraxxus->weapon->name == "Blood Fury");
+    REQUIRE(jaraxxus->weapon->attack == 3);
+    REQUIRE(jaraxxus->weapon->durability == 8);
+
+    SECTION("Attack hero and destroy weapon")
+    {
+        new_state.current_player().hero->weapon->durability = 1;
+
+        auto actions = new_state.get_possible_actions();
+        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
+
+        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
+        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
+        REQUIRE(post_attack_state.opponent().hero->health == 27);
+    }
+
+    SECTION("Attack taunt minion and destroy weapon")
+    {
+        new_state.current_player().hero->weapon->durability = 1;
+        new_state.opponent().board.add_minion(BoulderfistOgre(), 0);
+        new_state.opponent().board.get_minion(0).keywords |= TAUNT;
+
+        auto actions = new_state.get_possible_actions();
+        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
+
+        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
+        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
+        REQUIRE(post_attack_state.current_player().hero->health == 9);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 4);
+    }
+
+    SECTION("Hero power")
+    {
+        new_state.current_player().mana = 2;
+
+        auto actions = new_state.get_possible_actions();
+        auto post_hero_power_state = actions.at(1)->apply(new_state).at(0);
+
+        auto& infernal = post_hero_power_state.current_player().board.get_minion(0);
+
+        REQUIRE_FALSE(infernal.active);
+        REQUIRE(infernal.attack == 6);
+        REQUIRE(infernal.health == 6);
+        REQUIRE(infernal.keywords == MinionKeywords::NO_KEYWORDS);
+        REQUIRE(infernal.max_health == 6);
+        REQUIRE(infernal.name == "Infernal");
+        REQUIRE(infernal.tribe == Tribe::DEMON);
+        REQUIRE_FALSE(infernal.will_die_horribly);
+    }
 }

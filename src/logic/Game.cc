@@ -1,6 +1,7 @@
 #include "logic/Game.h"
 
 #include <algorithm>
+#include <spdlog/spdlog.h>
 
 #include "logic/cards/Coin.h"
 #include "utils/Rng.h"
@@ -157,17 +158,16 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 
 HeroInput Game::get_hero_state(unsigned player_index) const
 {
-    HeroStateInput hero_hero{static_cast<unsigned>(players_.at(player_index).hero->health)};
+    HeroStateInput hero_hero{players_.at(player_index).hero->health};
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_heros;
 
     const unsigned board_size = players_.at(player_index).board.minion_count();
     for(unsigned minion_index = 0; minion_index < board_size; ++minion_index)
     {
         auto& curr_minion = players_.at(player_index).board.get_minion(minion_index);
-        minion_heros.at(minion_index) = MinionStateInput{static_cast<unsigned>(curr_minion.health), curr_minion.attack};
+        minion_heros.at(minion_index) = MinionStateInput{curr_minion.health, curr_minion.attack};
     }
-    for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE - board_size;
-        ++empty_space_index)
+    for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE; ++empty_space_index)
         minion_heros.at(empty_space_index) = MinionStateInput();
 
     return HeroInput{
@@ -184,6 +184,8 @@ std::vector<Game> Game::do_action(const EndTurnAction& action)
     static_cast<void>(action);
 
     turn_ended = true;
+
+    SPDLOG_INFO("Player has ended their turn");
 
     current_player().board.trigger_end_of_turn();
     opponent().board.trigger_end_of_turn();
@@ -202,6 +204,11 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
 
     auto new_states = played_card->on_play(*this, action.args);
 
+    SPDLOG_INFO(
+        "Player has played {} from hand position {} for {} mana in board position {}", played_card->name,
+        action.hand_position, action.card_cost, action.board_position
+    );
+
     std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
         game.current_player().board.remove_dead_minions();
         game.opponent().board.remove_dead_minions();
@@ -217,6 +224,11 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     auto played_card = current_player().hand.remove_card(action.hand_position);
 
     auto new_states = played_card->on_play(*this, action.args);
+
+    SPDLOG_INFO(
+        "Player has played {} from hand position {} for {} mana", played_card->name, action.hand_position,
+        action.card_cost
+    );
 
     std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
         game.current_player().board.remove_dead_minions();
@@ -236,6 +248,11 @@ std::vector<Game> Game::do_action(const TradeAction& action)
 
     first_minion.active = false;
 
+    SPDLOG_INFO(
+        "Player has traded {} from position {} into {} in position {}", first_minion.name, action.first_target,
+        second_minion.name, action.second_target
+    );
+
     current_player().board.remove_dead_minions();
     opponent().board.remove_dead_minions();
 
@@ -249,6 +266,8 @@ std::vector<Game> Game::do_action(const HitHeroAction& action)
     opponent().hero->health -= minion.attack;
     minion.active = false;
 
+    SPDLOG_INFO("Player has attacked the opponent using {} from position {}", minion.name, action.position);
+
     return {*this};
 }
 
@@ -258,6 +277,8 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
     current_player().hero->hero_power_active = false;
 
     auto new_states = current_player().hero->on_hero_power_use(*this, action.args);
+
+    SPDLOG_INFO("Player has used their hero power");
 
     std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
         game.current_player().board.remove_dead_minions();
@@ -279,6 +300,8 @@ std::vector<Game> Game::do_action(const HeroTradeAction& action)
 
     current_player().hero->active = false;
 
+    SPDLOG_INFO("Player has attacked {} in position {}", target_minion.name, action.position);
+
     opponent().board.remove_dead_minions();
 
     return {*this};
@@ -294,6 +317,8 @@ std::vector<Game> Game::do_action(const HeroHitHeroAction& action)
         current_player().hero->weapon = std::nullopt;
 
     current_player().hero->active = false;
+
+    SPDLOG_INFO("Player has attacked their opponent");
 
     return {*this};
 }

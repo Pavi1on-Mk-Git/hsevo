@@ -1,5 +1,7 @@
 #include "logic/run_game.h"
 
+#include <spdlog/spdlog.h>
+
 #include "utils/Rng.h"
 
 std::optional<GameResult> do_turn(Game& game)
@@ -42,8 +44,15 @@ GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<P
 
     std::optional<GameResult> winner = game.check_winner();
 
+    unsigned global_turn = 0;
+
     while(!winner)
     {
+        ++global_turn;
+        SPDLOG_INFO(
+            "Turn number {} of the {} player has begun.", (global_turn + 1) / 2,
+            (global_turn % 2) == 1 ? "first" : "second"
+        );
         winner = do_turn(game);
         game.switch_active_player();
     }

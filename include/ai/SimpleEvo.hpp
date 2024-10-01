@@ -104,9 +104,7 @@ public:
         std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)> scoring_func, unsigned iterations
     )
     {
-        std::vector<SimpleEvo<InSize>> population;
-        population.reserve(mu);
-        population = init_population(mu, init_mutation_strength);
+        auto population = init_population(mu, init_mutation_strength);
 
         auto best_member = std::make_pair(SimpleEvo<InSize>(init_mutation_strength), 0);
 

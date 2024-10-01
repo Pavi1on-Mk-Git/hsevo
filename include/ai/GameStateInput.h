@@ -7,12 +7,13 @@
 
 struct HeroStateInput
 {
-    unsigned health;
+    int health;
 };
 
 struct MinionStateInput
 {
-    unsigned health, attack;
+    int health;
+    unsigned attack;
 };
 
 struct HeroInput

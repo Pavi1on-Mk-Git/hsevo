@@ -3,13 +3,11 @@
 #include "logic/Game.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/heroes/GulDan.h"
-#include "players/RandomPlayerLogic.h"
 
 TEST_CASE("Initialize game")
 {
     Decklist decklist = ogre_deck();
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     for(const auto& player: {game.current_player(), game.opponent()})
     {
@@ -33,9 +31,8 @@ TEST_CASE("Initialize game")
 
 TEST_CASE("Draw cards")
 {
-    Decklist deck = ogre_deck();
-    std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-    Game game(logic, logic);
+    Decklist decklist = ogre_deck();
+    Game game(decklist, decklist);
 
     game.draw();
 
@@ -52,8 +49,7 @@ TEST_CASE("Fatigue")
     DecklistDeck deck;
     deck.push_back({std::make_unique<BoulderfistOgre>(), 4});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.draw(3);
 
@@ -66,9 +62,8 @@ TEST_CASE("Fatigue")
 
 TEST_CASE("End turn")
 {
-    Decklist deck = ogre_deck();
-    std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-    Game game(logic, logic);
+    Decklist decklist = ogre_deck();
+    Game game(decklist, decklist);
 
     auto actions = game.get_possible_actions();
 

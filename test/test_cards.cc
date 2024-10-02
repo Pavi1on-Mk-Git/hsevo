@@ -23,7 +23,6 @@
 #include "logic/cards/TwilightDrake.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
-#include "players/RandomPlayerLogic.h"
 
 TEST_CASE("Play cards")
 {
@@ -31,8 +30,7 @@ TEST_CASE("Play cards")
     DecklistDeck deck;
     deck.push_back({std::make_unique<BoulderfistOgre>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 6;
 
@@ -56,9 +54,8 @@ TEST_CASE("Play cards")
 
 TEST_CASE("Minion attacks")
 {
-    Decklist deck = ogre_deck();
-    std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-    Game game(logic, logic);
+    Decklist decklist = ogre_deck();
+    Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre(), 0);
     game.current_player().board.get_minion(0).active = true;
@@ -88,9 +85,8 @@ TEST_CASE("Keywords")
 {
     SECTION("Can't attack")
     {
-        Decklist deck = ogre_deck();
-        std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-        Game game(logic, logic);
+        Decklist decklist = ogre_deck();
+        Game game(decklist, decklist);
 
         game.current_player().board.add_minion(AncientWatcher(), 0);
         game.current_player().board.get_minion(0).active = true;
@@ -100,9 +96,8 @@ TEST_CASE("Keywords")
 
     SECTION("Taunt")
     {
-        Decklist deck = ogre_deck();
-        std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-        Game game(logic, logic);
+        Decklist decklist = ogre_deck();
+        Game game(decklist, decklist);
 
         game.current_player().board.add_minion(BoulderfistOgre(), 0);
         game.current_player().board.get_minion(0).active = true;
@@ -119,9 +114,8 @@ TEST_CASE("Keywords")
 
     SECTION("Charge")
     {
-        Decklist deck = ogre_deck();
-        std::shared_ptr<PlayerLogic> logic = std::make_shared<RandomPlayerLogic>(deck);
-        Game game(logic, logic);
+        Decklist decklist = ogre_deck();
+        Game game(decklist, decklist);
 
         game.current_player().board.add_minion(LeeroyJenkins(), 0);
 
@@ -135,8 +129,7 @@ TEST_CASE("The Coin")
     DecklistDeck deck;
     deck.push_back({std::make_unique<Coin>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     SECTION("Normal use")
     {
@@ -163,8 +156,7 @@ TEST_CASE("Sacrificial Pact")
     DecklistDeck deck;
     deck.push_back({std::make_unique<SacrificialPact>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().board.add_minion(Infernal(), 0);
     game.opponent().board.add_minion(Infernal(), 0);
@@ -207,8 +199,7 @@ TEST_CASE("Soulfire")
         deck.push_back({std::make_unique<Soulfire>(), 1});
         deck.push_back({std::make_unique<BoulderfistOgre>(), 5});
         Decklist decklist(std::move(hero), std::move(deck));
-        auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-        Game game(logic, logic);
+        Game game(decklist, decklist);
 
         game.draw(3);
         game.current_player().board.add_minion(BoulderfistOgre(), 0);
@@ -267,8 +258,7 @@ TEST_CASE("Soulfire")
         DecklistDeck deck;
         deck.push_back({std::make_unique<Soulfire>(), 1});
         Decklist decklist(std::move(hero), std::move(deck));
-        auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-        Game game(logic, logic);
+        Game game(decklist, decklist);
 
         auto actions = game.get_possible_actions();
 
@@ -282,8 +272,7 @@ TEST_CASE("Mortal Coil")
     DecklistDeck deck;
     deck.push_back({std::make_unique<MortalCoil>(), 5});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 1;
 
@@ -340,8 +329,7 @@ TEST_CASE("Power Overwhelming")
     DecklistDeck deck;
     deck.push_back({std::make_unique<PowerOverwhelming>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre(), 0);
     game.current_player().mana = 1;
@@ -367,8 +355,7 @@ TEST_CASE("Sunfury Protector")
     DecklistDeck deck;
     deck.push_back({std::make_unique<SunfuryProtector>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre(), 0);
     game.current_player().board.add_minion(BoulderfistOgre(), 1);
@@ -408,8 +395,7 @@ TEST_CASE("Earthen Ring Farseer")
     DecklistDeck deck;
     deck.push_back({std::make_unique<EarthenRingFarseer>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 3;
 
@@ -456,8 +442,7 @@ TEST_CASE("Defender of Argus")
     DecklistDeck deck;
     deck.push_back({std::make_unique<DefenderOfArgus>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre(), 0);
     game.current_player().board.add_minion(BoulderfistOgre(), 1);
@@ -524,8 +509,7 @@ TEST_CASE("Hellfire")
     DecklistDeck deck;
     deck.push_back({std::make_unique<Hellfire>(), 5});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 4;
 
@@ -553,8 +537,7 @@ TEST_CASE("Leeroy Jenkins")
     DecklistDeck deck;
     deck.push_back({std::make_unique<LeeroyJenkins>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 5;
 
@@ -570,8 +553,7 @@ TEST_CASE("Shadowflame")
     DecklistDeck deck;
     deck.push_back({std::make_unique<Shadowflame>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 4;
 
@@ -593,8 +575,7 @@ TEST_CASE("Twilight Drake")
     DecklistDeck deck;
     deck.push_back({std::make_unique<TwilightDrake>(), 5});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 4;
 
@@ -625,8 +606,7 @@ TEST_CASE("Faceless Manipulator")
     DecklistDeck deck;
     deck.push_back({std::make_unique<FacelessManipulator>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 5;
     game.current_player().board.add_minion(BoulderfistOgre(), 0);
@@ -663,8 +643,7 @@ TEST_CASE("Siphon Soul")
     DecklistDeck deck;
     deck.push_back({std::make_unique<SiphonSoul>(), 1});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 6;
 
@@ -698,8 +677,7 @@ TEST_CASE("Mountain Giant")
     deck.push_back({std::make_unique<MountainGiant>(), 1});
     deck.push_back({std::make_unique<BoulderfistOgre>(), 9});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 3;
 
@@ -717,8 +695,7 @@ TEST_CASE("Molten Giant")
     deck.push_back({std::make_unique<MoltenGiant>(), 1});
     deck.push_back({std::make_unique<BoulderfistOgre>(), 2});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     REQUIRE(game.get_possible_actions().size() == 1);
 
@@ -733,8 +710,7 @@ TEST_CASE("Lord Jaraxxus")
     DecklistDeck deck;
     deck.push_back({std::make_unique<LordJaraxxusCard>(), 4});
     Decklist decklist(std::move(hero), std::move(deck));
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 9;
 

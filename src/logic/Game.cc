@@ -6,8 +6,8 @@
 #include "logic/cards/Coin.h"
 #include "utils/Rng.h"
 
-Game::Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player):
-    players_({first_player, second_player}), active_player_(Rng::instance()->uniform_int(0, 1)), turn_ended(false)
+Game::Game(const Decklist& first_decklist, const Decklist& second_decklist, bool reverse_player_order):
+    players_({first_decklist, second_decklist}), active_player_(reverse_player_order ? 1 : 0), turn_ended(false)
 {
     mulligan();
 }

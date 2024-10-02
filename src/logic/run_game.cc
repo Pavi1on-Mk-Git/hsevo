@@ -4,7 +4,7 @@
 
 #include "utils/Rng.h"
 
-std::optional<GameResult> do_turn(Game& game)
+std::optional<GameResult> do_turn(Game& game, const std::unique_ptr<PlayerLogic>& logic)
 {
     std::optional<GameResult> winner = std::nullopt;
 
@@ -29,7 +29,7 @@ std::optional<GameResult> do_turn(Game& game)
 
     while(!game.turn_ended)
     {
-        game = game.current_player().logic->choose_and_apply_action(game, game.get_possible_actions());
+        game = logic->choose_and_apply_action(game, game.get_possible_actions());
 
         if((winner = game.check_winner()))
             return winner;
@@ -38,9 +38,9 @@ std::optional<GameResult> do_turn(Game& game)
     return std::nullopt;
 }
 
-GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player)
+GameResult run_game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player)
 {
-    Game game(first_player, second_player);
+    Game game(first_player->decklist, second_player->decklist);
 
     std::optional<GameResult> winner = game.check_winner();
 
@@ -53,7 +53,7 @@ GameResult run_game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<P
             "Turn number {} of the {} player has begun.", (global_turn + 1) / 2,
             (global_turn % 2) == 1 ? "first" : "second"
         );
-        winner = do_turn(game);
+        winner = do_turn(game, (global_turn % 2) == 1 ? first_player : second_player);
         game.switch_active_player();
     }
 

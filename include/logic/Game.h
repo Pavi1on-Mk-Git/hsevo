@@ -32,7 +32,7 @@ private:
 public:
     bool turn_ended;
 
-    Game(std::shared_ptr<PlayerLogic> first_player, std::shared_ptr<PlayerLogic> second_player);
+    Game(const Decklist& first_decklist, const Decklist& second_decklist, bool reverse_player_order = false);
     std::optional<GameResult> check_winner() const;
     void switch_active_player();
     std::vector<std::unique_ptr<Action>> get_possible_actions() const;

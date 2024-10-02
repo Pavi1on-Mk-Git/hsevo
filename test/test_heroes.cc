@@ -2,13 +2,11 @@
 
 #include "logic/Game.h"
 #include "logic/decklists.h"
-#include "players/RandomPlayerLogic.h"
 
 TEST_CASE("Gul'Dan")
 {
     Decklist decklist = handlock();
-    auto logic = std::make_shared<RandomPlayerLogic>(decklist);
-    Game game(logic, logic);
+    Game game(decklist, decklist);
 
     game.current_player().mana = 2;
 

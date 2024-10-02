@@ -11,14 +11,13 @@ struct Player
 {
     static constexpr unsigned MAX_MANA = 10;
 
-    std::shared_ptr<PlayerLogic> logic;
     std::unique_ptr<Hero> hero;
     unsigned mana_crystals, mana;
     Deck deck;
     Hand hand;
     Board board;
 
-    Player(std::shared_ptr<PlayerLogic> logic);
+    Player(const Decklist& decklist);
     Player(const Player& other);
     Player& operator=(Player&& other) = default;
 };

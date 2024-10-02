@@ -23,6 +23,6 @@ int main()
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
     auto deck = handlock();
-    auto logic = std::make_shared<EvoPlayerLogic>(deck, best_evo.first);
+    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic>(deck, best_evo.first);
     run_game(logic, logic);
 }

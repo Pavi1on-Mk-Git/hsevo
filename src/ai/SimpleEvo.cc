@@ -11,9 +11,9 @@ std::vector<unsigned> score_member(
     for(unsigned member_index = 0; member_index < population.size(); ++member_index)
         scores.push_back(0);
 
-    std::vector<std::shared_ptr<PlayerLogic>> players;
+    std::vector<std::unique_ptr<PlayerLogic>> players;
     for(const auto& member: population)
-        players.push_back(std::make_shared<EvoPlayerLogic>(decklist, member));
+        players.push_back(std::make_unique<EvoPlayerLogic>(decklist, member));
 
     for(unsigned i = 0; i < players.size(); ++i)
     {

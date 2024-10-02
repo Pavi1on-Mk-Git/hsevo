@@ -23,7 +23,8 @@ coverage:
 	@ $(BROWSER) ./build/bin/coverage/index.html
 
 profile:
-	@ valgrind --log-file="./build/bin/profiling/profile.out" --tool=callgrind ./build/bin/hsevo
+	@ mkdir -p ./build/bin/profiling
+	@ valgrind --callgrind-out-file="./build/bin/profiling/profile.out" --tool=callgrind ./build/bin/hsevo
 	@ kcachegrind ./build/bin/profiling/profile.out
 
 %:

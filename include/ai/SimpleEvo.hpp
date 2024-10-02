@@ -6,6 +6,7 @@
 #include <cmath>
 #include <functional>
 
+#include "ai/GameStateInput.h"
 #include "logic/Board.h"
 #include "logic/decklists.h"
 #include "utils/Rng.h"
@@ -132,7 +133,7 @@ public:
 };
 
 std::vector<unsigned> score_member(
-    const std::vector<SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>>& population, const Decklist& decklist
+    const std::vector<SimpleEvo<GameStateInput::INPUT_SIZE>>& population, const Decklist& decklist
 );
 
 #endif

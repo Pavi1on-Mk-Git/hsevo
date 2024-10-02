@@ -6,8 +6,7 @@
 struct Weapon
 {
     std::string name;
-    unsigned attack;
-    int durability;
+    unsigned attack, durability;
 
     Weapon(std::string_view name, unsigned attack, unsigned durability);
 };

@@ -121,7 +121,7 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
         ++current_board_position)
     {
         auto& current_minion = current_player().board.get_minion(current_board_position);
-        if(!current_minion.active || current_minion.keywords & CANT_ATTACK)
+        if(!current_minion.active || (current_minion.keywords & CANT_ATTACK))
             continue;
 
         if(taunt_minion_positions.empty())
@@ -158,20 +158,28 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 
 HeroInput Game::get_hero_state(unsigned player_index) const
 {
-    HeroStateInput hero_hero{players_.at(player_index).hero->health};
+    const auto& player = players_.at(player_index);
+    const auto& hero = player.hero;
+
+    auto hero_hero = player.hero->weapon ?
+                         HeroStateInput{hero->health, hero->active, hero->weapon->attack, hero->weapon->durability} :
+                         HeroStateInput{hero->health, false, 0, 0};
+
+    const auto& board = player.board;
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_heros;
 
-    const unsigned board_size = players_.at(player_index).board.minion_count();
+    const unsigned board_size = board.minion_count();
     for(unsigned minion_index = 0; minion_index < board_size; ++minion_index)
     {
-        auto& curr_minion = players_.at(player_index).board.get_minion(minion_index);
-        minion_heros.at(minion_index) = MinionStateInput{curr_minion.health, curr_minion.attack};
+        auto& curr_minion = board.get_minion(minion_index);
+        minion_heros.at(minion_index) = MinionStateInput{
+            curr_minion.health, curr_minion.attack, curr_minion.active && !(curr_minion.keywords & CANT_ATTACK),
+            static_cast<bool>(curr_minion.keywords & TAUNT)};
     }
     for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE; ++empty_space_index)
-        minion_heros.at(empty_space_index) = MinionStateInput();
+        minion_heros.at(empty_space_index) = MinionStateInput{};
 
-    return HeroInput{
-        hero_hero, minion_heros, players_.at(player_index).hand.size(), board_size, players_.at(player_index).mana};
+    return HeroInput{hero_hero, minion_heros, player.hand.size(), board_size, player.mana};
 }
 
 GameStateInput Game::get_state() const

@@ -9,16 +9,18 @@
 
 int main()
 {
-    spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "logs/hsevo.log"));
-    spdlog::set_pattern("[%@] [%l] %v");
+    spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "logs/hsevo.log", true));
+    spdlog::set_pattern("[%l] %v");
     spdlog::set_level(spdlog::level::off);
 
     int SEED = 42;
     Rng::instance()->seed(SEED);
 
-    auto best_evo = SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3>::evolve(
+    auto best_evo = SimpleEvo<GameStateInput::INPUT_SIZE>::evolve(
         10, 10, 0.0001, [&](const auto& population) { return score_member(population, handlock()); }, 20
     );
+
+    spdlog::set_level(spdlog::level::debug);
 
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 

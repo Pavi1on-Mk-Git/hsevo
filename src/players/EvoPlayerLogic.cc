@@ -4,7 +4,7 @@
 
 #include "logic/Game.h"
 
-EvoPlayerLogic::EvoPlayerLogic(const Decklist& decklist, SimpleEvo<1 + 2 * Board::MAX_BOARD_SIZE + 3> evo):
+EvoPlayerLogic::EvoPlayerLogic(const Decklist& decklist, SimpleEvo<GameStateInput::INPUT_SIZE> evo):
     PlayerLogic(decklist), evo(evo)
 {}
 

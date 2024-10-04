@@ -26,6 +26,7 @@ double EvoPlayerLogic::average_of_states(const std::vector<Game>& states) const
 Game EvoPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const
 {
     std::vector<std::vector<Game>> states_for_action;
+    states_for_action.reserve(actions.size());
 
     std::transform(
         actions.begin(), actions.end(), std::back_inserter(states_for_action),

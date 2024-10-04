@@ -7,11 +7,11 @@ std::vector<unsigned> score_member(
     const std::vector<SimpleEvo<GameStateInput::INPUT_SIZE>>& population, const Decklist& decklist
 )
 {
-    std::vector<unsigned> scores;
-    for(unsigned member_index = 0; member_index < population.size(); ++member_index)
-        scores.push_back(0);
+    std::vector<unsigned> scores(population.size(), 0);
 
     std::vector<std::unique_ptr<PlayerLogic>> players;
+    players.reserve(population.size());
+
     for(const auto& member: population)
         players.push_back(std::make_unique<EvoPlayerLogic>(decklist, member));
 

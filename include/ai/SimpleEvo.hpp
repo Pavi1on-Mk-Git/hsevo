@@ -91,6 +91,7 @@ public:
         auto scores = scoring_func(mutants);
 
         std::vector<std::pair<SimpleEvo<InSize>, unsigned>> mutants_with_scores;
+        mutants_with_scores.reserve(mutants.size());
 
         std::transform(
             mutants.begin(), mutants.end(), scores.begin(), std::back_inserter(mutants_with_scores),

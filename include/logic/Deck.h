@@ -16,7 +16,7 @@ public:
     Deck(const Deck& deck);
     Deck& operator=(Deck&& other) = default;
     void shuffle();
-    std::tuple<std::vector<std::unique_ptr<Card>>, unsigned> draw(unsigned amount);
+    std::pair<std::vector<std::unique_ptr<Card>>, unsigned> draw(unsigned amount);
     std::unique_ptr<Card> draw();
 };
 

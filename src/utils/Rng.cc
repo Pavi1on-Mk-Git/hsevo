@@ -2,11 +2,11 @@
 
 Rng::Rng() {}
 
-std::unique_ptr<Rng> Rng::instance_ = nullptr;
+Rng* Rng::instance_ = nullptr;
 
-std::unique_ptr<Rng>& Rng::instance()
+Rng* Rng::instance()
 {
-    return instance_ ? instance_ : (instance_ = std::make_unique<Rng>());
+    return instance_ ? instance_ : (instance_ = new Rng());
 }
 
 void Rng::seed(int seed_nr)

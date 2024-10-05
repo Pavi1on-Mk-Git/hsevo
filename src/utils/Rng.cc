@@ -28,3 +28,8 @@ double Rng::uniform_real(double min, double max)
 {
     return std::uniform_real_distribution(min, max)(random_engine_);
 }
+
+double Rng::normal(double mean, double stddev)
+{
+    return std::normal_distribution(mean, stddev)(random_engine_);
+}

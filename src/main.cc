@@ -17,12 +17,16 @@ int main()
     Rng::instance()->seed(SEED);
 
     auto best_evo = SimpleEvo<GameStateInput::INPUT_SIZE>::evolve(
-        10, 10, 0.0001, [&](const auto& population) { return score_member(population, handlock()); }, 20
+        10, 10, 0.001, [&](const auto& population) { return score_member(population, handlock()); }, 20
     );
 
     spdlog::set_level(spdlog::level::debug);
 
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
+
+    auto weights = best_evo.first.get_weights();
+    for(unsigned weight_id = 0; weight_id < weights.size(); ++weight_id)
+        SPDLOG_DEBUG("Weight nr {}: {}", weight_id, weights.at(weight_id));
 
     auto deck = handlock();
     std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<SimpleEvo<GameStateInput::INPUT_SIZE>>>(

@@ -23,7 +23,7 @@ private:
 
     void mutate()
     {
-        auto random_evo_coeff_a = Rng::instance()->uniform_real(), random_evo_coeff_b = Rng::instance()->uniform_real();
+        double random_evo_coeff_a = Rng::instance()->normal(), random_evo_coeff_b = Rng::instance()->normal();
 
         std::transform(
             mutation_strengths_.begin(), mutation_strengths_.end(), mutation_strengths_.begin(),
@@ -38,9 +38,12 @@ private:
             }
         );
 
-        std::transform(weights_.begin(), weights_.end(), weights_.begin(), [](double weight) {
-            return std::clamp(weight + Rng::instance()->uniform_real(0, weight), MIN_WEIGHT, MAX_WEIGHT);
-        });
+        std::transform(
+            weights_.begin(), weights_.end(), mutation_strengths_.begin(), weights_.begin(),
+            [](double weight, double strength) {
+                return std::clamp(weight + Rng::instance()->normal(0., strength), MIN_WEIGHT, MAX_WEIGHT);
+            }
+        );
     }
 
     static auto init_population(unsigned population_size, double init_mutation_strength)
@@ -97,6 +100,11 @@ public:
         for(unsigned i = 0; i < InSize; ++i)
             score += weights_.at(i) * input_vec.at(i);
         return score;
+    }
+
+    std::array<double, InSize> get_weights()
+    {
+        return weights_;
     }
 
     static auto evolve(

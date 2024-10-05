@@ -15,6 +15,7 @@ public:
     void seed(int seed_nr);
     int uniform_int(int min, int max);
     double uniform_real(double min = 0., double max = 1.);
+    double normal(double mean = 0., double stddev = 1.);
     std::ranlux24& generator();
     friend std::unique_ptr<Rng> std::make_unique<Rng>();
 };

@@ -1,6 +1,5 @@
 build/
 .vscode/
 docs/*.pdf
-docs/images/
 code_archives
 logs/

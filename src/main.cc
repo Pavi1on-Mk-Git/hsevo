@@ -2,10 +2,10 @@
 #include <spdlog/spdlog.h>
 
 #include "ai/SimpleEvo.hpp"
-#include "logic/Board.h"
+#include "ai/evo_functions.hpp"
 #include "logic/decklists.h"
 #include "logic/run_game.h"
-#include "players/EvoPlayerLogic.h"
+#include "players/EvoPlayerLogic.hpp"
 
 int main()
 {
@@ -25,6 +25,8 @@ int main()
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
     auto deck = handlock();
-    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic>(deck, best_evo.first);
+    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<SimpleEvo<GameStateInput::INPUT_SIZE>>>(
+        deck, best_evo.first
+    );
     run_game(logic, logic);
 }

@@ -18,22 +18,8 @@ private:
     static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
     std::array<double, InSize> weights_;
     std::array<double, InSize> mutation_strengths_;
-public:
-    SimpleEvo(double init_mutation_strength)
-    {
-        std::generate(weights_.begin(), weights_.end(), []() {
-            return Rng::instance()->uniform_real(MIN_WEIGHT, MAX_WEIGHT);
-        });
-        std::fill(mutation_strengths_.begin(), mutation_strengths_.end(), init_mutation_strength);
-    }
 
-    double score_vec(const std::array<double, InSize>& input_vec) const
-    {
-        double score = 0.;
-        for(unsigned i = 0; i < InSize; ++i)
-            score += weights_.at(i) * input_vec.at(i);
-        return score;
-    }
+    using ScoringFunc = std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)>;
 
     void mutate()
     {
@@ -52,16 +38,12 @@ public:
             }
         );
 
-        for(unsigned weight_index = 0; weight_index < InSize; ++weight_index)
-        {
-            weights_.at(weight_index) = std::clamp(
-                weights_.at(weight_index) + Rng::instance()->uniform_real(0, mutation_strengths_.at(weight_index)), 0.,
-                1.
-            );
-        }
+        std::transform(weights_.begin(), weights_.end(), weights_.begin(), [](double weight) {
+            return std::clamp(weight + Rng::instance()->uniform_real(0, weight), MIN_WEIGHT, MAX_WEIGHT);
+        });
     }
 
-    static std::vector<SimpleEvo<InSize>> init_population(unsigned population_size, double init_mutation_strength)
+    static auto init_population(unsigned population_size, double init_mutation_strength)
     {
         std::vector<SimpleEvo<InSize>> population;
         population.reserve(population_size);
@@ -71,13 +53,13 @@ public:
         return population;
     }
 
-    static std::vector<std::pair<SimpleEvo<InSize>, unsigned>> mutate_population(
-        const std::vector<SimpleEvo<InSize>>& population, unsigned mutants_size,
-        std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)> scoring_func
+    static auto mutate_population(
+        const std::vector<SimpleEvo<InSize>>& population, unsigned mutants_size, ScoringFunc scoring_func
     )
     {
         std::vector<SimpleEvo<InSize>> mutants;
         mutants.reserve(mutants_size + population.size());
+
         for(unsigned mutant_id = 0; mutant_id < mutants_size; ++mutant_id)
         {
             const unsigned to_mutate = Rng::instance()->uniform_int(0, population.size() - 1);
@@ -100,10 +82,25 @@ public:
 
         return mutants_with_scores;
     }
+public:
+    SimpleEvo(double init_mutation_strength)
+    {
+        std::generate(weights_.begin(), weights_.end(), []() {
+            return Rng::instance()->uniform_real(MIN_WEIGHT, MAX_WEIGHT);
+        });
+        std::fill(mutation_strengths_.begin(), mutation_strengths_.end(), init_mutation_strength);
+    }
 
-    static std::pair<SimpleEvo<InSize>, unsigned> evolve(
-        unsigned mu, unsigned lambda, double init_mutation_strength,
-        std::function<std::vector<unsigned>(std::vector<SimpleEvo<InSize>>)> scoring_func, unsigned iterations
+    double score_vec(const std::array<double, InSize>& input_vec) const
+    {
+        double score = 0.;
+        for(unsigned i = 0; i < InSize; ++i)
+            score += weights_.at(i) * input_vec.at(i);
+        return score;
+    }
+
+    static auto evolve(
+        unsigned mu, unsigned lambda, double init_mutation_strength, ScoringFunc scoring_func, unsigned iterations
     )
     {
         auto population = init_population(mu, init_mutation_strength);
@@ -132,9 +129,5 @@ public:
         return best_member;
     }
 };
-
-std::vector<unsigned> score_member(
-    const std::vector<SimpleEvo<GameStateInput::INPUT_SIZE>>& population, const Decklist& decklist
-);
 
 #endif

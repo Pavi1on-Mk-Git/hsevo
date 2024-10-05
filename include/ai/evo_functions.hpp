@@ -1,11 +1,14 @@
-#include "ai/SimpleEvo.hpp"
+#ifndef EVO_FUNCTIONS_HPP
+#define EVO_FUNCTIONS_HPP
 
+#include <vector>
+
+#include "logic/Decklist.h"
 #include "logic/run_game.h"
-#include "players/EvoPlayerLogic.h"
+#include "players/EvoPlayerLogic.hpp"
 
-std::vector<unsigned> score_member(
-    const std::vector<SimpleEvo<GameStateInput::INPUT_SIZE>>& population, const Decklist& decklist
-)
+template <typename Evo>
+std::vector<unsigned> score_member(const std::vector<Evo>& population, const Decklist& decklist)
 {
     std::vector<unsigned> scores(population.size(), 0);
 
@@ -13,7 +16,7 @@ std::vector<unsigned> score_member(
     players.reserve(population.size());
 
     for(const auto& member: population)
-        players.push_back(std::make_unique<EvoPlayerLogic>(decklist, member));
+        players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
 
     for(unsigned i = 0; i < players.size(); ++i)
     {
@@ -36,3 +39,5 @@ std::vector<unsigned> score_member(
     }
     return scores;
 }
+
+#endif

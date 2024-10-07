@@ -1,11 +1,12 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-#include "ai/SimpleEvo.hpp"
+#include "ai/SimpleEvo.h"
 #include "ai/evo_functions.hpp"
 #include "logic/decklists.h"
 #include "logic/run_game.h"
 #include "players/EvoPlayerLogic.hpp"
+#include "utils/Rng.h"
 
 int main()
 {
@@ -16,7 +17,7 @@ int main()
     int SEED = 42;
     Rng::instance()->seed(SEED);
 
-    auto best_evo = SimpleEvo<GameStateInput::INPUT_SIZE>::evolve(
+    auto best_evo = SimpleEvo::evolve(
         10, 10, 0.001, [&](const auto& population) { return score_member(population, handlock()); }, 20
     );
 
@@ -24,13 +25,7 @@ int main()
 
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
-    auto weights = best_evo.first.get_weights();
-    for(unsigned weight_id = 0; weight_id < weights.size(); ++weight_id)
-        SPDLOG_DEBUG("Weight nr {}: {}", weight_id, weights.at(weight_id));
-
     auto deck = handlock();
-    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<SimpleEvo<GameStateInput::INPUT_SIZE>>>(
-        deck, best_evo.first
-    );
+    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<SimpleEvo>>(deck, best_evo.first);
     run_game(logic, logic);
 }

@@ -3,6 +3,7 @@
 
 #include "logic/Game.h"
 #include "players/PlayerLogic.h"
+#include "utils/Rng.h"
 
 template <typename Evo>
 struct EvoPlayerLogic: PlayerLogic

@@ -1,6 +1,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
+#include "ai/NEAT.h"
 #include "ai/SimpleEvo.h"
 #include "ai/evo_functions.hpp"
 #include "logic/decklists.h"
@@ -17,8 +18,9 @@ int main()
     int SEED = 42;
     Rng::instance()->seed(SEED);
 
-    auto best_evo = SimpleEvo::evolve(
-        10, 10, 0.001, [&](const auto& population) { return score_member(population, handlock()); }, 20
+    auto best_evo = NEAT::evolve(
+        {10, 20, [&](const auto& population) { return score_member(population, handlock()); },
+         [](double value) { return value; }}
     );
 
     spdlog::set_level(spdlog::level::debug);
@@ -26,6 +28,6 @@ int main()
     SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
     auto deck = handlock();
-    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<SimpleEvo>>(deck, best_evo.first);
+    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo.first);
     run_game(logic, logic);
 }

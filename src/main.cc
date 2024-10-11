@@ -20,7 +20,7 @@ int main()
 
     auto best_evo = NEAT::evolve(
         {10, 20, [&](const auto& population) { return score_member(population, handlock()); },
-         [](double value) { return value; }}
+         [](double value) { return value; }, 4., 1., 1., 3., 0.8, 0.02, 0.05, 0.9, 0.2, 0.75, 0.001, 0.75}
     );
 
     spdlog::set_level(spdlog::level::debug);

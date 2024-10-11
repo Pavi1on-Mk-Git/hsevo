@@ -23,8 +23,10 @@ double Network::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& 
     std::vector<double> node_values;
     node_values.resize(nodes_.size());
 
-    for(unsigned node_id = 0; node_id < GameStateInput::INPUT_SIZE; ++node_id)
-        node_values.at(node_id) = input_vec.at(node_id);
+    node_values.at(0) = 1;
+
+    for(unsigned node_id = 1; node_id <= GameStateInput::INPUT_SIZE; ++node_id)
+        node_values.at(node_id) = input_vec.at(node_id - 1);
 
     for(unsigned node_id = GameStateInput::INPUT_SIZE + 1; node_id < nodes_.size(); ++node_id)
         node_values.at(node_id) = activation(std::accumulate(

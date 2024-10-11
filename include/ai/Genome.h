@@ -17,6 +17,9 @@ private:
     std::optional<Connection> find_connection(NodeId from, NodeId to);
     void add_connection(NodeId from, NodeId to, double weight);
     void add_node_to_layer(unsigned layer);
+    void mutate_weight(Connection& connection, double weight_perturbation_prob, double mutation_strength);
+    void mutate_add_node();
+    void mutate_add_connection();
 public:
     NodeId next_node_id = 0;
 
@@ -25,6 +28,20 @@ public:
     std::vector<std::pair<ConnectionHash, Connection>> connections;
 
     Genome();
+    Genome(
+        NodeId next_node_id, const std::vector<std::pair<unsigned, std::vector<NodeId>>>& layers,
+        const std::vector<unsigned>& node_to_layer,
+        const std::vector<std::pair<ConnectionHash, Connection>>& connections
+    );
+    double similarity(const Genome& other, double excess_coeff, double disjoint_coeff, double weight_coeff) const;
+    void mutate(
+        double weight_mutation_prob, double add_node_mutation_prob, double add_connection_prob,
+        double weight_perturbation_prob, double mutation_strength
+    );
+    static Genome crossover(
+        const Genome& first, double first_score, const Genome& second, double second_score,
+        double inherit_connection_disabled_prob
+    );
 };
 
 #endif

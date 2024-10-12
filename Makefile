@@ -10,6 +10,15 @@ run:
 debug:
 	@ gdb ./build/bin/hsevo
 
+experiment:
+	@ ./build/bin/experiment_hsevo
+
+gui:
+	@ ./build/bin/gui_hsevo
+
+debug_gui:
+	@ gdb ./build/bin/gui_hsevo
+
 test:
 	@ ./build/bin/test_hsevo
 

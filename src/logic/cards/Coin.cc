@@ -4,10 +4,8 @@
 
 const unsigned COIN_MANA_INCREASE = 1;
 
-std::vector<Game> Coin::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> Coin::on_play(Game& game, const std::vector<OnPlayArg>&)
 {
-    static_cast<void>(args);
-
     auto& current_mana = game.current_player().mana;
 
     if(current_mana < Player::MAX_MANA)

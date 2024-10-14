@@ -1,6 +1,8 @@
-#include "ai/SimpleEvo.h"
+#include "ai/SimpleEvo.hpp"
 
 #include <algorithm>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <cmath>
 
 #include "utils/Rng.h"
@@ -70,6 +72,12 @@ SimpleEvo::SimpleEvo(double init_mutation_strength)
     std::ranges::fill(mutation_strengths_, init_mutation_strength);
 }
 
+SimpleEvo::SimpleEvo(std::istream& in)
+{
+    boost::archive::text_iarchive archive(in);
+    archive >> *this;
+}
+
 double SimpleEvo::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& input_vec) const
 {
     double score = 0.;
@@ -106,4 +114,10 @@ std::pair<SimpleEvo, unsigned> SimpleEvo::evolve(
     }
 
     return best_member;
+}
+
+void SimpleEvo::save(std::ostream& out) const
+{
+    boost::archive::text_oarchive archive(out);
+    archive << *this;
 }

@@ -3,7 +3,7 @@
 
 #include "ai/Genome.h"
 #include "ai/NEATConfig.h"
-#include "ai/Network.h"
+#include "ai/Network.hpp"
 
 class NEAT
 {

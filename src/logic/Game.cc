@@ -190,10 +190,8 @@ GameStateInput Game::get_state() const
     return GameStateInput{{get_hero_state(active_player_), get_hero_state(1 - active_player_)}};
 }
 
-std::vector<Game> Game::do_action(const EndTurnAction& action)
+std::vector<Game> Game::do_action(const EndTurnAction&)
 {
-    static_cast<void>(action);
-
     turn_ended = true;
 
     SPDLOG_INFO("Player has ended their turn");
@@ -318,10 +316,8 @@ std::vector<Game> Game::do_action(const HeroTradeAction& action)
     return {*this};
 }
 
-std::vector<Game> Game::do_action(const HeroHitHeroAction& action)
+std::vector<Game> Game::do_action(const HeroHitHeroAction&)
 {
-    static_cast<void>(action);
-
     opponent().hero->health -= current_player().hero->weapon->attack;
 
     if(--current_player().hero->weapon->durability == 0)

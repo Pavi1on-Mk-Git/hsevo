@@ -3,3 +3,4 @@ build/
 docs/*.pdf
 code_archives
 logs/
+results/

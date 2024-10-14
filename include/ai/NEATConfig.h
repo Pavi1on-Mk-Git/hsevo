@@ -3,10 +3,11 @@
 
 #include <functional>
 
+#include "ai/ActivationFunc.hpp"
+
 struct Network;
 
 using ScoringFunc = std::function<std::vector<unsigned>(std::vector<Network>)>;
-using ActivationFunc = std::function<double(double)>;
 
 struct NEATConfig
 {

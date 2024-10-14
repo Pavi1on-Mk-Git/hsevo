@@ -71,3 +71,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib_cpp)
 
 target_link_libraries(gui_hsevo PRIVATE raylib raylib_cpp)
+
+find_package(Boost 1.83 REQUIRED serialization)
+target_link_libraries(hsevo PRIVATE Boost::serialization)
+target_link_libraries(experiment_hsevo PRIVATE Boost::serialization)
+target_link_libraries(gui_hsevo PRIVATE Boost::serialization)
+target_link_libraries(test_hsevo PRIVATE Boost::serialization)

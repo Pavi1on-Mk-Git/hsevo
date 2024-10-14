@@ -196,6 +196,7 @@ void NEAT::cleanup_species()
             );
     }
 
+    species_.clear();
     species_.resize(clean_representatives.size());
     representatives_ = std::move(clean_representatives);
 

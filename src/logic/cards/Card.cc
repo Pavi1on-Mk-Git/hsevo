@@ -4,16 +4,13 @@
 
 Card::Card(std::string_view name, unsigned base_cost): mana_cost_(base_cost), name(name) {}
 
-unsigned Card::mana_cost(const Game& game) const
+unsigned Card::mana_cost(const Game&) const
 {
-    static_cast<void>(game);
-
     return mana_cost_;
 }
 
-std::vector<Game> Card::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> Card::on_play(Game& game, const std::vector<OnPlayArg>&)
 {
-    static_cast<void>(args);
     return {game};
 }
 

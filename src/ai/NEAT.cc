@@ -22,17 +22,16 @@ void NEAT::get_networks(ActivationFunc activation)
 {
     networks_.clear();
 
-    std::transform(
-        population_.begin(), population_.end(), std::back_inserter(networks_),
-        [&activation](const auto& genome) { return Network(genome, activation); }
-    );
+    std::ranges::transform(population_, std::back_inserter(networks_), [&activation](const auto& genome) {
+        return Network(genome, activation);
+    });
 }
 
 void NEAT::score_networks(ScoringFunc scoring_func)
 {
     scores_ = scoring_func(networks_);
 
-    auto best_score_it = std::max_element(scores_.begin(), scores_.end());
+    auto best_score_it = std::ranges::max_element(scores_);
     best_network_ = {networks_.at(best_score_it - scores_.begin()), *best_score_it};
 }
 
@@ -80,7 +79,7 @@ void NEAT::adjust_scores()
 void NEAT::sort_species()
 {
     for(auto& species: species_)
-        std::sort(species.begin(), species.end(), [this](unsigned fst, unsigned snd) {
+        std::ranges::sort(species, [this](unsigned fst, unsigned snd) {
             return adjusted_scores_.at(fst) < adjusted_scores_.at(snd);
         });
 }

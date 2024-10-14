@@ -20,7 +20,7 @@ Deck::Deck(const Deck& deck)
 
 void Deck::shuffle()
 {
-    std::shuffle(deck_.begin(), deck_.end(), Rng::instance()->generator());
+    std::ranges::shuffle(deck_, Rng::instance()->generator());
 }
 
 static const auto FATIGUE_DRAW = nullptr;
@@ -31,7 +31,7 @@ std::pair<std::vector<std::unique_ptr<Card>>, unsigned> Deck::draw(unsigned amou
     std::vector<std::unique_ptr<Card>> drawn_cards;
     drawn_cards.reserve(actual_amount);
 
-    std::move(deck_.begin(), deck_.begin() + actual_amount, std::back_inserter(drawn_cards));
+    std::ranges::move(deck_.begin(), deck_.begin() + actual_amount, std::back_inserter(drawn_cards));
     deck_.erase(deck_.begin(), deck_.begin() + actual_amount);
 
     return {std::move(drawn_cards), amount - actual_amount};

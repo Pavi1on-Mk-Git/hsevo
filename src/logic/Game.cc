@@ -14,15 +14,17 @@ Game::Game(const Decklist& first_decklist, const Decklist& second_decklist, bool
 
 std::optional<GameResult> Game::check_winner() const
 {
+    using enum GameResult;
+
     bool first_player_dead = players_.at(0).hero->health <= 0;
     bool second_player_dead = players_.at(1).hero->health <= 0;
 
     if(first_player_dead && second_player_dead)
-        return GameResult::TIE;
+        return TIE;
     else if(first_player_dead)
-        return GameResult::PLAYER_2;
+        return PLAYER_2;
     else if(second_player_dead)
-        return GameResult::PLAYER_1;
+        return PLAYER_1;
     else
         return std::nullopt;
 }
@@ -87,18 +89,18 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
     {
         auto& current_card = current_player().hand.get_card(hand_position);
         auto play_card_actions = current_card->create_play_actions(*this, hand_position);
-        std::move(play_card_actions.begin(), play_card_actions.end(), std::back_inserter(possible_actions));
+        std::ranges::move(play_card_actions, std::back_inserter(possible_actions));
     }
 
     auto attack_actions = get_attack_actions();
-    std::move(attack_actions.begin(), attack_actions.end(), std::back_inserter(possible_actions));
+    std::ranges::move(attack_actions, std::back_inserter(possible_actions));
 
     auto& current_hero = current_player().hero;
 
     if(current_hero->hero_power_active && current_player().mana >= current_hero->hero_power_mana_cost)
     {
         auto hero_power_actions = current_player().hero->create_hero_power_use_actions(*this);
-        std::move(hero_power_actions.begin(), hero_power_actions.end(), std::back_inserter(possible_actions));
+        std::ranges::move(hero_power_actions, std::back_inserter(possible_actions));
     }
 
     possible_actions.push_back(std::make_unique<EndTurnAction>());
@@ -174,7 +176,8 @@ HeroInput Game::get_hero_state(unsigned player_index) const
         auto& curr_minion = board.get_minion(minion_index);
         minion_heros.at(minion_index) = MinionStateInput{
             curr_minion.health, curr_minion.attack, curr_minion.active && !(curr_minion.keywords & CANT_ATTACK),
-            static_cast<bool>(curr_minion.keywords & TAUNT)};
+            static_cast<bool>(curr_minion.keywords & TAUNT)
+        };
     }
     for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE; ++empty_space_index)
         minion_heros.at(empty_space_index) = MinionStateInput{};
@@ -217,7 +220,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
         action.hand_position, action.card_cost, action.board_position
     );
 
-    std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
+    std::ranges::for_each(new_states, [](Game& game) {
         game.current_player().board.remove_dead_minions();
         game.opponent().board.remove_dead_minions();
     });
@@ -238,7 +241,7 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
         action.card_cost
     );
 
-    std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
+    std::ranges::for_each(new_states, [](Game& game) {
         game.current_player().board.remove_dead_minions();
         game.opponent().board.remove_dead_minions();
     });
@@ -288,7 +291,7 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
 
     SPDLOG_INFO("Player has used their hero power");
 
-    std::for_each(new_states.begin(), new_states.end(), [](Game& game) {
+    std::ranges::for_each(new_states, [](Game& game) {
         game.current_player().board.remove_dead_minions();
         game.opponent().board.remove_dead_minions();
     });

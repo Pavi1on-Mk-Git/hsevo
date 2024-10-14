@@ -6,6 +6,8 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetCard::create_play_ac
     const Game& game, unsigned hand_position
 )
 {
+    using enum TargetType;
+
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
     const unsigned mana_cost = this->mana_cost(game);
@@ -15,21 +17,21 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetCard::create_play_ac
 
 
     play_self_actions.push_back(
-        std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_HERO})
+        std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{ALLY_HERO})
     );
 
     for(unsigned target_position = 0; target_position < game.current_player().board.minion_count(); ++target_position)
         play_self_actions.push_back(std::make_unique<PlaySpellAction>(
-            hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
+            hand_position, mana_cost, std::vector<OnPlayArg>{ALLY_MINION, target_position}
         ));
 
     play_self_actions.push_back(
-        std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_HERO})
+        std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{ENEMY_HERO})
     );
 
     for(unsigned target_position = 0; target_position < game.opponent().board.minion_count(); ++target_position)
         play_self_actions.push_back(std::make_unique<PlaySpellAction>(
-            hand_position, mana_cost, std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}
+            hand_position, mana_cost, std::vector<OnPlayArg>{ENEMY_MINION, target_position}
         ));
 
     return play_self_actions;

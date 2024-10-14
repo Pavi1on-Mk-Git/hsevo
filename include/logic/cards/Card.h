@@ -21,10 +21,10 @@ public:
     virtual std::unique_ptr<Card> clone() const = 0;
 };
 
-#define CLONE_CARD                                                                             \
-std::unique_ptr<Card> clone() const override                                                   \
-{                                                                                              \
-return std::make_unique<std::remove_const_t<std::remove_reference_t<decltype(*this)>>>(*this); \
-}
+#define CLONE_CARD                                                            \
+    std::unique_ptr<Card> clone() const override                              \
+    {                                                                         \
+        return std::make_unique<std::remove_cvref_t<decltype(*this)>>(*this); \
+    }
 
 #endif

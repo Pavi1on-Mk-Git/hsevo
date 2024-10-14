@@ -3,7 +3,7 @@ project(hsevo)
 
 include_directories(include)
 
-set(COMMON_FLAGS -std=c++17 -Wall -Werror -Wextra -Wpedantic)
+set(COMMON_FLAGS -std=c++20 -Wall -Werror -Wextra -Wpedantic)
 set(DEBUG_FLAGS ${COMMON_FLAGS} -Og -g)
 set(OPTIMIZED_FLAGS ${COMMON_FLAGS} -O3)
 

@@ -15,7 +15,7 @@ std::optional<Connection> Genome::find_connection(NodeId from, NodeId to)
 {
     const ConnectionHash hash = get_connection_hash(from, to);
 
-    auto found_connection = std::find_if(connections.begin(), connections.end(), [&hash](const auto& entry) {
+    auto found_connection = std::ranges::find_if(connections, [&hash](const auto& entry) {
         return entry.first == hash;
     });
 
@@ -31,14 +31,11 @@ void Genome::add_connection(NodeId from, NodeId to, double weight)
 
 void Genome::add_node_to_layer(unsigned layer)
 {
-    auto found_layer = std::find_if(layers.begin(), layers.end(), [&layer](const auto& entry) {
-        return entry.first == layer;
-    });
+    auto found_layer = std::ranges::find_if(layers, [&layer](const auto& entry) { return entry.first == layer; });
 
     if(found_layer != layers.end())
     {
-        if((std::find(found_layer->second.begin(), found_layer->second.end(), next_node_id) != found_layer->second.end()
-           ))
+        if((std::ranges::find(found_layer->second, next_node_id) != found_layer->second.end()))
             return;
 
         found_layer->second.push_back(next_node_id++);
@@ -124,9 +121,7 @@ Genome::Genome()
 Genome::Genome(
     NodeId next_node_id, const std::vector<std::pair<unsigned, std::vector<NodeId>>>& layers,
     const std::vector<unsigned>& node_to_layer, const std::vector<std::pair<ConnectionHash, Connection>>& connections
-):
-    next_node_id(next_node_id),
-    layers(layers), node_to_layer(node_to_layer), connections(connections)
+): next_node_id(next_node_id), layers(layers), node_to_layer(node_to_layer), connections(connections)
 {}
 
 double Genome::similarity(const Genome& other, double excess_coeff, double disjoint_coeff, double weight_coeff) const
@@ -209,11 +204,9 @@ Genome Genome::crossover(
 
     for(const auto& stronger_connection: stronger.connections)
     {
-        auto matching_connection = std::find_if(
-            weaker.connections.begin(), weaker.connections.end(),
-            [&stronger_connection](const auto& weaker_connection) {
-                return weaker_connection.first == stronger_connection.first;
-            }
+        auto matching_connection = std::ranges::find_if(
+            weaker.connections, [&stronger_connection](const auto& weaker_connection
+                                ) { return weaker_connection.first == stronger_connection.first; }
         );
 
         if(matching_connection == weaker.connections.end())

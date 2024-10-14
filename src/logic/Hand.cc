@@ -19,7 +19,7 @@ Hand::Hand(const Hand& hand)
 void Hand::add_cards(std::vector<std::unique_ptr<Card>> cards)
 {
     auto to_add = std::min(MAX_HAND_SIZE - hand_.size(), cards.size());
-    std::move(cards.begin(), cards.begin() + to_add, std::back_inserter(hand_));
+    std::ranges::move(cards.begin(), cards.begin() + to_add, std::back_inserter(hand_));
 }
 
 void Hand::add_cards(std::unique_ptr<Card> card)

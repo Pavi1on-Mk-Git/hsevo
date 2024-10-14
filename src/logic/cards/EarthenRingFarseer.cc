@@ -14,6 +14,8 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
     const Game& game, unsigned hand_position
 )
 {
+    using enum TargetType;
+
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
     const unsigned current_minion_count = game.current_player().board.minion_count();
@@ -26,7 +28,7 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
     for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
     {
         play_self_actions.push_back(std::make_unique<PlayMinionAction>(
-            hand_position, mana_cost, board_position, std::vector<OnPlayArg>{TargetType::ALLY_HERO}
+            hand_position, mana_cost, board_position, std::vector<OnPlayArg>{ALLY_HERO}
         ));
 
         for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
@@ -34,19 +36,17 @@ std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_act
             if(target_position == board_position)
                 continue;
             play_self_actions.push_back(std::make_unique<PlayMinionAction>(
-                hand_position, mana_cost, board_position,
-                std::vector<OnPlayArg>{TargetType::ALLY_MINION, target_position}
+                hand_position, mana_cost, board_position, std::vector<OnPlayArg>{ALLY_MINION, target_position}
             ));
         }
 
         play_self_actions.push_back(std::make_unique<PlayMinionAction>(
-            hand_position, mana_cost, board_position, std::vector<OnPlayArg>{TargetType::ENEMY_HERO}
+            hand_position, mana_cost, board_position, std::vector<OnPlayArg>{ENEMY_HERO}
         ));
 
         for(unsigned target_position = 0; target_position < game.opponent().board.minion_count(); ++target_position)
             play_self_actions.push_back(std::make_unique<PlayMinionAction>(
-                hand_position, mana_cost, board_position,
-                std::vector<OnPlayArg>{TargetType::ENEMY_MINION, target_position}
+                hand_position, mana_cost, board_position, std::vector<OnPlayArg>{ENEMY_MINION, target_position}
             ));
     }
 

@@ -35,15 +35,12 @@ const Minion& Board::get_minion(unsigned position) const
 
 void Board::remove_dead_minions()
 {
-    auto new_end = std::remove_if(board_.begin(), board_.end(), [](const Minion& minion) {
-        return minion.health <= 0;
-    });
-    board_.erase(new_end, board_.end());
+    std::erase_if(board_, [](const Minion& minion) { return minion.health <= 0; });
 }
 
 void Board::trigger_end_of_turn()
 {
-    std::for_each(board_.begin(), board_.end(), [](Minion& minion) {
+    std::ranges::for_each(board_, [](Minion& minion) {
         if(minion.will_die_horribly)
             minion.health = 0;
     });

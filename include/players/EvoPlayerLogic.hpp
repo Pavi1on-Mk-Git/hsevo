@@ -1,6 +1,8 @@
 #ifndef EVO_PLAYER_LOGIC_H
 #define EVO_PLAYER_LOGIC_H
 
+#include <algorithm>
+
 #include "logic/Game.h"
 #include "players/PlayerLogic.h"
 #include "utils/Rng.h"
@@ -32,16 +34,16 @@ struct EvoPlayerLogic: PlayerLogic
         std::vector<std::vector<Game>> states_for_action;
         states_for_action.reserve(actions.size());
 
-        std::transform(
-            actions.begin(), actions.end(), std::back_inserter(states_for_action),
+        std::ranges::transform(
+            actions, std::back_inserter(states_for_action),
             [&game](const std::unique_ptr<Action>& action) {
                 Game game_copy(game);
                 return action->apply(game_copy);
             }
         );
 
-        auto best_action = std::max_element(
-            states_for_action.begin(), states_for_action.end(),
+        auto best_action = std::ranges::max_element(
+            states_for_action,
             [this](const std::vector<Game>& first_states, const std::vector<Game>& second_states) {
                 return average_of_states(first_states) < average_of_states(second_states);
             }

@@ -36,5 +36,8 @@ profile:
 	@ valgrind --callgrind-out-file="./build/bin/profiling/profile.out" --tool=callgrind ./build/bin/hsevo
 	@ kcachegrind ./build/bin/profiling/profile.out
 
+zip:
+	@ zip -r ./code_archives/HSEVO_$$(date '+%d.%m.%Y').zip ./include ./src ./test ./.clang-format ./CMakeLists.txt ./Makefile
+
 %:
 	@$(MAKE) --no-print-directory -C build $@

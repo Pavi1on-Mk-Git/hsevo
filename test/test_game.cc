@@ -71,3 +71,22 @@ TEST_CASE("End turn")
 
     REQUIRE(new_state.turn_ended);
 }
+
+TEST_CASE("Tie")
+{
+    Decklist decklist = ogre_deck();
+    Game game(decklist, decklist);
+
+    game.current_player().hero->health = 0;
+    game.opponent().hero->health = 0;
+
+    REQUIRE(*game.check_winner() == GameResult::TIE);
+}
+
+TEST_CASE("Game unfinished")
+{
+    Decklist decklist = ogre_deck();
+    Game game(decklist, decklist);
+
+    REQUIRE_FALSE(game.check_winner());
+}

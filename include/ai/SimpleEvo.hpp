@@ -18,7 +18,6 @@ private:
         archive & weights_ & mutation_strengths_;
     }
 
-    static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
     std::array<double, GameStateInput::INPUT_SIZE> weights_;
     std::array<double, GameStateInput::INPUT_SIZE> mutation_strengths_;
 

@@ -50,8 +50,11 @@ void Genome::mutate_weight(Connection& connection, double weight_perturbation_pr
 {
     auto* rng = Rng::instance();
     connection.weight = rng->uniform_real() < weight_perturbation_prob ?
-                            std::clamp(connection.weight + rng->normal(0., mutation_strength), 0., 1.) :
-                            rng->uniform_real();
+                            std::clamp(
+                                connection.weight + rng->normal(0., mutation_strength), Connection::MIN_WEIGHT,
+                                Connection::MAX_WEIGHT
+                            ) :
+                            rng->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT);
 }
 
 void Genome::mutate_add_node()
@@ -101,14 +104,17 @@ void Genome::mutate_add_connection()
     if(connection)
         connection->enabled = true;
     else
-        add_connection(node_from, node_to, rng->uniform_real());
+        add_connection(node_from, node_to, rng->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT));
 }
 
 Genome::Genome()
 {
     connections.reserve(GameStateInput::INPUT_SIZE);
     for(unsigned from = 0; from <= GameStateInput::INPUT_SIZE; ++from)
-        add_connection(from, GameStateInput::INPUT_SIZE + 1, Rng::instance()->uniform_real());
+        add_connection(
+            from, GameStateInput::INPUT_SIZE + 1,
+            Rng::instance()->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT)
+        );
 
     node_to_layer.reserve(GameStateInput::INPUT_SIZE + 1);
 

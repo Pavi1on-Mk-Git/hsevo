@@ -7,6 +7,8 @@
 
 #include "utils/Rng.h"
 
+static const double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
+
 void SimpleEvo::mutate()
 {
     double random_evo_coeff_a = Rng::instance()->normal(), random_evo_coeff_b = Rng::instance()->normal();

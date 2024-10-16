@@ -33,28 +33,18 @@ add_executable(test_hsevo ${TEST_SOURCES})
 target_compile_options(test_hsevo PRIVATE ${DEBUG_FLAGS} --coverage)
 target_link_options(test_hsevo PRIVATE --coverage)
 
-include(FetchContent)
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.5.3
-)
-FetchContent_MakeAvailable(Catch2)
+find_package(Catch2 3 REQUIRED)
 
 target_link_libraries(test_hsevo PRIVATE Catch2::Catch2WithMain)
 
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG        v1.14.1
-)
-FetchContent_MakeAvailable(spdlog)
+find_package(spdlog REQUIRED)
 
 target_link_libraries(hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(experiment_hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(gui_hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(test_hsevo PRIVATE spdlog::spdlog)
 
+include(FetchContent)
 FetchContent_Declare(
   raylib
   GIT_REPOSITORY https://github.com/raysan5/raylib.git

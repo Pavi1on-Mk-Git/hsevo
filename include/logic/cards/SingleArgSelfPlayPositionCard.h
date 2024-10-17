@@ -3,12 +3,13 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct SingleArgSelfPlayPositionCard: public MinionCard
+class SingleArgSelfPlayPositionCard: public MinionCard
 {
 protected:
     using MinionCard::MinionCard;
 public:
-    std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position) override;
+    std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
+        const override;
 };
 
 #endif

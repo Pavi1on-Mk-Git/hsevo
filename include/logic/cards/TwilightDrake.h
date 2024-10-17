@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgSelfPlayPositionCard.h"
 
-struct TwilightDrake: public SingleArgSelfPlayPositionCard
+class TwilightDrake: public SingleArgSelfPlayPositionCard
 {
+private:
     TwilightDrake(): SingleArgSelfPlayPositionCard("Twilight Drake", 4, 4, 1, Tribe::DRAGON) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const TwilightDrake instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const TwilightDrake TwilightDrake::instance;
 
 #endif

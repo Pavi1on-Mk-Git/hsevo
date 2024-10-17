@@ -3,12 +3,15 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct Whelp: public MinionCard
+class Whelp: public MinionCard
 {
+private:
     Whelp(): MinionCard("Whelp", 1, 1, 1, Tribe::DRAGON) {}
-
-    CLONE_CARD
+public:
+    static const Whelp instance;
 };
+
+inline const Whelp Whelp::instance;
 
 
 #endif

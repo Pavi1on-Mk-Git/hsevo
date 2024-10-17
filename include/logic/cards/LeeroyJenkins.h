@@ -3,14 +3,16 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct LeeroyJenkins: public MinionCard
+class LeeroyJenkins: public MinionCard
 {
+private:
     LeeroyJenkins(): MinionCard("Leeroy Jenkins", 4, 6, 2, CHARGE) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const LeeroyJenkins instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const LeeroyJenkins LeeroyJenkins::instance;
 
 
 #endif

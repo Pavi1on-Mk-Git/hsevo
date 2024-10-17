@@ -4,7 +4,7 @@
 
 const unsigned COIN_MANA_INCREASE = 1;
 
-std::vector<Game> Coin::on_play(Game& game, const std::vector<OnPlayArg>&)
+std::vector<Game> Coin::on_play(Game& game, const std::vector<OnPlayArg>&) const
 {
     auto& current_mana = game.current_player().mana;
 

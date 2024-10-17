@@ -17,8 +17,8 @@ TEST_CASE("Initialize game")
         REQUIRE(player.hero->max_health == 30);
         REQUIRE(player.hero->hero_power_active);
         REQUIRE(player.hero->hero_power_mana_cost == 2);
-        REQUIRE(player.hero->hero_power_name == "Life Tap");
-        REQUIRE(player.hero->name == "Gul'Dan");
+        REQUIRE(std::strcmp(player.hero->hero_power_name, "Life Tap") == 0);
+        REQUIRE(std::strcmp(player.hero->name, "Gul'Dan") == 0);
         REQUIRE(player.hero->tribe == Tribe::NONE);
         REQUIRE_FALSE(player.hero->weapon.has_value());
         REQUIRE(player.mana == 0);
@@ -47,7 +47,7 @@ TEST_CASE("Fatigue")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<BoulderfistOgre>(), 4});
+    deck.push_back({&BoulderfistOgre::instance, 4});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 

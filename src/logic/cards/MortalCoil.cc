@@ -5,7 +5,7 @@
 
 const unsigned MORTAL_COIL_DMG = 1;
 
-std::vector<Game> MortalCoil::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> MortalCoil::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     apply_to_entity(game, args, [&game](Entity& entity) {
         entity.health -= MORTAL_COIL_DMG;

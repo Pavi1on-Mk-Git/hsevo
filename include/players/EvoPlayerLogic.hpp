@@ -49,7 +49,7 @@ struct EvoPlayerLogic: PlayerLogic
             }
         );
 
-        return best_action->at(Rng::instance()->uniform_int(0, best_action->size() - 1));
+        return best_action->at(Rng::instance().uniform_int(0, best_action->size() - 1));
     }
 };
 

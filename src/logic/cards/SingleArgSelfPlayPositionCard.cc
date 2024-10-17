@@ -4,7 +4,7 @@
 
 std::vector<std::unique_ptr<PlayCardAction>> SingleArgSelfPlayPositionCard::create_play_actions(
     const Game& game, unsigned hand_position
-)
+) const
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 

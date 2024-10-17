@@ -4,7 +4,7 @@
 
 const unsigned DEFENDER_OF_ARGUS_BUFF_AMOUNT = 1;
 
-std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     const auto position_played = std::get<unsigned>(args.at(0));
 

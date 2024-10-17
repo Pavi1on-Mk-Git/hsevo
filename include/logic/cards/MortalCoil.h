@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgTargetMinionCard.h"
 
-struct MortalCoil: public SingleArgTargetMinionCard
+class MortalCoil: public SingleArgTargetMinionCard
 {
+private:
     MortalCoil(): SingleArgTargetMinionCard("Mortal Coil", 1) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const MortalCoil instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const MortalCoil MortalCoil::instance;
 
 #endif

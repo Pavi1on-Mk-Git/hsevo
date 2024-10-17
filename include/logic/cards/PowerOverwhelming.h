@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgTargetFriendlyMinionCard.h"
 
-struct PowerOverwhelming: public SingleArgTargetFriendlyMinionCard
+class PowerOverwhelming: public SingleArgTargetFriendlyMinionCard
 {
+private:
     PowerOverwhelming(): SingleArgTargetFriendlyMinionCard("Power Overwhelming", 1) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const PowerOverwhelming instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const PowerOverwhelming PowerOverwhelming::instance;
 
 #endif

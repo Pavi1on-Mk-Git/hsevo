@@ -1,14 +1,12 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include <string>
-
 struct Weapon
 {
-    std::string name;
+    const char* name;
     unsigned attack, durability;
 
-    Weapon(std::string_view name, unsigned attack, unsigned durability);
+    Weapon(const char* name, unsigned attack, unsigned durability);
 };
 
 #endif

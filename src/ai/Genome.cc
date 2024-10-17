@@ -48,23 +48,23 @@ void Genome::add_node_to_layer(unsigned layer)
 
 void Genome::mutate_weight(Connection& connection, double weight_perturbation_prob, double mutation_strength)
 {
-    auto* rng = Rng::instance();
-    connection.weight = rng->uniform_real() < weight_perturbation_prob ?
+    auto& rng = Rng::instance();
+    connection.weight = rng.uniform_real() < weight_perturbation_prob ?
                             std::clamp(
-                                connection.weight + rng->normal(0., mutation_strength), Connection::MIN_WEIGHT,
+                                connection.weight + rng.normal(0., mutation_strength), Connection::MIN_WEIGHT,
                                 Connection::MAX_WEIGHT
                             ) :
-                            rng->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT);
+                            rng.uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT);
 }
 
 void Genome::mutate_add_node()
 {
-    auto* rng = Rng::instance();
+    auto& rng = Rng::instance();
     unsigned connection_id;
 
     do
     {
-        connection_id = rng->uniform_int(0, connections.size() - 1);
+        connection_id = rng.uniform_int(0, connections.size() - 1);
     }
     while(!connections.at(connection_id).second.enabled);
 
@@ -82,13 +82,13 @@ void Genome::mutate_add_node()
 
 void Genome::mutate_add_connection()
 {
-    auto* rng = Rng::instance();
+    auto& rng = Rng::instance();
     unsigned layer_from, layer_to;
 
     do
     {
-        layer_from = rng->uniform_int(0, layers.size() - 1);
-        layer_to = rng->uniform_int(0, layers.size() - 1);
+        layer_from = rng.uniform_int(0, layers.size() - 1);
+        layer_to = rng.uniform_int(0, layers.size() - 1);
     }
     while(layer_from == layer_to);
 
@@ -97,14 +97,14 @@ void Genome::mutate_add_connection()
 
     const auto &layer_from_nodes = layers.at(layer_from).second, layer_to_nodes = layers.at(layer_to).second;
 
-    NodeId node_from = layer_from_nodes.at(rng->uniform_int(0, layer_from_nodes.size() - 1)),
-           node_to = layer_to_nodes.at(rng->uniform_int(0, layer_to_nodes.size() - 1));
+    NodeId node_from = layer_from_nodes.at(rng.uniform_int(0, layer_from_nodes.size() - 1)),
+           node_to = layer_to_nodes.at(rng.uniform_int(0, layer_to_nodes.size() - 1));
 
     auto connection = find_connection(node_from, node_to);
     if(connection)
         connection->enabled = true;
     else
-        add_connection(node_from, node_to, rng->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT));
+        add_connection(node_from, node_to, rng.uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT));
 }
 
 Genome::Genome()
@@ -113,7 +113,7 @@ Genome::Genome()
     for(unsigned from = 0; from <= GameStateInput::INPUT_SIZE; ++from)
         add_connection(
             from, GameStateInput::INPUT_SIZE + 1,
-            Rng::instance()->uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT)
+            Rng::instance().uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT)
         );
 
     node_to_layer.reserve(GameStateInput::INPUT_SIZE + 1);
@@ -182,16 +182,16 @@ void Genome::mutate(
     double weight_perturbation_prob, double mutation_strength
 )
 {
-    auto* rng = Rng::instance();
+    auto& rng = Rng::instance();
 
     for(auto& [hash, connection]: connections)
-        if(rng->uniform_real() < weight_mutation_prob)
+        if(rng.uniform_real() < weight_mutation_prob)
             mutate_weight(connection, weight_perturbation_prob, mutation_strength);
 
-    if(rng->uniform_real() < add_node_mutation_prob)
+    if(rng.uniform_real() < add_node_mutation_prob)
         mutate_add_node();
 
-    if(rng->uniform_real() < add_connection_prob)
+    if(rng.uniform_real() < add_connection_prob)
         mutate_add_connection();
 }
 
@@ -219,12 +219,12 @@ Genome Genome::crossover(
             new_connections.push_back(stronger_connection);
         else
         {
-            auto* rng = Rng::instance();
-            const unsigned toss_up_result = rng->uniform_int(0, 1);
+            auto& rng = Rng::instance();
+            const unsigned toss_up_result = rng.uniform_int(0, 1);
             auto to_add = toss_up_result == 0 ? stronger_connection : *matching_connection;
 
             if(!stronger_connection.second.enabled && !matching_connection->second.enabled &&
-               rng->uniform_real() >= inherit_connection_disabled_prob)
+               rng.uniform_real() >= inherit_connection_disabled_prob)
                 to_add.second.enabled = true;
 
             new_connections.push_back(to_add);

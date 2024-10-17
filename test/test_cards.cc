@@ -28,7 +28,7 @@ TEST_CASE("Play cards")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<BoulderfistOgre>(), 1});
+    deck.push_back({&BoulderfistOgre::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -47,7 +47,7 @@ TEST_CASE("Play cards")
     REQUIRE(ogre.health == 7);
     REQUIRE(ogre.keywords == MinionKeywords::NO_KEYWORDS);
     REQUIRE(ogre.max_health == 7);
-    REQUIRE(ogre.name == "Boulderfist Ogre");
+    REQUIRE(std::strcmp(ogre.name, "Boulderfist Ogre") == 0);
     REQUIRE(ogre.tribe == Tribe::NONE);
     REQUIRE_FALSE(ogre.will_die_horribly);
 }
@@ -57,9 +57,9 @@ TEST_CASE("Minion attacks")
     Decklist decklist = ogre_deck();
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).active = true;
-    game.opponent().board.add_minion(BoulderfistOgre(), 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
 
     auto actions = game.get_possible_actions();
 
@@ -88,7 +88,7 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(AncientWatcher(), 0);
+        game.current_player().board.add_minion(AncientWatcher::instance, 0);
         game.current_player().board.get_minion(0).active = true;
 
         REQUIRE(game.get_possible_actions().size() == 1);
@@ -99,11 +99,11 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
         game.current_player().board.get_minion(0).active = true;
 
-        game.opponent().board.add_minion(BoulderfistOgre(), 0);
-        game.opponent().board.add_minion(BoulderfistOgre(), 1);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
 
         REQUIRE(game.get_possible_actions().size() == 4);
 
@@ -117,7 +117,7 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(LeeroyJenkins(), 0);
+        game.current_player().board.add_minion(LeeroyJenkins::instance, 0);
 
         REQUIRE(game.current_player().board.get_minion(0).active);
     }
@@ -127,7 +127,7 @@ TEST_CASE("The Coin")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<Coin>(), 1});
+    deck.push_back({&Coin::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -154,12 +154,12 @@ TEST_CASE("Sacrificial Pact")
 {
     auto hero = std::make_unique<LordJaraxxus>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<SacrificialPact>(), 1});
+    deck.push_back({&SacrificialPact::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(Infernal(), 0);
-    game.opponent().board.add_minion(Infernal(), 0);
+    game.current_player().board.add_minion(Infernal::instance, 0);
+    game.opponent().board.add_minion(Infernal::instance, 0);
 
     auto actions = game.get_possible_actions();
 
@@ -196,14 +196,14 @@ TEST_CASE("Soulfire")
     {
         auto hero = std::make_unique<GulDan>();
         DecklistDeck deck;
-        deck.push_back({std::make_unique<Soulfire>(), 1});
-        deck.push_back({std::make_unique<BoulderfistOgre>(), 5});
+        deck.push_back({&Soulfire::instance, 1});
+        deck.push_back({&BoulderfistOgre::instance, 5});
         Decklist decklist(std::move(hero), std::move(deck));
         Game game(decklist, decklist);
 
         game.draw(3);
-        game.current_player().board.add_minion(BoulderfistOgre(), 0);
-        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
 
@@ -256,7 +256,7 @@ TEST_CASE("Soulfire")
     {
         auto hero = std::make_unique<GulDan>();
         DecklistDeck deck;
-        deck.push_back({std::make_unique<Soulfire>(), 1});
+        deck.push_back({&Soulfire::instance, 1});
         Decklist decklist(std::move(hero), std::move(deck));
         Game game(decklist, decklist);
 
@@ -270,7 +270,7 @@ TEST_CASE("Mortal Coil")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<MortalCoil>(), 5});
+    deck.push_back({&MortalCoil::instance, 5});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -278,7 +278,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Target friendly")
     {
-        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -289,7 +289,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Draw card from ally")
     {
-        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
         game.current_player().board.get_minion(0).health = 1;
 
         auto actions = game.get_possible_actions();
@@ -301,7 +301,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Target enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -312,7 +312,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Draw card from enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
         game.opponent().board.get_minion(0).health = 1;
 
         auto actions = game.get_possible_actions();
@@ -327,11 +327,11 @@ TEST_CASE("Power Overwhelming")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<PowerOverwhelming>(), 1});
+    deck.push_back({&PowerOverwhelming::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
     game.current_player().mana = 1;
 
     auto actions = game.get_possible_actions();
@@ -353,12 +353,12 @@ TEST_CASE("Sunfury Protector")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<SunfuryProtector>(), 1});
+    deck.push_back({&SunfuryProtector::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
-    game.current_player().board.add_minion(BoulderfistOgre(), 1);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
     game.current_player().mana = 2;
 
 
@@ -393,16 +393,16 @@ TEST_CASE("Earthen Ring Farseer")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<EarthenRingFarseer>(), 1});
+    deck.push_back({&EarthenRingFarseer::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 3;
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).health -= 2;
 
-    game.opponent().board.add_minion(BoulderfistOgre(), 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
     game.opponent().board.get_minion(0).health -= 4;
 
     auto actions = game.get_possible_actions();
@@ -440,12 +440,12 @@ TEST_CASE("Defender of Argus")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<DefenderOfArgus>(), 1});
+    deck.push_back({&DefenderOfArgus::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
-    game.current_player().board.add_minion(BoulderfistOgre(), 1);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
     game.current_player().mana = 4;
 
 
@@ -507,17 +507,17 @@ TEST_CASE("Hellfire")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<Hellfire>(), 5});
+    deck.push_back({&Hellfire::instance, 5});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 4;
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
-    game.current_player().board.add_minion(BoulderfistOgre(), 1);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
 
-    game.opponent().board.add_minion(BoulderfistOgre(), 0);
-    game.opponent().board.add_minion(BoulderfistOgre(), 1);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
 
     auto actions = game.get_possible_actions();
 
@@ -535,7 +535,7 @@ TEST_CASE("Leeroy Jenkins")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<LeeroyJenkins>(), 1});
+    deck.push_back({&LeeroyJenkins::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -551,15 +551,15 @@ TEST_CASE("Shadowflame")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<Shadowflame>(), 1});
+    deck.push_back({&Shadowflame::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 4;
 
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
-    game.opponent().board.add_minion(BoulderfistOgre(), 0);
-    game.opponent().board.add_minion(BoulderfistOgre(), 1);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
 
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
@@ -573,7 +573,7 @@ TEST_CASE("Twilight Drake")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<TwilightDrake>(), 5});
+    deck.push_back({&TwilightDrake::instance, 5});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -604,12 +604,12 @@ TEST_CASE("Faceless Manipulator")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<FacelessManipulator>(), 1});
+    deck.push_back({&FacelessManipulator::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 5;
-    game.current_player().board.add_minion(BoulderfistOgre(), 0);
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
 
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
@@ -621,7 +621,7 @@ TEST_CASE("Faceless Manipulator")
     REQUIRE(faceless.health == 7);
     REQUIRE(faceless.keywords == MinionKeywords::NO_KEYWORDS);
     REQUIRE(faceless.max_health == 7);
-    REQUIRE(faceless.name == "Boulderfist Ogre");
+    REQUIRE(std::strcmp(faceless.name, "Boulderfist Ogre") == 0);
     REQUIRE(faceless.tribe == Tribe::NONE);
     REQUIRE_FALSE(faceless.will_die_horribly);
 
@@ -632,7 +632,7 @@ TEST_CASE("Faceless Manipulator")
     REQUIRE(ogre.health == 7);
     REQUIRE(ogre.keywords == MinionKeywords::NO_KEYWORDS);
     REQUIRE(ogre.max_health == 7);
-    REQUIRE(ogre.name == "Boulderfist Ogre");
+    REQUIRE(std::strcmp(ogre.name, "Boulderfist Ogre") == 0);
     REQUIRE(ogre.tribe == Tribe::NONE);
     REQUIRE_FALSE(ogre.will_die_horribly);
 }
@@ -641,7 +641,7 @@ TEST_CASE("Siphon Soul")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<SiphonSoul>(), 1});
+    deck.push_back({&SiphonSoul::instance, 1});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -649,7 +649,7 @@ TEST_CASE("Siphon Soul")
 
     SECTION("Target friendly")
     {
-        game.current_player().board.add_minion(BoulderfistOgre(), 0);
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -660,7 +660,7 @@ TEST_CASE("Siphon Soul")
 
     SECTION("Target enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre(), 0);
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -674,8 +674,8 @@ TEST_CASE("Mountain Giant")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<MountainGiant>(), 1});
-    deck.push_back({std::make_unique<BoulderfistOgre>(), 9});
+    deck.push_back({&MountainGiant::instance, 1});
+    deck.push_back({&BoulderfistOgre::instance, 9});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -692,8 +692,8 @@ TEST_CASE("Molten Giant")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<MoltenGiant>(), 1});
-    deck.push_back({std::make_unique<BoulderfistOgre>(), 2});
+    deck.push_back({&MoltenGiant::instance, 1});
+    deck.push_back({&BoulderfistOgre::instance, 2});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -708,7 +708,7 @@ TEST_CASE("Lord Jaraxxus")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
-    deck.push_back({std::make_unique<LordJaraxxusCard>(), 4});
+    deck.push_back({&LordJaraxxusCard::instance, 4});
     Decklist decklist(std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
@@ -724,10 +724,10 @@ TEST_CASE("Lord Jaraxxus")
     REQUIRE(jaraxxus->health == 15);
     REQUIRE(jaraxxus->hero_power_active);
     REQUIRE(jaraxxus->hero_power_mana_cost == 2);
-    REQUIRE(jaraxxus->hero_power_name == "INFERNO!");
-    REQUIRE(jaraxxus->name == "Lord Jaraxxus");
+    REQUIRE(std::strcmp(jaraxxus->hero_power_name, "INFERNO!") == 0);
+    REQUIRE(std::strcmp(jaraxxus->name, "Lord Jaraxxus") == 0);
     REQUIRE(jaraxxus->tribe == Tribe::DEMON);
-    REQUIRE(jaraxxus->weapon->name == "Blood Fury");
+    REQUIRE(std::strcmp(jaraxxus->weapon->name, "Blood Fury") == 0);
     REQUIRE(jaraxxus->weapon->attack == 3);
     REQUIRE(jaraxxus->weapon->durability == 8);
 
@@ -746,7 +746,7 @@ TEST_CASE("Lord Jaraxxus")
     SECTION("Attack taunt minion and destroy weapon")
     {
         new_state.current_player().hero->weapon->durability = 1;
-        new_state.opponent().board.add_minion(BoulderfistOgre(), 0);
+        new_state.opponent().board.add_minion(BoulderfistOgre::instance, 0);
         new_state.opponent().board.get_minion(0).keywords |= TAUNT;
 
         auto actions = new_state.get_possible_actions();
@@ -772,7 +772,7 @@ TEST_CASE("Lord Jaraxxus")
         REQUIRE(infernal.health == 6);
         REQUIRE(infernal.keywords == MinionKeywords::NO_KEYWORDS);
         REQUIRE(infernal.max_health == 6);
-        REQUIRE(infernal.name == "Infernal");
+        REQUIRE(std::strcmp(infernal.name, "Infernal") == 0);
         REQUIRE(infernal.tribe == Tribe::DEMON);
         REQUIRE_FALSE(infernal.will_die_horribly);
     }

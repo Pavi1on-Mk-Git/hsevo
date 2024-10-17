@@ -8,10 +8,9 @@ class Rng
 {
 private:
     std::ranlux24 random_engine_;
-    static Rng* instance_;
     Rng();
 public:
-    static Rng* instance();
+    static Rng& instance();
     void seed(int seed_nr);
     int uniform_int(int min, int max);
     double uniform_real(double min = 0., double max = 1.);

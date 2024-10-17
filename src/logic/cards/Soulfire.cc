@@ -5,7 +5,7 @@
 
 const unsigned SOULFIRE_DMG = 4;
 
-std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     apply_to_entity(game, args, [](Entity& entity) { entity.health -= SOULFIRE_DMG; });
 

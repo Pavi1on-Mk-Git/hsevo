@@ -62,7 +62,7 @@ void Game::mulligan()
     switch_active_player();
 
     draw(FIRST_DRAW_AMOUNT + 1);
-    current_player().hand.add_cards(std::make_unique<Coin>());
+    current_player().hand.add_cards(&Coin::instance);
     switch_active_player();
 }
 
@@ -208,7 +208,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
 {
     current_player().mana -= action.card_cost;
 
-    auto* played_card = static_cast<MinionCard*>(current_player().hand.remove_card(action.hand_position).release());
+    const auto* played_card = static_cast<const MinionCard*>(current_player().hand.remove_card(action.hand_position));
     current_player().board.add_minion(Minion(*played_card), action.board_position);
 
     auto new_states = played_card->on_play(*this, action.args);

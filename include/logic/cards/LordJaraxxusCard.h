@@ -3,13 +3,15 @@
 
 #include "logic/cards/Card.h"
 
-struct LordJaraxxusCard: public Card
+class LordJaraxxusCard: public Card
 {
+private:
     LordJaraxxusCard(): Card("Lord Jaraxxus", 9) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const LordJaraxxusCard instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const LordJaraxxusCard LordJaraxxusCard::instance;
 
 #endif

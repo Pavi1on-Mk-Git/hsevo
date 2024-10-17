@@ -13,11 +13,11 @@
 int main()
 {
     spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "logs/hsevo.log", true));
-    spdlog::set_pattern("[%l] %v");
+    spdlog::set_pattern(".at(%l) %v");
     spdlog::set_level(spdlog::level::off);
 
     const int SEED = 42;
-    Rng::instance()->seed(SEED);
+    Rng::instance().seed(SEED);
 
     auto best_evo = NEAT::evolve({
         .population_size = 10,

@@ -3,11 +3,14 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct BoulderfistOgre: public MinionCard
+class BoulderfistOgre: public MinionCard
 {
+private:
     BoulderfistOgre(): MinionCard("Boulderfist Ogre", 6, 6, 7) {}
-
-    CLONE_CARD
+public:
+    static const BoulderfistOgre instance;
 };
+
+inline const BoulderfistOgre BoulderfistOgre::instance;
 
 #endif

@@ -2,7 +2,6 @@
 #define ENTITY_H
 
 #include <functional>
-#include <string>
 
 #include "logic/OnPlayArg.h"
 #include "logic/Tribe.h"
@@ -12,9 +11,9 @@ struct Game;
 class Entity
 {
 protected:
-    Entity(std::string_view name, unsigned base_health, const Tribe& tribe);
+    Entity(const char* name, unsigned base_health, const Tribe& tribe);
 public:
-    std::string name;
+    const char* name;
     unsigned max_health;
     int health;
     Tribe tribe;

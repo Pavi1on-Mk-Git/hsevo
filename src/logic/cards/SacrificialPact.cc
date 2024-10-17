@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> SacrificialPact::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> SacrificialPact::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
     return {game};
@@ -10,7 +10,7 @@ std::vector<Game> SacrificialPact::on_play(Game& game, const std::vector<OnPlayA
 
 std::vector<std::unique_ptr<PlayCardAction>> SacrificialPact::create_play_actions(
     const Game& game, unsigned hand_position
-)
+) const
 {
     using enum Tribe;
     using enum TargetType;

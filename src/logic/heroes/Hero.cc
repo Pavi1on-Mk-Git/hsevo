@@ -1,7 +1,7 @@
 #include "logic/heroes/Hero.h"
 
 Hero::Hero(
-    std::string_view name, std::string_view hero_power_name, unsigned hero_power_mana_cost, unsigned base_health,
+    const char* name, const char* hero_power_name, unsigned hero_power_mana_cost, unsigned base_health,
     const Tribe& tribe
 ):
     Entity(name, base_health, tribe), fatigue_dmg_(0), hero_power_name(hero_power_name),

@@ -100,26 +100,26 @@ std::optional<Genome> NEAT::crossover(
     double inherit_connection_disabled_prob
 )
 {
-    auto* rng = Rng::instance();
+    auto& rng = Rng::instance();
 
-    if(rng->uniform_real() < crossover_prob && bound > 0)
+    if(rng.uniform_real() < crossover_prob && bound > 0)
     {
-        const unsigned first_parent_id = species.at(rng->uniform_int(0, bound - 1));
+        const unsigned first_parent_id = species.at(rng.uniform_int(0, bound - 1));
         const Genome& first_parent = population_.at(first_parent_id);
         const double first_parent_score = adjusted_scores_.at(first_parent_id);
 
-        if(rng->uniform_real() < interspecies_mating_prob)
+        if(rng.uniform_real() < interspecies_mating_prob)
         {
             std::vector<unsigned> alive_species{};
             for(unsigned alive_species_id = 0; alive_species_id < species_.size(); ++alive_species_id)
                 if(!species_.at(alive_species_id).empty())
                     alive_species.push_back(alive_species_id);
 
-            const unsigned second_parent_species_id = alive_species.at(rng->uniform_int(0, alive_species.size() - 1));
+            const unsigned second_parent_species_id = alive_species.at(rng.uniform_int(0, alive_species.size() - 1));
 
             const Species& second_parent_species = species_.at(second_parent_species_id);
             const unsigned second_bound = species_bounds_.at(second_parent_species_id);
-            const unsigned second_parent_id = second_parent_species.at(rng->uniform_int(0, second_bound - 1));
+            const unsigned second_parent_id = second_parent_species.at(rng.uniform_int(0, second_bound - 1));
             const Genome& second_parent = population_.at(second_parent_id);
             const double second_parent_score = adjusted_scores_.at(second_parent_id);
 
@@ -129,7 +129,7 @@ std::optional<Genome> NEAT::crossover(
         }
         else
         {
-            const unsigned second_parent_id = species.at(rng->uniform_int(0, bound - 1));
+            const unsigned second_parent_id = species.at(rng.uniform_int(0, bound - 1));
             const Genome& second_parent = population_.at(second_parent_id);
             const double second_parent_score = adjusted_scores_.at(second_parent_id);
 
@@ -156,7 +156,7 @@ void NEAT::offspring(
         const unsigned bound = species_bounds_.at(species_id);
 
         for(unsigned old_genome_id = 0; old_genome_id < bound; ++old_genome_id)
-            population_.at(species.at(old_genome_id))
+            population_.at(species[old_genome_id])
                 .mutate(
                     weight_mutation_prob, add_node_mutation_prob, add_connection_prob, weight_perturbation_prob,
                     mutation_strength
@@ -164,7 +164,7 @@ void NEAT::offspring(
 
         for(unsigned new_genome_id = bound; new_genome_id < species.size(); ++new_genome_id)
         {
-            Genome& to_replace = population_.at(species.at(new_genome_id));
+            Genome& to_replace = population_.at(species[new_genome_id]);
 
             auto new_genome = crossover(
                 species, bound, crossover_prob, interspecies_mating_prob, inherit_connection_disabled_prob
@@ -192,8 +192,7 @@ void NEAT::cleanup_species()
         unsigned kept_count = species_bounds_.at(species_id);
 
         if(!species.empty() && kept_count > 0)
-            clean_representatives.push_back(population_.at(species.at(Rng::instance()->uniform_int(0, kept_count - 1)))
-            );
+            clean_representatives.push_back(population_.at(species[Rng::instance().uniform_int(0, kept_count - 1)]));
     }
 
     species_.clear();

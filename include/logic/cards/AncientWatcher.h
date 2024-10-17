@@ -3,11 +3,14 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct AncientWatcher: public MinionCard
+class AncientWatcher: public MinionCard
 {
+private:
     AncientWatcher(): MinionCard("Ancient Watcher", 2, 4, 5, CANT_ATTACK) {}
-
-    CLONE_CARD
+public:
+    static const AncientWatcher instance;
 };
+
+inline const AncientWatcher AncientWatcher::instance;
 
 #endif

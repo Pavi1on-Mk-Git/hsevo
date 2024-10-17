@@ -4,7 +4,7 @@
 
 std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetCard::create_play_actions(
     const Game& game, unsigned hand_position
-)
+) const
 {
     using enum TargetType;
 

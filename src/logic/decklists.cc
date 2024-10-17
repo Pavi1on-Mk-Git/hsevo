@@ -25,7 +25,7 @@ Decklist ogre_deck()
     std::unique_ptr<Hero> hero = std::make_unique<GulDan>();
 
     DecklistDeck deck;
-    deck.emplace_back(std::make_unique<BoulderfistOgre>(), 30);
+    deck.emplace_back(&BoulderfistOgre::instance, 30);
 
     return Decklist(std::move(hero), std::move(deck));
 }
@@ -35,23 +35,23 @@ Decklist handlock()
     std::unique_ptr<Hero> hero = std::make_unique<GulDan>();
 
     DecklistDeck deck;
-    deck.emplace_back(std::make_unique<SacrificialPact>(), 1);
-    deck.emplace_back(std::make_unique<Soulfire>(), 2);
-    deck.emplace_back(std::make_unique<MortalCoil>(), 2);
-    deck.emplace_back(std::make_unique<PowerOverwhelming>(), 2);
-    deck.emplace_back(std::make_unique<AncientWatcher>(), 2);
-    deck.emplace_back(std::make_unique<SunfuryProtector>(), 2);
-    deck.emplace_back(std::make_unique<EarthenRingFarseer>(), 2);
-    deck.emplace_back(std::make_unique<DefenderOfArgus>(), 2);
-    deck.emplace_back(std::make_unique<Hellfire>(), 2);
-    deck.emplace_back(std::make_unique<LeeroyJenkins>(), 1);
-    deck.emplace_back(std::make_unique<Shadowflame>(), 2);
-    deck.emplace_back(std::make_unique<TwilightDrake>(), 2);
-    deck.emplace_back(std::make_unique<FacelessManipulator>(), 2);
-    deck.emplace_back(std::make_unique<SiphonSoul>(), 2);
-    deck.emplace_back(std::make_unique<LordJaraxxusCard>(), 1);
-    deck.emplace_back(std::make_unique<MountainGiant>(), 2);
-    deck.emplace_back(std::make_unique<MoltenGiant>(), 2);
+    deck.emplace_back(&SacrificialPact::instance, 1);
+    deck.emplace_back(&Soulfire::instance, 2);
+    deck.emplace_back(&MortalCoil::instance, 2);
+    deck.emplace_back(&PowerOverwhelming::instance, 2);
+    deck.emplace_back(&AncientWatcher::instance, 2);
+    deck.emplace_back(&SunfuryProtector::instance, 2);
+    deck.emplace_back(&EarthenRingFarseer::instance, 2);
+    deck.emplace_back(&DefenderOfArgus::instance, 2);
+    deck.emplace_back(&Hellfire::instance, 2);
+    deck.emplace_back(&LeeroyJenkins::instance, 1);
+    deck.emplace_back(&Shadowflame::instance, 2);
+    deck.emplace_back(&TwilightDrake::instance, 2);
+    deck.emplace_back(&FacelessManipulator::instance, 2);
+    deck.emplace_back(&SiphonSoul::instance, 2);
+    deck.emplace_back(&LordJaraxxusCard::instance, 1);
+    deck.emplace_back(&MountainGiant::instance, 2);
+    deck.emplace_back(&MoltenGiant::instance, 2);
 
     return Decklist(std::move(hero), std::move(deck));
 }

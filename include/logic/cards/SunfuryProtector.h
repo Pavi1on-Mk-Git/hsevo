@@ -3,14 +3,16 @@
 
 #include "logic/cards/SingleArgSelfPlayPositionCard.h"
 
-struct SunfuryProtector: public SingleArgSelfPlayPositionCard
+class SunfuryProtector: public SingleArgSelfPlayPositionCard
 {
+private:
     SunfuryProtector(): SingleArgSelfPlayPositionCard("Sunfury Protector", 2, 2, 3) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const SunfuryProtector instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const SunfuryProtector SunfuryProtector::instance;
 
 
 #endif

@@ -4,7 +4,7 @@
 
 const unsigned POWER_OVERWHELMING_BUFF_AMOUNT = 4;
 
-std::vector<Game> PowerOverwhelming::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> PowerOverwhelming::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     const auto target_position = std::get<unsigned>(args.at(0));
 

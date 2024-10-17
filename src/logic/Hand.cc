@@ -9,28 +9,21 @@ Hand::Hand()
     hand_.reserve(MAX_HAND_SIZE);
 }
 
-Hand::Hand(const Hand& hand)
-{
-    hand_.reserve(MAX_HAND_SIZE);
-    for(const auto& card: hand.hand_)
-        hand_.push_back(card->clone());
-}
-
-void Hand::add_cards(std::vector<std::unique_ptr<Card>> cards)
+void Hand::add_cards(const std::vector<const Card*>& cards)
 {
     auto to_add = std::min(MAX_HAND_SIZE - hand_.size(), cards.size());
-    std::ranges::move(cards.begin(), cards.begin() + to_add, std::back_inserter(hand_));
+    std::ranges::copy(cards.begin(), cards.begin() + to_add, std::back_inserter(hand_));
 }
 
-void Hand::add_cards(std::unique_ptr<Card> card)
+void Hand::add_cards(const Card* card)
 {
     if(hand_.size() != MAX_HAND_SIZE)
-        hand_.push_back(std::move(card));
+        hand_.push_back(card);
 }
 
-std::unique_ptr<Card> Hand::remove_card(unsigned position)
+const Card* Hand::remove_card(unsigned position)
 {
-    auto to_return = std::move(hand_.at(position));
+    auto to_return = hand_.at(position);
     hand_.erase(hand_.begin() + position);
     return to_return;
 }
@@ -40,7 +33,7 @@ unsigned Hand::size() const
     return hand_.size();
 }
 
-const std::unique_ptr<Card>& Hand::get_card(unsigned position) const
+const Card* const& Hand::get_card(unsigned position) const
 {
     return hand_.at(position);
 }

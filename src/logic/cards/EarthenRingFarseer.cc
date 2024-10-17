@@ -4,7 +4,7 @@
 
 const unsigned EARTHEN_RING_FARSEER_HEAL_AMOUNT = 3;
 
-std::vector<Game> EarthenRingFarseer::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> EarthenRingFarseer::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     apply_to_entity(game, args, [](Entity& entity) { entity.restore_health(EARTHEN_RING_FARSEER_HEAL_AMOUNT); });
     return {game};
@@ -12,7 +12,7 @@ std::vector<Game> EarthenRingFarseer::on_play(Game& game, const std::vector<OnPl
 
 std::vector<std::unique_ptr<PlayCardAction>> EarthenRingFarseer::create_play_actions(
     const Game& game, unsigned hand_position
-)
+) const
 {
     using enum TargetType;
 

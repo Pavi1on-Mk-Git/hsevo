@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgTargetMinionCard.h"
 
-struct SiphonSoul: public SingleArgTargetMinionCard
+class SiphonSoul: public SingleArgTargetMinionCard
 {
+private:
     SiphonSoul(): SingleArgTargetMinionCard("Siphon Soul", 6) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const SiphonSoul instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const SiphonSoul SiphonSoul::instance;
 
 #endif

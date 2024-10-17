@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     const auto target_position = std::get<unsigned>(args.at(0));
 

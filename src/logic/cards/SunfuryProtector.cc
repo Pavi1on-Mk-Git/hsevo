@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> SunfuryProtector::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> SunfuryProtector::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     const auto position_played = std::get<unsigned>(args.at(0));
 

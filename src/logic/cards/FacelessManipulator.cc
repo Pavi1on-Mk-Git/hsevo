@@ -2,10 +2,10 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args)
+std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
-    const auto position_played = std::get<unsigned>(args[0]);
-    const auto target_position = std::get<unsigned>(args[1]);
+    const auto position_played = std::get<unsigned>(args.at(0));
+    const auto target_position = std::get<unsigned>(args.at(1));
 
     auto& board = game.current_player().board;
 
@@ -18,7 +18,7 @@ std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnP
 
 std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_actions(
     const Game& game, unsigned hand_position
-)
+) const
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 

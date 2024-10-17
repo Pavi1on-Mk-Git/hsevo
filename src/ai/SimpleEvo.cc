@@ -11,7 +11,7 @@ static const double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
 
 void SimpleEvo::mutate()
 {
-    double random_evo_coeff_a = Rng::instance()->normal(), random_evo_coeff_b = Rng::instance()->normal();
+    double random_evo_coeff_a = Rng::instance().normal(), random_evo_coeff_b = Rng::instance().normal();
 
     std::ranges::transform(mutation_strengths_, mutation_strengths_.begin(), [&](double strength) {
         return std::max(
@@ -24,7 +24,7 @@ void SimpleEvo::mutate()
     });
 
     std::ranges::transform(weights_, mutation_strengths_, weights_.begin(), [](double weight, double strength) {
-        return std::clamp(weight + Rng::instance()->normal(0., strength), MIN_WEIGHT, MAX_WEIGHT);
+        return std::clamp(weight + Rng::instance().normal(0., strength), MIN_WEIGHT, MAX_WEIGHT);
     });
 }
 
@@ -47,7 +47,7 @@ auto SimpleEvo::mutate_population(
 
     for(unsigned mutant_id = 0; mutant_id < mutants_size; ++mutant_id)
     {
-        const unsigned to_mutate = Rng::instance()->uniform_int(0, population.size() - 1);
+        const unsigned to_mutate = Rng::instance().uniform_int(0, population.size() - 1);
         auto mutant = population.at(to_mutate);
         mutant.mutate();
         mutants.push_back(mutant);
@@ -70,7 +70,7 @@ auto SimpleEvo::mutate_population(
 
 SimpleEvo::SimpleEvo(double init_mutation_strength)
 {
-    std::ranges::generate(weights_, []() { return Rng::instance()->uniform_real(MIN_WEIGHT, MAX_WEIGHT); });
+    std::ranges::generate(weights_, []() { return Rng::instance().uniform_real(MIN_WEIGHT, MAX_WEIGHT); });
     std::ranges::fill(mutation_strengths_, init_mutation_strength);
 }
 

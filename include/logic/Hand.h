@@ -9,16 +9,14 @@
 class Hand
 {
 private:
-    std::vector<std::unique_ptr<Card>> hand_;
+    std::vector<const Card*> hand_;
 public:
-    void add_cards(std::vector<std::unique_ptr<Card>> cards);
-    void add_cards(std::unique_ptr<Card> card);
-    std::unique_ptr<Card> remove_card(unsigned position);
+    void add_cards(const std::vector<const Card*>& cards);
+    void add_cards(const Card* card);
+    const Card* remove_card(unsigned position);
     unsigned size() const;
-    const std::unique_ptr<Card>& get_card(unsigned position) const;
+    const Card* const& get_card(unsigned position) const;
     Hand();
-    Hand(const Hand& hand);
-    Hand& operator=(Hand&& other) = default;
 };
 
 #endif

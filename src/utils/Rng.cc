@@ -2,11 +2,10 @@
 
 Rng::Rng() {}
 
-Rng* Rng::instance_ = nullptr;
-
-Rng* Rng::instance()
+Rng& Rng::instance()
 {
-    return instance_ ? instance_ : (instance_ = new Rng());
+    static Rng instance;
+    return instance;
 }
 
 void Rng::seed(int seed_nr)

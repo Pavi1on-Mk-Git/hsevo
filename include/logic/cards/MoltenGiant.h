@@ -3,13 +3,15 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct MoltenGiant: public MinionCard
+class MoltenGiant: public MinionCard
 {
+private:
     MoltenGiant(): MinionCard("Molten Giant", 20, 8, 8) {}
-
-    CLONE_CARD
-
+public:
+    static const MoltenGiant instance;
     unsigned mana_cost(const Game& game) const override;
 };
+
+inline const MoltenGiant MoltenGiant::instance;
 
 #endif

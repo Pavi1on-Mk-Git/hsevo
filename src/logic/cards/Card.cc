@@ -2,19 +2,19 @@
 
 #include "logic/Game.h"
 
-Card::Card(std::string_view name, unsigned base_cost): mana_cost_(base_cost), name(name) {}
+Card::Card(const char* name, unsigned base_cost): mana_cost_(base_cost), name(name) {}
 
 unsigned Card::mana_cost(const Game&) const
 {
     return mana_cost_;
 }
 
-std::vector<Game> Card::on_play(Game& game, const std::vector<OnPlayArg>&)
+std::vector<Game> Card::on_play(Game& game, const std::vector<OnPlayArg>&) const
 {
     return {game};
 }
 
-std::vector<std::unique_ptr<PlayCardAction>> Card::create_play_actions(const Game& game, unsigned hand_position)
+std::vector<std::unique_ptr<PlayCardAction>> Card::create_play_actions(const Game& game, unsigned hand_position) const
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 

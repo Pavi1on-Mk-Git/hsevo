@@ -2,7 +2,7 @@
 
 #include "logic/Game.h"
 
-Entity::Entity(std::string_view name, unsigned base_health, const Tribe& tribe):
+Entity::Entity(const char* name, unsigned base_health, const Tribe& tribe):
     name(name), max_health(base_health), health(base_health), tribe(tribe)
 {}
 

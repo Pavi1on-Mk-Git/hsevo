@@ -2,26 +2,22 @@
 
 #include "logic/Game.h"
 
-MinionCard::MinionCard(std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health):
+MinionCard::MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(Tribe::NONE)
 {}
 
 MinionCard::MinionCard(
-    std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health,
-    const MinionKeywords& keywords
-):
-    Card(name, base_cost),
-    base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE)
+    const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords
+): Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE)
 {}
 
 MinionCard::MinionCard(
-    std::string_view name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe
-):
-    Card(name, base_cost),
-    base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe)
+    const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe
+): Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe)
 {}
 
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)
+    const
 {
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 

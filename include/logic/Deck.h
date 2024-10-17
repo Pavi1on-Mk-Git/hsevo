@@ -10,14 +10,12 @@
 class Deck
 {
 private:
-    std::vector<std::unique_ptr<Card>> deck_;
+    std::vector<const Card*> deck_;
 public:
     Deck(const DecklistDeck& decklist);
-    Deck(const Deck& deck);
-    Deck& operator=(Deck&& other) = default;
     void shuffle();
-    std::pair<std::vector<std::unique_ptr<Card>>, unsigned> draw(unsigned amount);
-    std::unique_ptr<Card> draw();
+    std::pair<std::vector<const Card*>, unsigned> draw(unsigned amount);
+    const Card* draw();
 };
 
 #endif

@@ -14,11 +14,11 @@ private:
     unsigned fatigue_dmg_;
 protected:
     Hero(
-        std::string_view name, std::string_view hero_power_name, unsigned hero_power_mana_cost, unsigned base_health,
+        const char* name, const char* hero_power_name, unsigned hero_power_mana_cost, unsigned base_health,
         const Tribe& tribe = Tribe::NONE
     );
 public:
-    std::string hero_power_name;
+    const char* hero_power_name;
     unsigned hero_power_mana_cost;
     bool hero_power_active;
 

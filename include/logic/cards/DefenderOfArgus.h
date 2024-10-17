@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgSelfPlayPositionCard.h"
 
-struct DefenderOfArgus: public SingleArgSelfPlayPositionCard
+class DefenderOfArgus: public SingleArgSelfPlayPositionCard
 {
+private:
     DefenderOfArgus(): SingleArgSelfPlayPositionCard("Defender of Argus", 4, 2, 3) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const DefenderOfArgus instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const DefenderOfArgus DefenderOfArgus::instance;
 
 #endif

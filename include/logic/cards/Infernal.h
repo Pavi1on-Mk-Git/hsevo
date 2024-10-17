@@ -3,11 +3,14 @@
 
 #include "logic/cards/MinionCard.h"
 
-struct Infernal: public MinionCard
+class Infernal: public MinionCard
 {
+private:
     Infernal(): MinionCard("Infernal", 6, 6, 6, Tribe::DEMON) {}
-
-    CLONE_CARD
+public:
+    static const Infernal instance;
 };
+
+inline const Infernal Infernal::instance;
 
 #endif

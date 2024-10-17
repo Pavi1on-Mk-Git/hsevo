@@ -3,13 +3,15 @@
 
 #include "logic/cards/SingleArgTargetCard.h"
 
-struct Soulfire: public SingleArgTargetCard
+class Soulfire: public SingleArgTargetCard
 {
+private:
     Soulfire(): SingleArgTargetCard("Soulfire", 0) {}
-
-    CLONE_CARD
-
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) override;
+public:
+    static const Soulfire instance;
+    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
 };
+
+inline const Soulfire Soulfire::instance;
 
 #endif

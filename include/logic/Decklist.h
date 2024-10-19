@@ -10,10 +10,13 @@ using DecklistDeck = std::vector<std::pair<const Card*, unsigned>>;
 
 struct Decklist
 {
+    const char* name;
     std::unique_ptr<Hero> hero;
     DecklistDeck cards_w_counts;
 
-    Decklist(std::unique_ptr<Hero> hero, DecklistDeck deck): hero(std::move(hero)), cards_w_counts(deck) {}
+    Decklist(const char* name, std::unique_ptr<Hero> hero, DecklistDeck deck):
+        name(name), hero(std::move(hero)), cards_w_counts(deck)
+    {}
 };
 
 #endif

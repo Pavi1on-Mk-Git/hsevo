@@ -27,7 +27,7 @@ Decklist ogre_deck()
     DecklistDeck deck;
     deck.emplace_back(&BoulderfistOgre::instance, 30);
 
-    return Decklist(std::move(hero), std::move(deck));
+    return Decklist("Ogre deck", std::move(hero), std::move(deck));
 }
 
 Decklist handlock()
@@ -53,5 +53,5 @@ Decklist handlock()
     deck.emplace_back(&MountainGiant::instance, 2);
     deck.emplace_back(&MoltenGiant::instance, 2);
 
-    return Decklist(std::move(hero), std::move(deck));
+    return Decklist("Handlock", std::move(hero), std::move(deck));
 }

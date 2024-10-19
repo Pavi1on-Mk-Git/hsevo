@@ -13,6 +13,7 @@ private:
     const Decklist* player_deck_;
     const Decklist* bot_deck_;
     std::vector<raylib::Rectangle> deck_choice_buttons_;
+    std::vector<bool> button_is_highlighted;
 
     void update();
     void draw();

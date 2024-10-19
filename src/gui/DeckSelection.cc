@@ -15,36 +15,40 @@ DeckSelection::DeckSelection(raylib::Window& window, const std::vector<const Dec
         deck_choice_buttons_.emplace_back(0, offset, deck_choice_button_width, deck_choice_button_height);
         offset += deck_choice_button_height;
     }
+
+    button_is_highlighted.resize(decklists_.size());
 }
 
 void DeckSelection::update()
 {
-    if(!IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-        return;
-
-    const raylib::Vector2 click_position = GetMousePosition();
+    const raylib::Vector2 mouse_position = GetMousePosition();
     for(unsigned decklist_id = 0; decklist_id < decklists_.size(); ++decklist_id)
     {
-        if(deck_choice_buttons_.at(decklist_id).CheckCollision(click_position))
+        if(!(button_is_highlighted.at(decklist_id) = deck_choice_buttons_.at(decklist_id).CheckCollision(mouse_position)
+           ))
+            continue;
+
+        if(!IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+            continue;
+
+        if(!player_deck_)
         {
-            if(!player_deck_)
-            {
-                player_deck_ = decklists_.at(decklist_id);
-                break;
-            }
-            else if(!bot_deck_)
-            {
-                bot_deck_ = decklists_.at(decklist_id);
-                break;
-            }
-            else
-                break;
+            player_deck_ = decklists_.at(decklist_id);
+            break;
         }
+        else if(!bot_deck_)
+        {
+            bot_deck_ = decklists_.at(decklist_id);
+            break;
+        }
+        else
+            break;
     }
 }
 
 const raylib::Color DECK_SELECTION_BG_COLOUR = WHITE;
 const raylib::Color DECK_CHOICE_BUTTON_COLOUR = BLACK;
+const raylib::Color HIGHLIGHT_COLOR(0, 158, 47, 128);
 const float DECK_CHOICE_BUTTON_BORDER_THICKNESS = 5.f;
 const unsigned TEXT_HEIGHT_DIVISOR = 2;
 const unsigned TEXT_SPACING_DIVISOR = 10;
@@ -56,6 +60,9 @@ void DeckSelection::draw()
     for(unsigned decklist_id = 0; decklist_id < decklists_.size(); ++decklist_id)
     {
         const raylib::Rectangle& deck_button = deck_choice_buttons_.at(decklist_id);
+
+        if(button_is_highlighted.at(decklist_id))
+            deck_button.Draw(HIGHLIGHT_COLOR);
 
         deck_button.DrawLines(DECK_CHOICE_BUTTON_COLOUR, DECK_CHOICE_BUTTON_BORDER_THICKNESS);
 

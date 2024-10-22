@@ -12,6 +12,7 @@ struct PlayMinionAction: public PlayCardAction
         unsigned hand_position, unsigned card_cost, unsigned board_position, const std::vector<OnPlayArg>& args = {}
     );
     std::vector<Game> apply(Game& game) const;
+    std::deque<GuiElementId> element_sequence() const override;
 };
 
 #endif

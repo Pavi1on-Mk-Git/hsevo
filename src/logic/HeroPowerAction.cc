@@ -8,3 +8,12 @@ std::vector<Game> HeroPowerAction::apply(Game& game) const
 {
     return game.do_action(*this);
 }
+
+std::deque<GuiElementId> HeroPowerAction::element_sequence() const
+{
+    std::deque<GuiElementId> sequence;
+    sequence.emplace_back(GuiElementIdType::HERO_POWER);
+    auto args_sequence = get_element_sequence(args);
+    std::ranges::move(args_sequence, std::back_inserter(sequence));
+    return sequence;
+}

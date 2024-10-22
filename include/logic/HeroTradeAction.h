@@ -9,6 +9,7 @@ struct HeroTradeAction: Action
 
     HeroTradeAction(unsigned position);
     std::vector<Game> apply(Game& game) const;
+    std::deque<GuiElementId> element_sequence() const override;
 };
 
 #endif

@@ -8,7 +8,7 @@
 struct RandomPlayerLogic: PlayerLogic
 {
     RandomPlayerLogic(const Decklist& decklist);
-    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const override;
+    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) override;
 };
 
 #endif

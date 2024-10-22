@@ -14,7 +14,7 @@ public:
     const Decklist& decklist;
 
     virtual ~PlayerLogic() = default;
-    virtual Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const = 0;
+    virtual Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) = 0;
 };
 
 

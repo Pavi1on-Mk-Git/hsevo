@@ -14,6 +14,8 @@ struct EvoPlayerLogic: PlayerLogic
 
     EvoPlayerLogic(const Decklist& decklist, Evo evo): PlayerLogic(decklist), evo(evo) {}
 
+    EvoPlayerLogic(const Decklist& decklist, std::istream& in): PlayerLogic(decklist), evo(in) {}
+
     double add_game_score(double sum, const Game& game) const
     {
         auto inputs = game.get_state().get_evo_input();
@@ -29,7 +31,7 @@ struct EvoPlayerLogic: PlayerLogic
                states.size();
     }
 
-    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const override
+    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) override
     {
         std::vector<std::vector<Game>> states_for_action;
         states_for_action.reserve(actions.size());

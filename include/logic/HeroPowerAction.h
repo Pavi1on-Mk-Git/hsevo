@@ -10,6 +10,7 @@ struct HeroPowerAction: Action
 
     HeroPowerAction(const std::vector<OnPlayArg>& args = {});
     std::vector<Game> apply(Game& game) const;
+    std::deque<GuiElementId> element_sequence() const override;
 };
 
 #endif

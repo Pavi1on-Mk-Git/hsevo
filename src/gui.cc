@@ -1,6 +1,8 @@
+#include <fstream>
 #include <raylib-cpp.hpp>
 
 #include "gui/DeckSelection.h"
+#include "gui/GameGui.h"
 #include "logic/decklists.h"
 
 int main()
@@ -11,5 +13,8 @@ int main()
     const Decklist OGRE_DECK = ogre_deck(), HANDLOCK = handlock();
 
     DeckSelection selection(window, {&OGRE_DECK, &HANDLOCK});
-    selection.run();
+    auto [player_deck, bot_deck] = selection.run();
+    std::ifstream in("results/test.txt");
+    GameGui gui(window, player_deck, bot_deck, in);
+    gui.run();
 }

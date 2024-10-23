@@ -136,7 +136,7 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
                 );
         }
         else
-            for(auto taunt_minion_position: taunt_minion_positions)
+            for(unsigned taunt_minion_position: taunt_minion_positions)
                 attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, taunt_minion_position));
     }
 
@@ -151,7 +151,7 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
                 attack_actions.push_back(std::make_unique<HeroTradeAction>(opponent_board_position));
         }
         else
-            for(auto taunt_minion_position: taunt_minion_positions)
+            for(unsigned taunt_minion_position: taunt_minion_positions)
                 attack_actions.push_back(std::make_unique<HeroTradeAction>(taunt_minion_position));
     }
 

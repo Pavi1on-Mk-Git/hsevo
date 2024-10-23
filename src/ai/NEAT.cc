@@ -2,16 +2,14 @@
 
 #include <algorithm>
 #include <cmath>
-#include <numeric>
+#include <ranges>
 
 #include "utils/Rng.h"
 
 NEAT::NEAT(unsigned size)
 {
     population_.reserve(size);
-    for(unsigned i = 0; i < size; ++i)
-        population_.push_back(Genome());
-
+    std::ranges::generate_n(std::back_inserter(population_), size, [] { return Genome(); });
     networks_.reserve(size);
     scores_.reserve(size);
     adjusted_scores_.resize(size);
@@ -37,18 +35,16 @@ void NEAT::score_networks(ScoringFunc scoring_func)
 
 void NEAT::speciate(double similarity_threshold, double excess_coeff, double disjoint_coeff, double weight_coeff)
 {
-    for(unsigned genome_id = 0; genome_id < population_.size(); ++genome_id)
+    for(auto [genome_id, genome, genome_species]: std::views::zip(std::views::iota(0), population_, genome_to_species_))
     {
-        const auto& genome = population_.at(genome_id);
         bool found_species = false;
-
-        for(unsigned species_id = 0; species_id < representatives_.size(); ++species_id)
+        for(auto [species_id, species, representative]:
+            std::views::zip(std::views::iota(0), species_, representatives_))
         {
-            const auto& representative = representatives_.at(species_id);
             if(genome.similarity(representative, excess_coeff, disjoint_coeff, weight_coeff) < similarity_threshold)
             {
-                species_.at(species_id).push_back(genome_id);
-                genome_to_species_.at(genome_id) = species_id;
+                species.push_back(genome_id);
+                genome_species = species_id;
                 found_species = true;
                 break;
             }
@@ -57,7 +53,7 @@ void NEAT::speciate(double similarity_threshold, double excess_coeff, double dis
         if(!found_species)
         {
             representatives_.push_back(genome);
-            genome_to_species_.at(genome_id) = species_.size();
+            genome_species = species_.size();
             species_.emplace_back(1, genome_id);
             species_score_sums_.push_back(0.);
         }
@@ -66,13 +62,13 @@ void NEAT::speciate(double similarity_threshold, double excess_coeff, double dis
 
 void NEAT::adjust_scores()
 {
-    for(unsigned genome_id = 0; genome_id < population_.size(); ++genome_id)
+    for(auto [genome_species, score, prev_adjusted_score]:
+        std::views::zip(genome_to_species_, scores_, adjusted_scores_))
     {
-        const unsigned species_id = genome_to_species_.at(genome_id);
-        const double adjusted_score = scores_.at(genome_id) / species_.at(species_id).size();
+        const double adjusted_score = score / species_.at(genome_species).size();
 
-        adjusted_scores_.at(genome_id) = adjusted_score;
-        species_score_sums_.at(species_id) += adjusted_score;
+        prev_adjusted_score = adjusted_score;
+        species_score_sums_.at(genome_species) += adjusted_score;
     }
 }
 
@@ -86,13 +82,12 @@ void NEAT::sort_species()
 
 void NEAT::calculate_species_bounds()
 {
-    species_bounds_.resize(species_.size());
+    species_bounds_.reserve(species_.size());
 
-    const double total_score = std::accumulate(species_score_sums_.begin(), species_score_sums_.end(), 0.);
+    const double total_score = *std::ranges::fold_left_first(species_score_sums_, std::plus{});
 
-    for(unsigned species_id = 0; species_id < species_.size(); ++species_id)
-        species_bounds_.at(species_id
-        ) = std::ceil(species_score_sums_.at(species_id) * species_.at(species_id).size() / total_score);
+    for(auto [score_sum, species]: std::views::zip(species_score_sums_, species_))
+        species_bounds_.push_back(std::ceil(score_sum * species.size() / total_score));
 }
 
 std::optional<Genome> NEAT::crossover(
@@ -110,9 +105,9 @@ std::optional<Genome> NEAT::crossover(
 
         if(rng.uniform_real() < interspecies_mating_prob)
         {
-            std::vector<unsigned> alive_species{};
-            for(unsigned alive_species_id = 0; alive_species_id < species_.size(); ++alive_species_id)
-                if(!species_.at(alive_species_id).empty())
+            std::vector<unsigned> alive_species;
+            for(auto [alive_species_id, species]: std::views::enumerate(species_))
+                if(!species.empty())
                     alive_species.push_back(alive_species_id);
 
             const unsigned second_parent_species_id = alive_species.at(rng.uniform_int(0, alive_species.size() - 1));
@@ -147,24 +142,21 @@ void NEAT::offspring(
     double inherit_connection_disabled_prob
 )
 {
-    for(unsigned species_id = 0; species_id < species_.size(); ++species_id)
+    for(auto [species, bound]: std::views::zip(species_, species_bounds_))
     {
-        const Species& species = species_.at(species_id);
         if(species.empty())
             continue;
 
-        const unsigned bound = species_bounds_.at(species_id);
-
-        for(unsigned old_genome_id = 0; old_genome_id < bound; ++old_genome_id)
-            population_.at(species[old_genome_id])
+        for(unsigned old_genome_id: species | std::views::take(bound))
+            population_.at(old_genome_id)
                 .mutate(
                     weight_mutation_prob, add_node_mutation_prob, add_connection_prob, weight_perturbation_prob,
                     mutation_strength
                 );
 
-        for(unsigned new_genome_id = bound; new_genome_id < species.size(); ++new_genome_id)
+        for(unsigned new_genome_id: species | std::views::drop(bound))
         {
-            Genome& to_replace = population_.at(species[new_genome_id]);
+            Genome& to_replace = population_.at(new_genome_id);
 
             auto new_genome = crossover(
                 species, bound, crossover_prob, interspecies_mating_prob, inherit_connection_disabled_prob
@@ -186,14 +178,9 @@ void NEAT::cleanup_species()
     std::vector<Genome> clean_representatives;
     clean_representatives.reserve(species_.size());
 
-    for(unsigned species_id = 0; species_id < species_.size(); ++species_id)
-    {
-        const Species& species = species_.at(species_id);
-        unsigned kept_count = species_bounds_.at(species_id);
-
+    for(auto [species, kept_count]: std::views::zip(species_, species_bounds_))
         if(!species.empty() && kept_count > 0)
-            clean_representatives.push_back(population_.at(species[Rng::instance().uniform_int(0, kept_count - 1)]));
-    }
+            clean_representatives.push_back(population_.at(species.at(Rng::instance().uniform_int(0, kept_count - 1))));
 
     species_.clear();
     species_.resize(clean_representatives.size());

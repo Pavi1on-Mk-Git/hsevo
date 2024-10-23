@@ -4,6 +4,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <cmath>
+#include <ranges>
 
 #include "utils/Rng.h"
 
@@ -83,8 +84,8 @@ SimpleEvo::SimpleEvo(std::istream& in)
 double SimpleEvo::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& input_vec) const
 {
     double score = 0.;
-    for(unsigned i = 0; i < GameStateInput::INPUT_SIZE; ++i)
-        score += weights_.at(i) * input_vec.at(i);
+    for(auto [weight, input]: std::views::zip(weights_, input_vec))
+        score += weight * input;
     return score;
 }
 

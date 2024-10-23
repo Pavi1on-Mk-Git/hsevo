@@ -29,7 +29,7 @@ TEST_CASE("Play cards")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&BoulderfistOgre::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 6;
@@ -128,7 +128,7 @@ TEST_CASE("The Coin")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&Coin::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     SECTION("Normal use")
@@ -155,7 +155,7 @@ TEST_CASE("Sacrificial Pact")
     auto hero = std::make_unique<LordJaraxxus>();
     DecklistDeck deck;
     deck.push_back({&SacrificialPact::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().board.add_minion(Infernal::instance, 0);
@@ -198,7 +198,7 @@ TEST_CASE("Soulfire")
         DecklistDeck deck;
         deck.push_back({&Soulfire::instance, 1});
         deck.push_back({&BoulderfistOgre::instance, 5});
-        Decklist decklist(std::move(hero), std::move(deck));
+        Decklist decklist("Test", std::move(hero), std::move(deck));
         Game game(decklist, decklist);
 
         game.draw(3);
@@ -257,7 +257,7 @@ TEST_CASE("Soulfire")
         auto hero = std::make_unique<GulDan>();
         DecklistDeck deck;
         deck.push_back({&Soulfire::instance, 1});
-        Decklist decklist(std::move(hero), std::move(deck));
+        Decklist decklist("Test", std::move(hero), std::move(deck));
         Game game(decklist, decklist);
 
         auto actions = game.get_possible_actions();
@@ -271,7 +271,7 @@ TEST_CASE("Mortal Coil")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&MortalCoil::instance, 5});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 1;
@@ -328,7 +328,7 @@ TEST_CASE("Power Overwhelming")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&PowerOverwhelming::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
@@ -354,7 +354,7 @@ TEST_CASE("Sunfury Protector")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&SunfuryProtector::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
@@ -394,7 +394,7 @@ TEST_CASE("Earthen Ring Farseer")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&EarthenRingFarseer::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 3;
@@ -441,7 +441,7 @@ TEST_CASE("Defender of Argus")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&DefenderOfArgus::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
@@ -508,7 +508,7 @@ TEST_CASE("Hellfire")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&Hellfire::instance, 5});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 4;
@@ -536,7 +536,7 @@ TEST_CASE("Leeroy Jenkins")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&LeeroyJenkins::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 5;
@@ -552,7 +552,7 @@ TEST_CASE("Shadowflame")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&Shadowflame::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 4;
@@ -574,7 +574,7 @@ TEST_CASE("Twilight Drake")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&TwilightDrake::instance, 5});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 4;
@@ -605,7 +605,7 @@ TEST_CASE("Faceless Manipulator")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&FacelessManipulator::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 5;
@@ -642,7 +642,7 @@ TEST_CASE("Siphon Soul")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&SiphonSoul::instance, 1});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 6;
@@ -676,7 +676,7 @@ TEST_CASE("Mountain Giant")
     DecklistDeck deck;
     deck.push_back({&MountainGiant::instance, 1});
     deck.push_back({&BoulderfistOgre::instance, 9});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 3;
@@ -694,7 +694,7 @@ TEST_CASE("Molten Giant")
     DecklistDeck deck;
     deck.push_back({&MoltenGiant::instance, 1});
     deck.push_back({&BoulderfistOgre::instance, 2});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     REQUIRE(game.get_possible_actions().size() == 1);
@@ -709,7 +709,7 @@ TEST_CASE("Lord Jaraxxus")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&LordJaraxxusCard::instance, 4});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.current_player().mana = 9;

@@ -24,9 +24,8 @@ struct EvoPlayerLogic: PlayerLogic
 
     double average_of_states(const std::vector<Game>& states) const
     {
-        return std::accumulate(
-                   states.begin(), states.end(), 0.,
-                   [this](double sum, const Game& game) { return add_game_score(sum, game); }
+        return std::ranges::fold_left(
+                   states, 0., [this](double sum, const Game& game) { return add_game_score(sum, game); }
                ) /
                states.size();
     }

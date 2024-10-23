@@ -1,5 +1,7 @@
 #include "ai/Genome.h"
 
+#include <algorithm>
+
 #include "ai/GameStateInput.h"
 #include "utils/Rng.h"
 

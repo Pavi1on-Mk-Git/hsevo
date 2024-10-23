@@ -3,8 +3,8 @@ project(hsevo)
 
 include_directories(include)
 
-set(COMMON_FLAGS -std=c++20 -Wall -Werror -Wextra -Wpedantic)
-set(DEBUG_FLAGS ${COMMON_FLAGS} -Og -g -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+set(COMMON_FLAGS -std=c++23 -Wall -Werror -Wextra -Wpedantic)
+set(DEBUG_FLAGS ${COMMON_FLAGS} -Og -g)
 set(OPTIMIZED_FLAGS ${COMMON_FLAGS} -O3 -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_OFF)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -19,23 +19,23 @@ file(GLOB_RECURSE PLAYERS_SOURCES CONFIGURE_DEPENDS "src/players/*.cc")
 file(GLOB_RECURSE UTILS_SOURCES CONFIGURE_DEPENDS "src/utils/*.cc")
 
 add_executable(hsevo ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/main.cc")
-target_compile_options(hsevo PRIVATE ${DEBUG_FLAGS})
+target_compile_options(hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
 
 add_executable(profile_hsevo ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/main.cc")
-target_compile_options(profile_hsevo PRIVATE ${DEBUG_FLAGS} -pg)
+target_compile_options(profile_hsevo PRIVATE ${OPTIMIZED_FLAGS} -pg)
 target_link_options(profile_hsevo PRIVATE -pg)
 
 add_executable(experiment_hsevo ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/run_experiment.cc")
 target_compile_options(experiment_hsevo PRIVATE ${OPTIMIZED_FLAGS})
 
 add_executable(gui_hsevo ${AI_SOURCES} ${GUI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/gui.cc")
-target_compile_options(gui_hsevo PRIVATE ${DEBUG_FLAGS})
+target_compile_options(gui_hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
 
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "test/*.cc" ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES})
 
 
 add_executable(test_hsevo ${TEST_SOURCES})
-target_compile_options(test_hsevo PRIVATE ${DEBUG_FLAGS} --coverage)
+target_compile_options(test_hsevo PRIVATE ${DEBUG_FLAGS} --coverage -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_OFF)
 target_link_options(test_hsevo PRIVATE --coverage)
 
 find_package(Catch2 3 REQUIRED)

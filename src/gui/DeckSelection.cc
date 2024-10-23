@@ -1,6 +1,7 @@
 #include "gui/DeckSelection.h"
 
 #include <algorithm>
+#include <ranges>
 
 DeckSelection::DeckSelection(raylib::Window& window, const std::vector<const Decklist*>& decklists):
     window_(window), decklists_(decklists), player_deck_(nullptr), bot_deck_(nullptr)
@@ -22,10 +23,10 @@ DeckSelection::DeckSelection(raylib::Window& window, const std::vector<const Dec
 void DeckSelection::update()
 {
     const raylib::Vector2 mouse_position = GetMousePosition();
-    for(unsigned decklist_id = 0; decklist_id < decklists_.size(); ++decklist_id)
+    for(auto [decklist, button, is_highlighted]:
+        std::views::zip(decklists_, deck_choice_buttons_, button_is_highlighted))
     {
-        if(!(button_is_highlighted.at(decklist_id) = deck_choice_buttons_.at(decklist_id).CheckCollision(mouse_position)
-           ))
+        if(!(is_highlighted = button.CheckCollision(mouse_position)))
             continue;
 
         if(!IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
@@ -33,12 +34,12 @@ void DeckSelection::update()
 
         if(!player_deck_)
         {
-            player_deck_ = decklists_.at(decklist_id);
+            player_deck_ = decklist;
             break;
         }
         else if(!bot_deck_)
         {
-            bot_deck_ = decklists_.at(decklist_id);
+            bot_deck_ = decklist;
             break;
         }
         else
@@ -57,11 +58,12 @@ void DeckSelection::draw()
 {
     window_.BeginDrawing();
     window_.ClearBackground(DECK_SELECTION_BG_COLOUR);
-    for(unsigned decklist_id = 0; decklist_id < decklists_.size(); ++decklist_id)
+    for(auto [decklist_id, decklist, is_highlighted]:
+        std::views::zip(std::views::iota(0), decklists_, button_is_highlighted))
     {
         const raylib::Rectangle& deck_button = deck_choice_buttons_.at(decklist_id);
 
-        if(button_is_highlighted.at(decklist_id))
+        if(is_highlighted)
             deck_button.Draw(HIGHLIGHT_COLOR);
 
         deck_button.DrawLines(DECK_CHOICE_BUTTON_COLOUR, DECK_CHOICE_BUTTON_BORDER_THICKNESS);
@@ -69,9 +71,7 @@ void DeckSelection::draw()
         const unsigned text_height = deck_button.GetHeight() / TEXT_HEIGHT_DIVISOR;
         const unsigned text_spacing = text_height / TEXT_SPACING_DIVISOR;
 
-        const raylib::Text text(
-            decklists_.at(decklist_id)->name, text_height, DECK_CHOICE_BUTTON_COLOUR, GetFontDefault(), text_spacing
-        );
+        const raylib::Text text(decklist->name, text_height, DECK_CHOICE_BUTTON_COLOUR, GetFontDefault(), text_spacing);
 
         const unsigned text_width = text.Measure();
 

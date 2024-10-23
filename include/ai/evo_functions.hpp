@@ -1,6 +1,7 @@
 #ifndef EVO_FUNCTIONS_HPP
 #define EVO_FUNCTIONS_HPP
 
+#include <ranges>
 #include <vector>
 
 #include "logic/Decklist.h"
@@ -15,26 +16,30 @@ std::vector<unsigned> score_member(const std::vector<Evo>& population, const Dec
     std::vector<std::unique_ptr<PlayerLogic>> players;
     players.reserve(population.size());
 
+
     for(const auto& member: population)
         players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
 
-    for(unsigned i = 0; i < players.size(); ++i)
-    {
-        for(unsigned j = 0; j < players.size(); ++j)
-        {
-            auto winner = run_game(players.at(i), players.at(j));
+    auto players_n_scores = std::views::zip(players, scores);
 
-            switch(winner)
-            {
-            case GameResult::PLAYER_1:
-                scores.at(i)++;
-                break;
-            case GameResult::PLAYER_2:
-                scores.at(j)++;
-                break;
-            default:
-                break;
-            }
+    for(auto [first_player, first_player_score, second_player, second_player_score]:
+        std::views::cartesian_product(players_n_scores, players_n_scores) |
+            std::views::transform([](const auto& pair_of_pairs) {
+                return std::tuple_cat(pair_of_pairs.first, pair_of_pairs.second);
+            }))
+    {
+        auto winner = run_game(first_player, second_player);
+
+        switch(winner)
+        {
+        case GameResult::PLAYER_1:
+            first_player_score++;
+            break;
+        case GameResult::PLAYER_2:
+            second_player_score++;
+            break;
+        default:
+            break;
         }
     }
     return scores;

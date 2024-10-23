@@ -48,7 +48,7 @@ TEST_CASE("Fatigue")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&BoulderfistOgre::instance, 4});
-    Decklist decklist(std::move(hero), std::move(deck));
+    Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
     game.draw(3);

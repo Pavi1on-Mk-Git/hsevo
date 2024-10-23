@@ -7,8 +7,8 @@ std::array<std::array<double, GameStateInput::INPUT_SIZE>, 2> GameStateInput::ge
     std::array<std::array<double, INPUT_SIZE>, 2> result;
     std::ranges::transform(players, result.begin(), [](const HeroInput& player) {
         std::array<double, INPUT_SIZE> result_element;
-        unsigned result_element_index = 0;
-        auto add_to_element = [&](double value) { result_element.at(result_element_index++) = value; };
+        auto result_element_it = result_element.begin();
+        auto add_to_element = [&](double value) { *result_element_it++ = value; };
 
         add_to_element(player.hero.health);
         add_to_element(player.hero.can_attack);

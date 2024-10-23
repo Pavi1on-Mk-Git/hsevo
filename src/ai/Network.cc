@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include <numeric>
+#include <ranges>
 
 Network::Network(const Genome& genome, const ActivationFunc& activation): activation_(activation)
 {
@@ -33,12 +33,12 @@ double Network::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& 
 
     node_values.at(0) = 1;
 
-    for(unsigned node_id = 1; node_id <= GameStateInput::INPUT_SIZE; ++node_id)
-        node_values.at(node_id) = input_vec.at(node_id - 1);
+    std::ranges::copy(input_vec, node_values.begin() + 1);
 
-    for(unsigned node_id = GameStateInput::INPUT_SIZE + 1; node_id < nodes_.size(); ++node_id)
-        node_values.at(node_id) = activation_(std::accumulate(
-            in_connections_.at(node_id).begin(), in_connections_.at(node_id).end(), 0.,
+    for(auto [node_value, in_connections]:
+        std::views::zip(node_values, in_connections_) | std::views::drop(GameStateInput::INPUT_SIZE + 1))
+        node_value = activation_(std::ranges::fold_left(
+            in_connections, 0.,
             [&node_values](double init, const auto& connection) {
                 return init + node_values.at(connection.first) * connection.second;
             }

@@ -10,7 +10,7 @@ class GuiPlayerLogic: public PlayerLogic
 {
 private:
     GameGui& gui_;
-    std::deque<GuiElementId> click_sequence;
+    std::deque<GuiElementId> click_sequence_;
 public:
     GuiPlayerLogic(const Decklist& decklist, GameGui& gui);
     Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) override;

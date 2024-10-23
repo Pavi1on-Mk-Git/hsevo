@@ -1,5 +1,6 @@
 #include "gui/GameGui.h"
 
+#include <ranges>
 #include <raylib.h>
 #include <tuple>
 
@@ -7,6 +8,22 @@
 #include "gui/GuiPlayerLogic.h"
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
+
+raylib::Rectangle GameGui::scale(const raylib::Rectangle& original, bool reflect)
+{
+    raylib::Rectangle scaled = original;
+    if(reflect)
+        scaled.y = 1.f - original.y - original.height;
+
+    const auto [width_scale, height_scale] = window_.GetSize();
+
+    scaled.x *= width_scale;
+    scaled.y *= height_scale;
+    scaled.width *= width_scale;
+    scaled.height *= height_scale;
+
+    return scaled;
+}
 
 void GameGui::update()
 {
@@ -54,9 +71,82 @@ void GameGui::update_begin_turn()
     is_turn_started_ = true;
 }
 
-GuiElementId GameGui::mouse_position()
+const std::vector<std::tuple<raylib::Rectangle, GuiElementIdType, unsigned>> area_to_element = {
+    {
+        {0.f, 0.f, 0.25f, 0.4f},
+        GuiElementIdType::HERO,
+        1,
+    },
+    {
+        {0.125f, 0.4f, 0.125f, 0.1f},
+        GuiElementIdType::HERO_POWER,
+        1,
+    },
+    {
+        {0.25f, 0.f, 0.65f, 0.25f},
+        GuiElementIdType::CARD,
+        Board::MAX_BOARD_SIZE,
+    },
+    {
+        {0.25f, 0.25f, 0.65f, 0.25f},
+        GuiElementIdType::MINION,
+        Hand::MAX_HAND_SIZE,
+    },
+    {
+        {0.8f, 0.45f, 0.2f, 0.05f},
+        GuiElementIdType::EOT_BUTTON,
+        1,
+    },
+};
+
+std::optional<GuiElementId> GameGui::mouse_position()
 {
-    return GuiElementIdType::EOT_BUTTON;
+    const auto position = GetMousePosition();
+
+    std::optional<GuiElementIdType> element_type;
+    bool player_side = false;
+    std::optional<unsigned> element_id;
+
+    auto get_type_and_id = [&](const raylib::Rectangle& scaled, const GuiElementIdType& element, unsigned count) {
+        element_type = element;
+        element_id = std::floor(count * (position.x - scaled.x) / scaled.width);
+    };
+
+    auto check_areas = [&] {
+        for(const auto& [area, element, count]: area_to_element)
+        {
+            auto scaled = scale(area, player_side);
+            if(scaled.CheckCollision(position))
+            {
+                get_type_and_id(scaled, element, count);
+                break;
+            }
+        }
+    };
+
+    check_areas();
+
+    if(!element_type)
+    {
+        player_side = true;
+        check_areas();
+    }
+
+    if(!element_type)
+        return std::nullopt;
+
+    using enum GuiElementIdType;
+    switch(*element_type)
+    {
+    case HERO:
+    case HERO_POWER:
+        return std::make_pair(*element_type, player_side);
+    case CARD:
+    case MINION:
+        return std::make_tuple(*element_type, player_side, *element_id);
+    default:
+        return *element_type;
+    }
 }
 
 void GameGui::draw()
@@ -103,19 +193,14 @@ std::vector<std::deque<GuiElementId>> GameGui::actions_to_elements(
     for(const auto& action: actions)
     {
         std::deque<GuiElementId> gui_elements = action->element_sequence();
-        bool is_prefix = true;
-        for(const auto& element: clicked_elements)
-        {
-            if(gui_elements.front() == element)
-                gui_elements.pop_front();
-            else
-            {
-                is_prefix = false;
-                break;
-            }
-        }
-        if(is_prefix)
-            element_sequences.push_back(gui_elements);
+
+        if((gui_elements.size() < clicked_elements.size()) ||
+           !std::ranges::all_of(std::views::zip(gui_elements, clicked_elements), [](const auto& expected_and_clicked) {
+               return expected_and_clicked.first == expected_and_clicked.second;
+           }))
+            element_sequences.emplace_back();
+        else
+            element_sequences.emplace_back(gui_elements.begin() + clicked_elements.size(), gui_elements.end());
     }
 
     return element_sequences;

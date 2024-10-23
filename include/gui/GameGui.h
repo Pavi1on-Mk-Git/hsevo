@@ -19,9 +19,9 @@ private:
     std::optional<GameResult> winner_;
     unsigned current_turn_;
 
+    raylib::Rectangle scale(const raylib::Rectangle& original, bool reflect);
     void update();
     void update_begin_turn();
-    GuiElementId mouse_position();
     void draw();
     // void draw_hero(const Hero& hero, bool is_player_side);
     // void draw_minion(const Minion& minion, bool is_player_side);
@@ -31,6 +31,7 @@ private:
 public:
     GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in);
     GameResult run();
+    std::optional<GuiElementId> mouse_position();
     static std::vector<std::deque<GuiElementId>> actions_to_elements(
         const std::vector<std::unique_ptr<Action>>& actions, const std::deque<GuiElementId>& clicked_elements
     );

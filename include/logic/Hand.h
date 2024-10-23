@@ -11,6 +11,7 @@ class Hand
 private:
     std::vector<const Card*> hand_;
 public:
+    static constexpr unsigned MAX_HAND_SIZE = 10;
     void add_cards(const std::vector<const Card*>& cards);
     void add_cards(const Card* card);
     const Card* remove_card(unsigned position);

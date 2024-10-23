@@ -15,7 +15,7 @@ std::deque<GuiElementId> PlaySpellAction::element_sequence() const
 {
     using enum GuiElementIdType;
     std::deque<GuiElementId> sequence;
-    sequence.push_back(std::make_pair(CARD, hand_position));
+    sequence.push_back(std::make_tuple(CARD, true, hand_position));
     auto args_sequence = get_element_sequence(args);
     std::ranges::move(args_sequence, std::back_inserter(sequence));
     return sequence;

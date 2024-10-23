@@ -2,8 +2,6 @@
 
 #include <algorithm>
 
-static const unsigned MAX_HAND_SIZE = 10;
-
 Hand::Hand()
 {
     hand_.reserve(MAX_HAND_SIZE);

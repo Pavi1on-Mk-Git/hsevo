@@ -7,6 +7,7 @@
 #include "ai/Network.hpp"
 #include "gui/GuiPlayerLogic.h"
 #include "gui/HeroElement.h"
+#include "gui/HeroPowerElement.h"
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
 
@@ -108,6 +109,9 @@ GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Deck
     for(bool is_player_side: {false, true})
     {
         elements_.push_back(std::make_unique<HeroElement>(*this, 0.f, 0.f, HERO_WIDTH, HERO_HEIGHT, is_player_side));
+        elements_.push_back(std::make_unique<HeroPowerElement>(
+            *this, HERO_POWER_LEN, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side
+        ));
     }
 }
 

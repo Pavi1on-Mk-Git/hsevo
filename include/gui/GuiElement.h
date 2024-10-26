@@ -11,13 +11,14 @@ struct GameGui;
 class GuiElement
 {
 protected:
-    static const raylib::Color TEXT_COLOUR, ACTIVE_COLOUR;
+    static const raylib::Color TEXT_COLOUR, ACTIVE_COLOUR, INACTIVE_COLOUR, BG_COLOUR;
     static constexpr unsigned SPACING_DIVISOR = 10;
     static constexpr float BORDER_THICKNESS = 5.f;
     const GameGui& gui_;
     bool is_player_side_;
 
     GuiElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side);
+    void draw_centered_text(const std::string& text, float text_height_ratio) const;
 public:
     raylib::Rectangle base_area;
     bool is_active;

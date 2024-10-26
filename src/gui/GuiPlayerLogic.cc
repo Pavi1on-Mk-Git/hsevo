@@ -4,6 +4,7 @@
 #include <raylib-cpp.hpp>
 
 #include "gui/GameGui.h"
+#include "gui/utils.h"
 #include "logic/Game.h"
 #include "utils/Rng.h"
 
@@ -11,15 +12,15 @@ GuiPlayerLogic::GuiPlayerLogic(const Decklist& decklist, GameGui& gui): PlayerLo
 
 Game GuiPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions)
 {
+    auto potential_sequences = actions_to_elements(actions, click_sequence_);
+
     if(!IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
         return game;
 
-    auto clicked_element = gui_.mouse_position();
+    auto clicked_element = gui_.clicked_element();
 
     if(!clicked_element)
         click_sequence_.clear();
-
-    auto potential_sequences = GameGui::actions_to_elements(actions, click_sequence_);
 
     auto matching_sequence = std::ranges::find_if(potential_sequences, [&clicked_element](const auto& sequence) {
         return !sequence.empty() && (sequence.front() == *clicked_element);

@@ -1,14 +1,15 @@
 #ifndef GAME_GUI_H
 #define GAME_GUI_H
 
-#include <deque>
 #include <raylib-cpp.hpp>
 
+#include "gui/GuiElement.h"
 #include "logic/Game.h"
 #include "players/PlayerLogic.h"
 #include "utils/GuiElementId.h"
 
 class GameGui
+
 {
 private:
     raylib::Window& window_;
@@ -18,23 +19,17 @@ private:
     Game game_;
     std::optional<GameResult> winner_;
     unsigned current_turn_;
+    std::vector<std::unique_ptr<GuiElement>> elements_;
 
-    raylib::Rectangle scale(const raylib::Rectangle& original, bool reflect);
     void update();
     void update_begin_turn();
     void draw();
-    // void draw_hero(const Hero& hero, bool is_player_side);
-    // void draw_minion(const Minion& minion, bool is_player_side);
-    // void draw_card(const Card* const& card, bool is_player_side);
-    // void draw_deck(unsigned size, bool is_player_side);
-    // void draw_eot_button();
 public:
     GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in);
     GameResult run();
-    std::optional<GuiElementId> mouse_position();
-    static std::vector<std::deque<GuiElementId>> actions_to_elements(
-        const std::vector<std::unique_ptr<Action>>& actions, const std::deque<GuiElementId>& clicked_elements
-    );
+    bool is_player_turn() const;
+    raylib::Rectangle scale(const raylib::Rectangle& original) const;
+    std::optional<GuiElementId> clicked_element() const;
 };
 
 #endif

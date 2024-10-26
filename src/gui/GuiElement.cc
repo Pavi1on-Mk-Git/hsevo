@@ -1,5 +1,7 @@
 #include "gui/GuiElement.h"
 
+#include <ranges>
+
 #include "gui/GameGui.h"
 #include "gui/utils.h"
 
@@ -11,18 +13,34 @@ GuiElement::GuiElement(const GameGui& gui, float x, float y, float width, float 
     is_active(false)
 {}
 
-void GuiElement::draw_centered_text(const std::string& text, float text_height_ratio) const
+void GuiElement::draw_text(
+    const std::string& txt, float text_height, const raylib::Rectangle& scaled, float offset_multiplier
+) const
+{
+    auto text_obj = raylib::Text(txt, text_height, TEXT_COLOUR, GetFontDefault(), text_height / SPACING_DIVISOR);
+
+    text_obj.Draw(
+        scaled.GetPosition() + center_offset(scaled.GetSize(), {static_cast<float>(text_obj.Measure()), text_height}) +
+        raylib::Vector2{0.f, offset_multiplier * text_height}
+    );
+}
+
+void GuiElement::draw_centered_text(const std::string& text, float text_height_ratio, bool split_lines) const
 {
     const auto scaled = gui_.scale(base_area);
     const auto text_height = text_height_ratio * scaled.height;
 
-    raylib::Text text_obj(text, text_height, TEXT_COLOUR, GetFontDefault(), text_height / SPACING_DIVISOR);
-
     scaled.Draw(BG_COLOUR);
-
     scaled.DrawLines(is_active ? ACTIVE_COLOUR : INACTIVE_COLOUR, BORDER_THICKNESS);
 
-    text_obj.Draw(
-        scaled.GetPosition() + center_offset(scaled.GetSize(), {static_cast<float>(text_obj.Measure()), text_height})
-    );
+    if(split_lines)
+    {
+        auto split_text = std::views::split(text, ' ');
+        const float word_count = std::ranges::distance(split_text);
+
+        for(auto [id, range]: std::views::enumerate(split_text))
+            draw_text(std::string(range.begin(), range.end()), text_height, scaled, word_count / -2 + 0.5f + id);
+    }
+    else
+        draw_text(text, text_height, scaled);
 }

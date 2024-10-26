@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "ai/Network.hpp"
+#include "gui/CardElement.h"
 #include "gui/GuiPlayerLogic.h"
 #include "gui/HeroElement.h"
 #include "gui/HeroPowerElement.h"
@@ -112,6 +113,11 @@ GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Deck
         elements_.push_back(std::make_unique<HeroPowerElement>(
             *this, HERO_POWER_LEN, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side
         ));
+
+        for(unsigned hand_id = 0; hand_id < Hand::MAX_HAND_SIZE; ++hand_id)
+            elements_.push_back(std::make_unique<CardElement>(
+                *this, HERO_WIDTH + CARD_WIDTH * hand_id, 0.f, CARD_WIDTH, ENTITY_HEIGHT, is_player_side, hand_id
+            ));
     }
 }
 

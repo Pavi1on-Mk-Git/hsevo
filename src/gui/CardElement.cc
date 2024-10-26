@@ -17,18 +17,12 @@ static const float CARD_HEIGHT_RATIO = 0.06f;
 
 void CardElement::draw(const Game& game) const
 {
-    const auto& hand = gui_.is_player_turn() ? game.current_player().hand : game.opponent().hand;
+    const auto& hand = to_draw(game).hand;
 
     if(position_ >= hand.size())
-    {
-        gui_.scale(base_area).Draw(BG_COLOUR);
-        gui_.scale(base_area).DrawLines(INACTIVE_COLOUR, BORDER_THICKNESS);
-    }
+        draw_empty();
     else if(!is_player_side_)
-    {
-        gui_.scale(base_area).Draw(DARKBLUE);
-        gui_.scale(base_area).DrawLines(INACTIVE_COLOUR, BORDER_THICKNESS);
-    }
+        draw_empty(DARKBLUE);
     else
         draw_centered_text(hand.get_card(position_)->name, CARD_HEIGHT_RATIO, true);
 }

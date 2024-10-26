@@ -22,7 +22,9 @@ protected:
     bool is_player_side_;
 
     GuiElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side);
+    void draw_empty(const raylib::Color& background_colour = BG_COLOUR) const;
     void draw_centered_text(const std::string& text, float text_height_ratio, bool split_lines = false) const;
+    const Player& to_draw(const Game& game) const;
 public:
     raylib::Rectangle base_area;
     bool is_active;

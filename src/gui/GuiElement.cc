@@ -25,6 +25,12 @@ void GuiElement::draw_text(
     );
 }
 
+void GuiElement::draw_empty(const raylib::Color& background_colour) const
+{
+    gui_.scale(base_area).Draw(background_colour);
+    gui_.scale(base_area).DrawLines(INACTIVE_COLOUR, BORDER_THICKNESS);
+}
+
 void GuiElement::draw_centered_text(const std::string& text, float text_height_ratio, bool split_lines) const
 {
     const auto scaled = gui_.scale(base_area);
@@ -43,4 +49,9 @@ void GuiElement::draw_centered_text(const std::string& text, float text_height_r
     }
     else
         draw_text(text, text_height, scaled);
+}
+
+const Player& GuiElement::to_draw(const Game& game) const
+{
+    return (gui_.is_player_turn() == is_player_side_) ? game.current_player() : game.opponent();
 }

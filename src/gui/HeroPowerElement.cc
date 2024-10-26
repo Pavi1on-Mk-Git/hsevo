@@ -16,7 +16,7 @@ static const float HERO_POWER_TEXT_HEIGHT_RATIO = 0.25f;
 
 void HeroPowerElement::draw(const Game& game) const
 {
-    const auto& hero = gui_.is_player_turn() ? game.current_player().hero : game.opponent().hero;
+    const auto& hero = to_draw(game).hero;
 
     draw_centered_text(hero->hero_power_name, HERO_POWER_TEXT_HEIGHT_RATIO);
 }

@@ -15,7 +15,7 @@ static const float HERO_TEXT_HEIGHT_RATIO = 0.2f;
 
 void HeroElement::draw(const Game& game) const
 {
-    const auto& hero = gui_.is_player_turn() ? game.current_player().hero : game.opponent().hero;
+    const auto& hero = to_draw(game).hero;
 
     draw_centered_text(hero->name, HERO_TEXT_HEIGHT_RATIO);
 }

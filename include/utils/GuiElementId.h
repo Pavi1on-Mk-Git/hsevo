@@ -10,13 +10,14 @@ enum class GuiElementIdType
     HERO_POWER,
     MINION,
     CARD,
-    EOT_BUTTON
+    EOT_BUTTON,
+    OTHER,
 };
 
-using GuiElementIdRegular = std::pair<GuiElementIdType, bool>;
+using GuiElementIdSided = std::pair<GuiElementIdType, bool>;
 using GuiElementIdWithPosition = std::tuple<GuiElementIdType, bool, unsigned>;
-using GuiElementEOT = GuiElementIdType;
+using GuiElementIdRegular = GuiElementIdType;
 
-using GuiElementId = std::variant<GuiElementIdRegular, GuiElementIdWithPosition, GuiElementEOT>;
+using GuiElementId = std::variant<GuiElementIdSided, GuiElementIdWithPosition, GuiElementIdRegular>;
 
 #endif

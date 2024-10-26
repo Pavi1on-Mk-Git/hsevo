@@ -1,12 +1,16 @@
+#include <chrono>
 #include <fstream>
 #include <raylib-cpp.hpp>
 
 #include "gui/DeckSelection.h"
 #include "gui/GameGui.h"
 #include "logic/decklists.h"
+#include "utils/Rng.h"
 
 int main()
 {
+    Rng::instance().seed(std::chrono::system_clock::now().time_since_epoch().count());
+
     raylib::Window window(1280, 720);
     window.SetTargetFPS(60);
 

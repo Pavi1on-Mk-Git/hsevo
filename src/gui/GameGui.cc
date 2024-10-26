@@ -9,6 +9,7 @@
 #include "gui/GuiPlayerLogic.h"
 #include "gui/HeroElement.h"
 #include "gui/HeroPowerElement.h"
+#include "gui/WeaponElement.h"
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
 
@@ -113,6 +114,9 @@ GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Deck
         elements_.push_back(std::make_unique<HeroPowerElement>(
             *this, HERO_POWER_LEN, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side
         ));
+        elements_.push_back(
+            std::make_unique<WeaponElement>(*this, 0.f, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side)
+        );
 
         for(unsigned hand_id = 0; hand_id < Hand::MAX_HAND_SIZE; ++hand_id)
             elements_.push_back(std::make_unique<CardElement>(

@@ -1,6 +1,7 @@
 #include <chrono>
 #include <fstream>
 #include <raylib-cpp.hpp>
+#include <spdlog/spdlog.h>
 
 #include "gui/DeckSelection.h"
 #include "gui/GameGui.h"
@@ -9,7 +10,10 @@
 
 int main()
 {
-    Rng::instance().seed(std::chrono::system_clock::now().time_since_epoch().count());
+    const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    Rng::instance().seed(seed);
+    SPDLOG_DEBUG("Game played with seed: {}", seed);
+
     raylib::Window window(1280, 720);
     window.SetTargetFPS(60);
 

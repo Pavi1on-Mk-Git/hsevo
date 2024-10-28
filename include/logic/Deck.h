@@ -16,6 +16,7 @@ public:
     void shuffle();
     std::pair<std::vector<const Card*>, unsigned> draw(unsigned amount);
     const Card* draw();
+    unsigned size() const;
 };
 
 #endif

@@ -15,7 +15,7 @@ private:
         const std::string& txt, float text_height, const raylib::Rectangle& scaled, float offset_multiplier = 0.f
     ) const;
 protected:
-    static const raylib::Color TEXT_COLOUR, ACTIVE_COLOUR, INACTIVE_COLOUR, BG_COLOUR;
+    static const raylib::Color TEXT_COLOUR, ACTIVE_COLOUR, INACTIVE_COLOUR, BG_COLOUR, CARD_REVERSE_COLOUR;
     static constexpr unsigned SPACING_DIVISOR = 10;
     static constexpr float BORDER_THICKNESS = 3.f;
     const GameGui& gui_;

@@ -6,9 +6,12 @@
 
 #include "ai/Network.hpp"
 #include "gui/CardElement.h"
+#include "gui/DeckElement.h"
+#include "gui/EOTElement.h"
 #include "gui/GuiPlayerLogic.h"
 #include "gui/HeroElement.h"
 #include "gui/HeroPowerElement.h"
+#include "gui/MinionElement.h"
 #include "gui/WeaponElement.h"
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
@@ -101,7 +104,7 @@ void GameGui::draw()
 const float HERO_WIDTH = 0.2f, HERO_HEIGHT = 0.4f, HERO_POWER_LEN = 0.1f, ENTITY_HEIGHT = 0.25f,
             ALL_ENTITIES_WIDTH = 0.6f, CARD_WIDTH = ALL_ENTITIES_WIDTH / Hand::MAX_HAND_SIZE,
             MINION_WIDTH = ALL_ENTITIES_WIDTH / Board::MAX_BOARD_SIZE, EOT_HEIGHT = 0.1f,
-            EOT_WIDTH = 1 - HERO_WIDTH - ALL_ENTITIES_WIDTH;
+            EOT_WIDTH = 1 - HERO_WIDTH - ALL_ENTITIES_WIDTH, DECK_HEIGHT = (1.f - EOT_HEIGHT) / 2;
 
 GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in):
     window_(window), is_bot_first_(Rng::instance().uniform_int(0, 1)), is_turn_started_(false),
@@ -122,7 +125,20 @@ GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Deck
             elements_.push_back(std::make_unique<CardElement>(
                 *this, HERO_WIDTH + CARD_WIDTH * hand_id, 0.f, CARD_WIDTH, ENTITY_HEIGHT, is_player_side, hand_id
             ));
+
+        for(unsigned board_id = 0; board_id < Board::MAX_BOARD_SIZE; ++board_id)
+            elements_.push_back(std::make_unique<MinionElement>(
+                *this, HERO_WIDTH + MINION_WIDTH * board_id, ENTITY_HEIGHT, MINION_WIDTH, ENTITY_HEIGHT, is_player_side,
+                board_id
+            ));
+
+        elements_.push_back(std::make_unique<DeckElement>(
+            *this, HERO_WIDTH + ALL_ENTITIES_WIDTH, 0.f, EOT_WIDTH, DECK_HEIGHT, is_player_side
+        ));
     }
+    elements_.push_back(
+        std::make_unique<EOTElement>(*this, HERO_WIDTH + ALL_ENTITIES_WIDTH, DECK_HEIGHT, EOT_WIDTH, EOT_HEIGHT)
+    );
 }
 
 GameResult GameGui::run()

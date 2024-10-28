@@ -6,7 +6,8 @@
 #include "gui/utils.h"
 
 const raylib::Color GuiElement::TEXT_COLOUR = BLACK, GuiElement::ACTIVE_COLOUR = GREEN,
-                    GuiElement::INACTIVE_COLOUR = BLACK, GuiElement::BG_COLOUR = BEIGE;
+                    GuiElement::INACTIVE_COLOUR = BLACK, GuiElement::BG_COLOUR = BEIGE,
+                    GuiElement::CARD_REVERSE_COLOUR = DARKBLUE;
 
 GuiElement::GuiElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side):
     gui_(gui), is_player_side_(is_player_side), base_area(x, is_player_side ? 1.f - y - height : y, width, height),
@@ -28,16 +29,15 @@ void GuiElement::draw_text(
 void GuiElement::draw_empty(const raylib::Color& background_colour) const
 {
     gui_.scale(base_area).Draw(background_colour);
-    gui_.scale(base_area).DrawLines(INACTIVE_COLOUR, BORDER_THICKNESS);
+    gui_.scale(base_area).DrawLines(is_active ? ACTIVE_COLOUR : INACTIVE_COLOUR, BORDER_THICKNESS);
 }
 
 void GuiElement::draw_centered_text(const std::string& text, float text_height_ratio, bool split_lines) const
 {
+    draw_empty();
+
     const auto scaled = gui_.scale(base_area);
     const auto text_height = text_height_ratio * scaled.height;
-
-    scaled.Draw(BG_COLOUR);
-    scaled.DrawLines(is_active ? ACTIVE_COLOUR : INACTIVE_COLOUR, BORDER_THICKNESS);
 
     if(split_lines)
     {

@@ -37,3 +37,8 @@ const Card* Deck::draw()
     deck_.erase(deck_.begin());
     return card;
 }
+
+unsigned Deck::size() const
+{
+    return deck_.size();
+}

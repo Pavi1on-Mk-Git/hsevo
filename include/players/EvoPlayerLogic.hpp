@@ -30,7 +30,7 @@ struct EvoPlayerLogic: PlayerLogic
                states.size();
     }
 
-    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) override
+    Game choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const override
     {
         std::vector<std::vector<Game>> states_for_action;
         states_for_action.reserve(actions.size());

@@ -6,6 +6,7 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetFriendlyMinionCard::
     const Game& game, unsigned hand_position
 ) const
 {
+    using enum TargetType;
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
     const unsigned mana_cost = this->mana_cost(game);
@@ -14,9 +15,9 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetFriendlyMinionCard::
         return {};
 
     for(unsigned target_position = 0; target_position < game.current_player().board.minion_count(); ++target_position)
-        play_self_actions.push_back(
-            std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{target_position})
-        );
+        play_self_actions.push_back(std::make_unique<PlaySpellAction>(
+            hand_position, mana_cost, std::vector<OnPlayArg>{ALLY_MINION, target_position}
+        ));
 
     return play_self_actions;
 }

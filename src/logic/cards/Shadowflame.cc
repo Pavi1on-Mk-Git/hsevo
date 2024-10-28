@@ -4,7 +4,7 @@
 
 std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
-    const auto target_position = std::get<unsigned>(args.at(0));
+    const auto target_position = std::get<unsigned>(args.at(1));
 
     auto& chosen_minion = game.current_player().board.get_minion(target_position);
 

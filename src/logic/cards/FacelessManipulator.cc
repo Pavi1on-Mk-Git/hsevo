@@ -20,6 +20,7 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
     const Game& game, unsigned hand_position
 ) const
 {
+    using enum TargetType;
     std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
 
     const unsigned current_minion_count = game.current_player().board.minion_count();
@@ -35,7 +36,8 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
             if(target_position == board_position)
                 continue;
             play_self_actions.push_back(std::make_unique<PlayMinionAction>(
-                hand_position, mana_cost, board_position, std::vector<OnPlayArg>{board_position, target_position}
+                hand_position, mana_cost, board_position,
+                std::vector<OnPlayArg>{board_position, ALLY_MINION, target_position}
             ));
         }
 

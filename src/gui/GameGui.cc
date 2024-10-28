@@ -1,7 +1,9 @@
 #include "gui/GameGui.h"
 
 #include <algorithm>
+#include <chrono>
 #include <ranges>
+#include <thread>
 #include <tuple>
 
 #include "ai/Network.hpp"
@@ -16,20 +18,33 @@
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
 
+const unsigned BOT_SLEEP_TIME_MILLIS = 1000;
+
+Game GameGui::delayed_action()
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(BOT_SLEEP_TIME_MILLIS));
+    return bot_logic_->choose_and_apply_action(game_, game_.get_possible_actions());
+}
+
 void GameGui::update()
 {
     if(!is_turn_started_)
     {
-        ++current_turn_;
         update_begin_turn();
 
         if((winner_ = game_.check_winner()))
             return;
     }
 
-    auto& logic = is_player_turn() ? player_logic_ : bot_logic_;
-
-    game_ = logic->choose_and_apply_action(game_, game_.get_possible_actions());
+    if(is_player_turn())
+        game_ = player_logic_->choose_and_apply_action(game_, game_.get_possible_actions());
+    else
+    {
+        if(!bot_action_result_.valid())
+            bot_action_result_ = std::async(std::launch::async, &GameGui::delayed_action, this);
+        else if(bot_action_result_.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+            game_ = bot_action_result_.get();
+    }
 
     if((winner_ = game_.check_winner()))
         return;
@@ -37,6 +52,9 @@ void GameGui::update()
     if(game_.turn_ended)
     {
         game_.switch_active_player();
+        ++current_turn_;
+        if(!is_player_turn())
+            make_active();
         is_turn_started_ = false;
     }
 }
@@ -67,7 +85,7 @@ void GameGui::update_begin_turn()
 
 bool GameGui::is_player_turn() const
 {
-    return current_turn_ % 2 != is_bot_first_;
+    return (current_turn_ % 2 == 1) != is_bot_first_;
 }
 
 raylib::Rectangle GameGui::scale(const raylib::Rectangle& original) const
@@ -131,7 +149,7 @@ const float HERO_WIDTH = 0.2f, HERO_HEIGHT = 0.4f, HERO_POWER_LEN = 0.1f, ENTITY
 GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in):
     window_(window), is_bot_first_(Rng::instance().uniform_int(0, 1)), is_turn_started_(false),
     player_logic_(new GuiPlayerLogic(*player_deck, *this)), bot_logic_(new EvoPlayerLogic<Network>(*bot_deck, in)),
-    game_(*player_deck, *bot_deck, is_bot_first_), winner_(game_.check_winner()), current_turn_(0)
+    game_(*player_deck, *bot_deck, is_bot_first_), winner_(game_.check_winner()), current_turn_(1)
 {
     for(bool is_player_side: {false, true})
     {

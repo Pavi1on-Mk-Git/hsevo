@@ -19,7 +19,7 @@ protected:
     static constexpr unsigned SPACING_DIVISOR = 10;
     static constexpr float BORDER_THICKNESS = 3.f;
     const GameGui& gui_;
-    bool is_player_side_;
+    const bool is_player_side_;
 
     GuiElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side);
     void draw_empty(const raylib::Color& background_colour = BG_COLOUR) const;

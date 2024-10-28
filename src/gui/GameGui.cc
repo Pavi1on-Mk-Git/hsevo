@@ -1,7 +1,7 @@
 #include "gui/GameGui.h"
 
+#include <algorithm>
 #include <ranges>
-#include <raylib.h>
 #include <tuple>
 
 #include "ai/Network.hpp"
@@ -30,6 +30,9 @@ void GameGui::update()
     auto& logic = is_player_turn() ? player_logic_ : bot_logic_;
 
     game_ = logic->choose_and_apply_action(game_, game_.get_possible_actions());
+
+    if((winner_ = game_.check_winner()))
+        return;
 
     if(game_.turn_ended)
     {
@@ -89,6 +92,25 @@ std::optional<GuiElementId> GameGui::clicked_element() const
         if(scale(element->base_area).CheckCollision(position))
             return element->id();
     return std::nullopt;
+}
+
+void GameGui::make_active(const std::vector<std::deque<GuiElementId>> potential_sequences)
+{
+    for(const auto& element: elements_)
+        element->is_active = false;
+
+    for(const auto& sequence: potential_sequences)
+    {
+        if(sequence.empty())
+            continue;
+
+        auto matching_element = std::ranges::find_if(elements_, [&sequence](const auto& element) {
+            return element->id() == sequence.front();
+        });
+
+        if(matching_element != elements_.end())
+            (*matching_element)->is_active = true;
+    }
 }
 
 void GameGui::draw()

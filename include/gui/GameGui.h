@@ -30,6 +30,7 @@ public:
     bool is_player_turn() const;
     raylib::Rectangle scale(const raylib::Rectangle& original) const;
     std::optional<GuiElementId> clicked_element() const;
+    void make_active(const std::vector<std::deque<GuiElementId>> potential_sequences);
 };
 
 #endif

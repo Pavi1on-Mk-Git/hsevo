@@ -14,6 +14,8 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::
 {
     auto potential_sequences = actions_to_elements(actions, click_sequence_);
 
+    gui_.make_active(potential_sequences);
+
     if(!IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
         return game;
 

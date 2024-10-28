@@ -11,11 +11,11 @@ GuiElementId HeroElement::id() const
     return std::make_pair(GuiElementIdType::HERO, is_player_side_);
 }
 
-static const float HERO_TEXT_HEIGHT_RATIO = 0.2f;
+static const float HERO_TEXT_HEIGHT_RATIO = 0.15f;
 
 void HeroElement::draw(const Game& game) const
 {
     const auto& hero = to_draw(game).hero;
 
-    draw_centered_text(hero->name, HERO_TEXT_HEIGHT_RATIO);
+    draw_centered_text(hero->name, HERO_TEXT_HEIGHT_RATIO, true);
 }

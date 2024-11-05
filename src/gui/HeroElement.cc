@@ -13,9 +13,9 @@ GuiElementId HeroElement::id() const
 
 static const float HERO_TEXT_HEIGHT_RATIO = 0.15f;
 
-void HeroElement::draw(const Game& game) const
+void HeroElement::draw_(const Game& game) const
 {
     const auto& hero = to_draw(game).hero;
 
-    draw_centered_text(hero->name, HERO_TEXT_HEIGHT_RATIO, true);
+    draw_centered_text(hero->name, scaled_height(HERO_TEXT_HEIGHT_RATIO), true);
 }

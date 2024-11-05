@@ -13,12 +13,12 @@ GuiElementId WeaponElement::id() const
 
 static const float WEAPON_TEXT_HEIGHT_RATIO = 0.25f;
 
-void WeaponElement::draw(const Game& game) const
+void WeaponElement::draw_(const Game& game) const
 {
     const auto& weapon = to_draw(game).hero->weapon;
 
     if(weapon)
-        draw_centered_text(weapon->name, WEAPON_TEXT_HEIGHT_RATIO);
+        draw_centered_text(weapon->name, scaled_height(WEAPON_TEXT_HEIGHT_RATIO));
     else
         draw_empty();
 }

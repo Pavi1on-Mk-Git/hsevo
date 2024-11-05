@@ -3,11 +3,13 @@
 
 #include "gui/GuiElement.h"
 
-struct EOTElement: public GuiElement
+class EOTElement: public GuiElement
 {
+private:
+    void draw_(const Game& game) const override;
+public:
     EOTElement(const GameGui& gui, float x, float y, float width, float height);
     GuiElementId id() const override;
-    void draw(const Game& game) const override;
 };
 
 #endif

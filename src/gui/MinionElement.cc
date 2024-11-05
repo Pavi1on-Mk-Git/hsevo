@@ -12,12 +12,12 @@ GuiElementId MinionElement::id() const
 
 static const float MINION_TEXT_HEIGHT_RATIO = 0.08f;
 
-void MinionElement::draw(const Game& game) const
+void MinionElement::draw_(const Game& game) const
 {
     const auto& board = to_draw(game).board;
 
     if(position_ >= board.minion_count())
         draw_empty();
     else
-        draw_centered_text(board.get_minion(position_).name, MINION_TEXT_HEIGHT_RATIO, true);
+        draw_centered_text(board.get_minion(position_).name, scaled_height(MINION_TEXT_HEIGHT_RATIO), true);
 }

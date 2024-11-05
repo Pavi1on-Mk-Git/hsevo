@@ -3,11 +3,13 @@
 
 #include "gui/GuiElement.h"
 
-struct HeroElement: public GuiElement
+class HeroElement: public GuiElement
 {
+private:
+    void draw_(const Game& game) const override;
+public:
     HeroElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side);
     GuiElementId id() const override;
-    void draw(const Game& game) const override;
 };
 
 #endif

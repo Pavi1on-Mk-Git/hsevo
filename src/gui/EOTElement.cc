@@ -11,7 +11,7 @@ GuiElementId EOTElement::id() const
 
 static const float EOT_TEXT_HEIGHT_RATIO = 0.4f;
 
-void EOTElement::draw(const Game&) const
+void EOTElement::draw_(const Game&) const
 {
-    draw_centered_text("END OF TURN", EOT_TEXT_HEIGHT_RATIO);
+    draw_centered_text("END OF TURN", scaled_height(EOT_TEXT_HEIGHT_RATIO));
 }

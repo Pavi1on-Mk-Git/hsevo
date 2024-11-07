@@ -28,6 +28,8 @@ private:
     Game delayed_action();
     void draw();
 public:
+    std::optional<unsigned> minion_gap_position;
+
     GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in);
     GameResult run();
     bool is_player_turn() const;

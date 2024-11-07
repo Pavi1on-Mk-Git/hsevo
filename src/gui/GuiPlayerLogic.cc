@@ -29,16 +29,30 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::
     });
 
     if(matching_sequence == potential_sequences.end())
+    {
         click_sequence_.clear();
+        gui_.minion_gap_position = std::nullopt;
+    }
     else if(matching_sequence->size() == 1)
     {
         click_sequence_.clear();
+        gui_.minion_gap_position = std::nullopt;
         Game game_copy(game);
         auto new_states = actions.at(matching_sequence - potential_sequences.begin())->apply(game_copy);
         return new_states.at(Rng::instance().uniform_int(0, new_states.size() - 1));
     }
     else
+    {
         click_sequence_.push_back(*clicked_element);
+
+        // Used to make it so that Gui knows how to offset drawing minions
+        if(std::holds_alternative<GuiElementIdWithPosition>(*clicked_element) && click_sequence_.size() == 2)
+        {
+            const auto& [type, is_player_side, position] = std::get<GuiElementIdWithPosition>(*clicked_element);
+            if(type == GuiElementIdType::MINION)
+                gui_.minion_gap_position = position;
+        }
+    }
 
     return game;
 }

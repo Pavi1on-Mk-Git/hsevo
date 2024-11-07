@@ -12,7 +12,6 @@ GuiElementId HeroElement::id() const
 }
 
 static const float HERO_TEXT_HEIGHT_RATIO = 0.15f;
-static const unsigned HERO_STAT_BOX_WIDTH_RATIO = 4, HERO_STAT_BOX_HEIGHT_RATIO = 5;
 
 void HeroElement::draw_(const Game& game) const
 {
@@ -23,9 +22,7 @@ void HeroElement::draw_(const Game& game) const
 
     draw_centered_text(hero->name, text_height, true);
 
-    const raylib::Vector2 stat_rect_size(
-        hero_rect.width / HERO_STAT_BOX_WIDTH_RATIO, hero_rect.height / HERO_STAT_BOX_HEIGHT_RATIO
-    );
+    const raylib::Vector2 stat_rect_size(hero_rect.width / STAT_BOX_SIZE_RATIO, hero_rect.height / STAT_BOX_SIZE_RATIO);
 
     const float right_aligned_x = hero_rect.x + hero_rect.width - stat_rect_size.x,
                 down_aligned_y = hero_rect.y + hero_rect.height - stat_rect_size.y;

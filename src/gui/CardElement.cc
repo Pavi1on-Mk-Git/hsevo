@@ -13,7 +13,6 @@ GuiElementId CardElement::id() const
 }
 
 static const float CARD_TEXT_HEIGHT_RATIO = 0.06f;
-static const unsigned CARD_STAT_BOX_WIDTH_RATIO = 4, CARD_STAT_BOX_HEIGHT_RATIO = 5;
 
 void CardElement::draw_(const Game& game) const
 {
@@ -26,13 +25,13 @@ void CardElement::draw_(const Game& game) const
     else
     {
         const auto& card = hand.get_card(position_);
-        auto card_rect = scaled_rect();
+        const auto card_rect = scaled_rect();
         const float text_height = scaled_height(CARD_TEXT_HEIGHT_RATIO);
 
         draw_centered_text(card->name, text_height, true);
 
         const raylib::Vector2 stat_rect_size(
-            card_rect.width / CARD_STAT_BOX_WIDTH_RATIO, card_rect.height / CARD_STAT_BOX_HEIGHT_RATIO
+            card_rect.width / STAT_BOX_SIZE_RATIO, card_rect.height / STAT_BOX_SIZE_RATIO
         );
 
         const float right_aligned_x = card_rect.x + card_rect.width - stat_rect_size.x,
@@ -43,7 +42,7 @@ void CardElement::draw_(const Game& game) const
         mana_rect.Draw(MANA_COLOUR);
         draw_text(std::to_string(card->mana_cost(game)), text_height, mana_rect);
 
-        auto minion = dynamic_cast<const MinionCard*>(card);
+        const auto minion = dynamic_cast<const MinionCard*>(card);
         if(minion != nullptr)
         {
             const raylib::Rectangle attack_rect({card_rect.x, down_aligned_y}, stat_rect_size);

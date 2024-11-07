@@ -15,8 +15,8 @@ private:
 protected:
     static const raylib::Color TEXT_COLOUR, ACTIVE_COLOUR, INACTIVE_COLOUR, BG_COLOUR, CARD_REVERSE_COLOUR,
         ATTACK_COLOUR, HEALTH_COLOUR, MANA_COLOUR;
-    static constexpr unsigned SPACING_DIVISOR = 10;
-    static constexpr float BORDER_THICKNESS = 3.f;
+    static constexpr unsigned SPACING_DIVISOR = 10, STAT_BOX_SIZE_RATIO = 4;
+    static constexpr float BORDER_THICKNESS = 3.f, SMALL_STAT_BOX_HEIGHT_MULTIPLIER = 1.2f;
     const GameGui& gui_;
     const bool is_player_side_;
 

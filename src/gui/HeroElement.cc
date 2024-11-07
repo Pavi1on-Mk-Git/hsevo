@@ -12,10 +12,34 @@ GuiElementId HeroElement::id() const
 }
 
 static const float HERO_TEXT_HEIGHT_RATIO = 0.15f;
+static const unsigned HERO_STAT_BOX_WIDTH_RATIO = 4, HERO_STAT_BOX_HEIGHT_RATIO = 5;
 
 void HeroElement::draw_(const Game& game) const
 {
     const auto& hero = to_draw(game).hero;
 
-    draw_centered_text(hero->name, scaled_height(HERO_TEXT_HEIGHT_RATIO), true);
+    auto hero_rect = scaled_rect();
+    const float text_height = scaled_height(HERO_TEXT_HEIGHT_RATIO);
+
+    draw_centered_text(hero->name, text_height, true);
+
+    const raylib::Vector2 stat_rect_size(
+        hero_rect.width / HERO_STAT_BOX_WIDTH_RATIO, hero_rect.height / HERO_STAT_BOX_HEIGHT_RATIO
+    );
+
+    const float right_aligned_x = hero_rect.x + hero_rect.width - stat_rect_size.x,
+                down_aligned_y = hero_rect.y + hero_rect.height - stat_rect_size.y;
+
+    if(hero->weapon)
+    {
+        const raylib::Rectangle attack_rect({hero_rect.x, down_aligned_y}, stat_rect_size);
+
+        attack_rect.Draw(ATTACK_COLOUR);
+        draw_text(std::to_string(hero->weapon->attack), text_height, attack_rect);
+    }
+
+    const raylib::Rectangle health_rect({right_aligned_x, down_aligned_y}, stat_rect_size);
+
+    health_rect.Draw(HEALTH_COLOUR);
+    draw_text(std::to_string(hero->health), text_height, health_rect);
 }

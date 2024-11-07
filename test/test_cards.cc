@@ -676,15 +676,15 @@ TEST_CASE("Mountain Giant")
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&MountainGiant::instance, 1});
-    deck.push_back({&BoulderfistOgre::instance, 9});
+    deck.push_back({&BoulderfistOgre::instance, 8});
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().mana = 3;
+    game.current_player().mana = 4;
 
     REQUIRE(game.get_possible_actions().size() == 2);
 
-    game.draw(7);
+    game.draw(6);
 
     REQUIRE(game.get_possible_actions().size() == 3);
 }

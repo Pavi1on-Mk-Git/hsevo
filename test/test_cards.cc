@@ -610,13 +610,14 @@ TEST_CASE("Faceless Manipulator")
 
     game.current_player().mana = 5;
     game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.current_player().board.get_minion(0).active = true;
 
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
 
     auto& faceless = new_state.current_player().board.get_minion(0);
 
-    REQUIRE_FALSE(faceless.active);
+    REQUIRE_FALSE(faceless.active); // Faceless manipulator can't attack even if the minion can
     REQUIRE(faceless.attack == 6);
     REQUIRE(faceless.health == 7);
     REQUIRE(faceless.keywords == MinionKeywords::NO_KEYWORDS);
@@ -627,7 +628,7 @@ TEST_CASE("Faceless Manipulator")
 
     auto& ogre = new_state.current_player().board.get_minion(1);
 
-    REQUIRE_FALSE(ogre.active);
+    REQUIRE(ogre.active);
     REQUIRE(ogre.attack == 6);
     REQUIRE(ogre.health == 7);
     REQUIRE(ogre.keywords == MinionKeywords::NO_KEYWORDS);
@@ -713,13 +714,14 @@ TEST_CASE("Lord Jaraxxus")
     Game game(decklist, decklist);
 
     game.current_player().mana = 9;
+    game.current_player().hero->active = false;
 
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
 
-    auto& jaraxxus = game.current_player().hero;
+    auto& jaraxxus = new_state.current_player().hero;
 
-    REQUIRE(jaraxxus->active);
+    REQUIRE_FALSE(jaraxxus->active); // Changing hero doesn't reset the active state
     REQUIRE(jaraxxus->max_health == 15);
     REQUIRE(jaraxxus->health == 15);
     REQUIRE(jaraxxus->hero_power_active);
@@ -730,6 +732,8 @@ TEST_CASE("Lord Jaraxxus")
     REQUIRE(std::strcmp(jaraxxus->weapon->name, "Blood Fury") == 0);
     REQUIRE(jaraxxus->weapon->attack == 3);
     REQUIRE(jaraxxus->weapon->durability == 8);
+
+    jaraxxus->active = true;
 
     SECTION("Attack hero and destroy weapon")
     {

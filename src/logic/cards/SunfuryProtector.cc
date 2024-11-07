@@ -4,7 +4,7 @@
 
 std::vector<Game> SunfuryProtector::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
-    const auto position_played = std::get<unsigned>(args.at(1));
+    const auto position_played = std::get<unsigned>(args.at(0));
 
     std::vector<unsigned> neighbour_positions;
 

@@ -5,13 +5,16 @@
 std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     const auto position_played = std::get<unsigned>(args.at(0));
-    const auto target_position = std::get<unsigned>(args.at(1));
+    const auto target_position = std::get<unsigned>(args.at(2));
 
     auto& board = game.current_player().board;
 
     auto target_copy = board.get_minion(target_position);
 
     board.transform_minion(target_copy, position_played);
+
+    auto& faceless = board.get_minion(position_played);
+    faceless.active = faceless.keywords & MinionKeywords::CHARGE;
 
     return {game};
 }
@@ -31,7 +34,7 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
 
 
     for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
-        for(unsigned target_position = 0; target_position < current_minion_count; ++target_position)
+        for(unsigned target_position = 0; target_position <= current_minion_count; ++target_position)
         {
             if(target_position == board_position)
                 continue;

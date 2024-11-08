@@ -40,7 +40,12 @@ void CardElement::draw_(const Game& game) const
         const raylib::Rectangle mana_rect({right_aligned_x, card_rect.y}, stat_rect_size);
 
         mana_rect.Draw(MANA_COLOUR);
-        draw_text(std::to_string(card->mana_cost(game)), text_height, mana_rect);
+
+        // Some mana costs depend on the current player and need to be drawn as if it were the player's turn
+        Game game_copy(game);
+        if(!gui_.is_player_turn())
+            game_copy.switch_active_player();
+        draw_text(std::to_string(card->mana_cost(game_copy)), text_height, mana_rect);
 
         const auto minion = dynamic_cast<const MinionCard*>(card);
         if(minion != nullptr)

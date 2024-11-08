@@ -9,7 +9,7 @@ GuiElementId EOTElement::id() const
     return GuiElementIdType::EOT_BUTTON;
 }
 
-static const float EOT_TEXT_HEIGHT_RATIO = 0.4f;
+static const float EOT_TEXT_HEIGHT_RATIO = 0.3f;
 
 void EOTElement::draw_(const Game&) const
 {

@@ -11,7 +11,7 @@ GuiElementId WeaponElement::id() const
     return GuiElementIdType::OTHER;
 }
 
-static const float WEAPON_TEXT_HEIGHT_RATIO = 0.25f;
+static const float WEAPON_TEXT_HEIGHT_RATIO = 0.1f;
 static const raylib::Color WEAPON_STAT_COLOUR = LIGHTGRAY;
 
 void WeaponElement::draw_(const Game& game) const
@@ -21,13 +21,12 @@ void WeaponElement::draw_(const Game& game) const
     if(weapon)
     {
         const auto weapon_rect = scaled_rect();
-        const float text_height = scaled_height(WEAPON_TEXT_HEIGHT_RATIO);
+        const float number_text_height = scaled_height(WEAPON_TEXT_HEIGHT_RATIO) * TEXT_HEIGHT_MULTIPLIER;
 
-        draw_centered_text(weapon->name, text_height, true);
+        draw_centered_text(weapon->name, scaled_height(WEAPON_TEXT_HEIGHT_RATIO), true);
 
         const raylib::Vector2 stat_rect_size(
-            weapon_rect.width / STAT_BOX_SIZE_RATIO,
-            weapon_rect.height * SMALL_STAT_BOX_HEIGHT_MULTIPLIER / STAT_BOX_SIZE_RATIO
+            weapon_rect.width / STAT_BOX_WIDTH_RATIO, weapon_rect.height / STAT_BOX_HEIGHT_RATIO
         );
 
         const float right_aligned_x = weapon_rect.x + weapon_rect.width - stat_rect_size.x,
@@ -37,12 +36,12 @@ void WeaponElement::draw_(const Game& game) const
         const raylib::Rectangle attack_rect({weapon_rect.x, down_aligned_y}, stat_rect_size);
 
         attack_rect.Draw(WEAPON_STAT_COLOUR);
-        draw_text(std::to_string(weapon->attack), text_height, attack_rect);
+        draw_text(std::to_string(weapon->attack), number_text_height, attack_rect);
 
         const raylib::Rectangle health_rect({right_aligned_x, down_aligned_y}, stat_rect_size);
 
         health_rect.Draw(WEAPON_STAT_COLOUR);
-        draw_text(std::to_string(weapon->durability), text_height, health_rect);
+        draw_text(std::to_string(weapon->durability), number_text_height, health_rect);
     }
     else
         draw_empty();

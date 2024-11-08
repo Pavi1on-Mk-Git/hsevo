@@ -11,9 +11,8 @@ GuiElementId DeckElement::id() const
     return std::make_pair(GuiElementIdType::OTHER, is_player_side_);
 }
 
-static const float DECK_TEXT_HEIGHT_RATIO = 0.6f, MANA_TEXT_BOX_WIDTH_MULTIPLIER = 1.5f,
-                   MANA_TEXT_BOX_HEIGHT_MULTIPLIER = 0.5f;
-static const unsigned MANA_TEXT_HEIGHT_DIVISOR = 8;
+static const float DECK_TEXT_HEIGHT_RATIO = 0.4f, MANA_TEXT_BOX_WIDTH_MULTIPLIER = 1.5f;
+static const unsigned MANA_TEXT_HEIGHT_DIVISOR = 4;
 
 void DeckElement::draw_(const Game& game) const
 {
@@ -25,8 +24,8 @@ void DeckElement::draw_(const Game& game) const
     draw_centered_text(std::to_string(deck.size()), text_height);
 
     const raylib::Vector2 stat_rect_size(
-        deck_rect.width * MANA_TEXT_BOX_WIDTH_MULTIPLIER / STAT_BOX_SIZE_RATIO,
-        deck_rect.height * MANA_TEXT_BOX_HEIGHT_MULTIPLIER / STAT_BOX_SIZE_RATIO
+        deck_rect.width * MANA_TEXT_BOX_WIDTH_MULTIPLIER / STAT_BOX_WIDTH_RATIO,
+        deck_rect.height / STAT_BOX_HEIGHT_RATIO
     );
 
     const raylib::Rectangle mana_rect({deck_rect.x, deck_rect.y + deck_rect.height - stat_rect_size.y}, stat_rect_size);

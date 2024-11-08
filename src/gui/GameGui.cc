@@ -141,8 +141,9 @@ void GameGui::draw()
     window_.EndDrawing();
 }
 
-const float HERO_WIDTH = 0.2f, HERO_HEIGHT = 0.4f, HERO_POWER_LEN = 0.1f, ENTITY_HEIGHT = 0.25f,
-            ALL_ENTITIES_WIDTH = 0.6f, CARD_WIDTH = ALL_ENTITIES_WIDTH / Hand::MAX_HAND_SIZE,
+const float HERO_WIDTH = 0.15f, HERO_HEIGHT = 0.3f, HERO_POWER_WIDTH = HERO_WIDTH / 2.f, ENTITY_HEIGHT = 0.25f,
+            HERO_POWER_HEIGHT = 0.5f - HERO_HEIGHT, ALL_ENTITIES_WIDTH = 0.7f,
+            CARD_WIDTH = ALL_ENTITIES_WIDTH / Hand::MAX_HAND_SIZE,
             MINION_WIDTH = ALL_ENTITIES_WIDTH / Board::MAX_BOARD_SIZE, EOT_HEIGHT = 0.1f,
             EOT_WIDTH = 1 - HERO_WIDTH - ALL_ENTITIES_WIDTH, DECK_HEIGHT = (1.f - EOT_HEIGHT) / 2;
 
@@ -155,11 +156,11 @@ GameGui::GameGui(raylib::Window& window, const Decklist* player_deck, const Deck
     {
         elements_.push_back(std::make_unique<HeroElement>(*this, 0.f, 0.f, HERO_WIDTH, HERO_HEIGHT, is_player_side));
         elements_.push_back(std::make_unique<HeroPowerElement>(
-            *this, HERO_POWER_LEN, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side
+            *this, HERO_POWER_WIDTH, HERO_HEIGHT, HERO_POWER_WIDTH, HERO_POWER_HEIGHT, is_player_side
         ));
-        elements_.push_back(
-            std::make_unique<WeaponElement>(*this, 0.f, HERO_HEIGHT, HERO_POWER_LEN, HERO_POWER_LEN, is_player_side)
-        );
+        elements_.push_back(std::make_unique<WeaponElement>(
+            *this, 0.f, HERO_HEIGHT, HERO_POWER_WIDTH, HERO_POWER_HEIGHT, is_player_side
+        ));
 
         for(unsigned hand_id = 0; hand_id < Hand::MAX_HAND_SIZE; ++hand_id)
             elements_.push_back(std::make_unique<CardElement>(

@@ -37,13 +37,12 @@ void MinionElement::draw_(const Game& game) const
     {
         const auto& minion = board.get_minion(offset_position);
         const auto minion_rect = scaled_rect();
+        const float number_text_height = scaled_height(MINION_TEXT_HEIGHT_RATIO) * TEXT_HEIGHT_MULTIPLIER;
 
-        const float text_height = scaled_height(MINION_TEXT_HEIGHT_RATIO);
-
-        draw_centered_text(minion.name, text_height, true);
+        draw_centered_text(minion.name, scaled_height(MINION_TEXT_HEIGHT_RATIO), true);
 
         const raylib::Vector2 stat_rect_size(
-            minion_rect.width / STAT_BOX_SIZE_RATIO, minion_rect.height / STAT_BOX_SIZE_RATIO
+            minion_rect.width / STAT_BOX_WIDTH_RATIO, minion_rect.height / STAT_BOX_HEIGHT_RATIO
         );
 
         const float right_aligned_x = minion_rect.x + minion_rect.width - stat_rect_size.x,
@@ -53,11 +52,11 @@ void MinionElement::draw_(const Game& game) const
         const raylib::Rectangle attack_rect({minion_rect.x, down_aligned_y}, stat_rect_size);
 
         attack_rect.Draw(ATTACK_COLOUR);
-        draw_text(std::to_string(minion.attack), text_height, attack_rect);
+        draw_text(std::to_string(minion.attack), number_text_height, attack_rect);
 
         const raylib::Rectangle health_rect({right_aligned_x, down_aligned_y}, stat_rect_size);
 
         health_rect.Draw(HEALTH_COLOUR);
-        draw_text(std::to_string(minion.health), text_height, health_rect);
+        draw_text(std::to_string(minion.health), number_text_height, health_rect);
     }
 }

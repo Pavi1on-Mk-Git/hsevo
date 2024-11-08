@@ -22,6 +22,21 @@ DeckSelection::DeckSelection(raylib::Window& window, const std::vector<const Dec
 
 void DeckSelection::update()
 {
+    const unsigned deck_choice_button_height = window_.GetHeight() / decklists_.size();
+    const unsigned deck_choice_button_width = window_.GetWidth();
+
+    unsigned offset = 0;
+
+    deck_choice_buttons_.reserve(decklists_.size());
+    for(auto& deck_choice_button: deck_choice_buttons_)
+    {
+        deck_choice_button = raylib::Rectangle(0, offset, deck_choice_button_width, deck_choice_button_height);
+        offset += deck_choice_button_height;
+    }
+
+    button_is_highlighted.resize(decklists_.size());
+
+
     const raylib::Vector2 mouse_position = GetMousePosition();
     for(auto [decklist, button, is_highlighted]:
         std::views::zip(decklists_, deck_choice_buttons_, button_is_highlighted))

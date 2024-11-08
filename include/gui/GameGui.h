@@ -30,7 +30,9 @@ private:
 public:
     std::optional<unsigned> minion_gap_position;
 
-    GameGui(raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& in);
+    GameGui(
+        raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file
+    );
     GameResult run();
     bool is_player_turn() const;
     raylib::Rectangle scale(const raylib::Rectangle& original) const;

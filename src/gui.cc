@@ -18,10 +18,13 @@ int main()
     window.SetTargetFPS(60);
 
     const Decklist OGRE_DECK = ogre_deck(), HANDLOCK = handlock();
+    const std::vector<const Decklist*> decklists{&OGRE_DECK, &HANDLOCK};
 
-    DeckSelection selection(window, {&OGRE_DECK, &HANDLOCK});
-    auto [player_deck, bot_deck] = selection.run();
-    std::ifstream in("results/test.txt");
-    GameGui gui(window, player_deck, bot_deck, in);
+    std::ifstream OGRE_LOGIC("results/test.txt"), HANDLOCK_LOGIC("results/test.txt");
+    const std::vector<std::ifstream*> logic_files{&OGRE_LOGIC, &HANDLOCK_LOGIC};
+
+    DeckSelection selection(window, decklists, logic_files);
+    auto [player_deck, bot_deck, bot_logic_file] = selection.run();
+    GameGui gui(window, player_deck, bot_deck, *bot_logic_file);
     gui.run();
 }

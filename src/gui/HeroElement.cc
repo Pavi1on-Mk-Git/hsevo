@@ -29,7 +29,7 @@ void HeroElement::draw_(const Game& game) const
     const float right_aligned_x = hero_rect.x + hero_rect.width - stat_rect_size.x,
                 down_aligned_y = hero_rect.y + hero_rect.height - stat_rect_size.y;
 
-    if(hero->weapon)
+    if(hero->weapon && (gui_.is_player_turn() == is_player_side_))
     {
         const raylib::Rectangle attack_rect({hero_rect.x, down_aligned_y}, stat_rect_size);
 

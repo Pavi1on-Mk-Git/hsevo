@@ -25,23 +25,26 @@ void WeaponElement::draw_(const Game& game) const
 
         draw_centered_text(weapon->name, scaled_height(WEAPON_TEXT_HEIGHT_RATIO), true);
 
-        const raylib::Vector2 stat_rect_size(
-            weapon_rect.width / STAT_BOX_WIDTH_RATIO, weapon_rect.height / STAT_BOX_HEIGHT_RATIO
-        );
+        if(gui_.is_player_turn() == is_player_side_)
+        {
+            const raylib::Vector2 stat_rect_size(
+                weapon_rect.width / STAT_BOX_WIDTH_RATIO, weapon_rect.height / STAT_BOX_HEIGHT_RATIO
+            );
 
-        const float right_aligned_x = weapon_rect.x + weapon_rect.width - stat_rect_size.x,
-                    down_aligned_y = weapon_rect.y + weapon_rect.height - stat_rect_size.y;
+            const float right_aligned_x = weapon_rect.x + weapon_rect.width - stat_rect_size.x,
+                        down_aligned_y = weapon_rect.y + weapon_rect.height - stat_rect_size.y;
 
 
-        const raylib::Rectangle attack_rect({weapon_rect.x, down_aligned_y}, stat_rect_size);
+            const raylib::Rectangle attack_rect({weapon_rect.x, down_aligned_y}, stat_rect_size);
 
-        attack_rect.Draw(WEAPON_STAT_COLOUR);
-        draw_text(std::to_string(weapon->attack), number_text_height, attack_rect);
+            attack_rect.Draw(WEAPON_STAT_COLOUR);
+            draw_text(std::to_string(weapon->attack), number_text_height, attack_rect);
 
-        const raylib::Rectangle health_rect({right_aligned_x, down_aligned_y}, stat_rect_size);
+            const raylib::Rectangle durability_rect({right_aligned_x, down_aligned_y}, stat_rect_size);
 
-        health_rect.Draw(WEAPON_STAT_COLOUR);
-        draw_text(std::to_string(weapon->durability), number_text_height, health_rect);
+            durability_rect.Draw(WEAPON_STAT_COLOUR);
+            draw_text(std::to_string(weapon->durability), number_text_height, durability_rect);
+        }
     }
     else
         draw_empty();

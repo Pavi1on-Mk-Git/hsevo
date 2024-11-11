@@ -6,7 +6,7 @@
 
 std::optional<GameResult> do_turn(Game& game, const std::unique_ptr<PlayerLogic>& logic)
 {
-    std::optional<GameResult> winner = std::nullopt;
+    std::optional<GameResult> winner;
 
     game.draw();
 

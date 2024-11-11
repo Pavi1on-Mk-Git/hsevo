@@ -16,6 +16,11 @@ MinionCard::MinionCard(
 ): Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe)
 {}
 
+std::vector<Game> MinionCard::on_death(Game& game, unsigned) const
+{
+    return {game};
+}
+
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)
     const
 {

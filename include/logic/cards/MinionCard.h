@@ -21,6 +21,7 @@ public:
     const Tribe tribe;
 
     virtual ~MinionCard() = default;
+    virtual std::vector<Game> on_death(Game& game, unsigned player_id) const;
     virtual std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
         const override;
 };

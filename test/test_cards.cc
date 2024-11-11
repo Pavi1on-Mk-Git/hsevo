@@ -12,6 +12,7 @@
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/Infernal.h"
 #include "logic/cards/LeeroyJenkins.h"
+#include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
 #include "logic/cards/MoltenGiant.h"
 #include "logic/cards/MortalCoil.h"
@@ -60,9 +61,9 @@ TEST_CASE("Minion attacks")
     Decklist decklist = ogre_deck();
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).active = true;
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
 
     auto actions = game.get_possible_actions();
 
@@ -91,7 +92,7 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(AncientWatcher::instance, 0);
+        game.add_minion(&AncientWatcher::instance, 0);
         game.current_player().board.get_minion(0).active = true;
 
         REQUIRE(game.get_possible_actions().size() == 1);
@@ -102,11 +103,11 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
         game.current_player().board.get_minion(0).active = true;
 
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
+        game.add_minion(&BoulderfistOgre::instance, 1, false);
 
         REQUIRE(game.get_possible_actions().size() == 4);
 
@@ -120,7 +121,7 @@ TEST_CASE("Keywords")
         Decklist decklist = ogre_deck();
         Game game(decklist, decklist);
 
-        game.current_player().board.add_minion(LeeroyJenkins::instance, 0);
+        game.add_minion(&LeeroyJenkins::instance, 0);
 
         REQUIRE(game.current_player().board.get_minion(0).active);
     }
@@ -161,8 +162,8 @@ TEST_CASE("Sacrificial Pact")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(Infernal::instance, 0);
-    game.opponent().board.add_minion(Infernal::instance, 0);
+    game.add_minion(&Infernal::instance, 0);
+    game.add_minion(&Infernal::instance, 0, false);
 
     auto actions = game.get_possible_actions();
 
@@ -205,8 +206,8 @@ TEST_CASE("Soulfire")
         Game game(decklist, decklist);
 
         game.draw(3);
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto actions = game.get_possible_actions();
 
@@ -281,7 +282,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Target friendly")
     {
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -292,7 +293,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Draw card from ally")
     {
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
         game.current_player().board.get_minion(0).health = 1;
 
         auto actions = game.get_possible_actions();
@@ -304,7 +305,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Target enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -315,7 +316,7 @@ TEST_CASE("Mortal Coil")
 
     SECTION("Draw card from enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
         game.opponent().board.get_minion(0).health = 1;
 
         auto actions = game.get_possible_actions();
@@ -334,7 +335,7 @@ TEST_CASE("Power Overwhelming")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().mana = 1;
 
     auto actions = game.get_possible_actions();
@@ -347,9 +348,10 @@ TEST_CASE("Power Overwhelming")
     REQUIRE(ogre.health == 11);
     REQUIRE(ogre.will_die_horribly);
 
-    (*(actions.end() - 1))->apply(game);
+    actions = new_state.get_possible_actions();
+    auto next_state = (*(actions.end() - 1))->apply(new_state).at(0);
 
-    REQUIRE(game.current_player().board.minion_count() == 0);
+    REQUIRE(next_state.current_player().board.minion_count() == 0);
 }
 
 TEST_CASE("Sunfury Protector")
@@ -360,8 +362,8 @@ TEST_CASE("Sunfury Protector")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
     game.current_player().mana = 2;
 
 
@@ -402,10 +404,10 @@ TEST_CASE("Earthen Ring Farseer")
 
     game.current_player().mana = 3;
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).health -= 2;
 
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
     game.opponent().board.get_minion(0).health -= 4;
 
     auto actions = game.get_possible_actions();
@@ -447,8 +449,8 @@ TEST_CASE("Defender of Argus")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
     game.current_player().mana = 4;
 
 
@@ -516,11 +518,11 @@ TEST_CASE("Hellfire")
 
     game.current_player().mana = 4;
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 1);
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
 
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
 
     auto actions = game.get_possible_actions();
 
@@ -560,9 +562,9 @@ TEST_CASE("Shadowflame")
 
     game.current_player().mana = 4;
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 1);
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
 
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
@@ -612,7 +614,7 @@ TEST_CASE("Faceless Manipulator")
     Game game(decklist, decklist);
 
     game.current_player().mana = 5;
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).active = true;
 
     auto actions = game.get_possible_actions();
@@ -653,7 +655,7 @@ TEST_CASE("Siphon Soul")
 
     SECTION("Target friendly")
     {
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -664,7 +666,7 @@ TEST_CASE("Siphon Soul")
 
     SECTION("Target enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -753,7 +755,7 @@ TEST_CASE("Lord Jaraxxus")
     SECTION("Attack taunt minion and destroy weapon")
     {
         new_state.current_player().hero->weapon->durability = 1;
-        new_state.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
         new_state.opponent().board.get_minion(0).keywords |= TAUNT;
 
         auto actions = new_state.get_possible_actions();
@@ -795,7 +797,7 @@ TEST_CASE("Hunter's Mark")
 
     SECTION("Target friendly")
     {
-        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -806,7 +808,7 @@ TEST_CASE("Hunter's Mark")
 
     SECTION("Target enemy")
     {
-        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto actions = game.get_possible_actions();
         auto new_state = actions.at(0)->apply(game).at(0);
@@ -826,8 +828,8 @@ TEST_CASE("Abusive Sergeant")
 
     game.current_player().mana = 1;
 
-    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
-    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
 
     auto actions = game.get_possible_actions();
 
@@ -844,4 +846,20 @@ TEST_CASE("Abusive Sergeant")
 
         REQUIRE(new_state.opponent().board.get_minion(0).attack == 8);
     }
+}
+
+TEST_CASE("Leper Gnome")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&SiphonSoul::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 6;
+    game.add_minion(&LeperGnome::instance, 0, false);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().hero->health == 28);
 }

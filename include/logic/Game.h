@@ -22,14 +22,18 @@ enum class GameResult
 class Game
 {
 private:
-    std::array<Player, 2> players_;
     unsigned active_player_;
+    std::vector<unsigned> minion_ids_;
+    std::vector<unsigned> play_order_;
 
     void mulligan();
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
+    void clear_dead_minions(Board& board);
+    std::vector<Game> trigger_on_death(unsigned last_id_position = 0);
 
     HeroInput get_hero_state(unsigned player_index) const;
 public:
+    std::array<Player, 2> players;
     bool turn_ended;
 
     Game(const Decklist& first_decklist, const Decklist& second_decklist, bool reverse_player_order = false);
@@ -43,6 +47,8 @@ public:
     GameStateInput get_state() const;
     void draw(unsigned amount);
     void draw();
+    unsigned next_minion_id();
+    void add_minion(const MinionCard* card, unsigned position, bool own_board = true);
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);
     std::vector<Game> do_action(const PlaySpellAction& action);

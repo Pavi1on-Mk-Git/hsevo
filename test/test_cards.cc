@@ -8,6 +8,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Hellfire.h"
+#include "logic/cards/HuntersMark.h"
 #include "logic/cards/Infernal.h"
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LordJaraxxusCard.h"
@@ -23,6 +24,7 @@
 #include "logic/cards/TwilightDrake.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
+#include "logic/heroes/Rexxar.h"
 
 TEST_CASE("Play cards")
 {
@@ -779,5 +781,36 @@ TEST_CASE("Lord Jaraxxus")
         REQUIRE(std::strcmp(infernal.name, "Infernal") == 0);
         REQUIRE(infernal.tribe == Tribe::DEMON);
         REQUIRE_FALSE(infernal.will_die_horribly);
+    }
+}
+
+TEST_CASE("Hunter's Mark")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&HuntersMark::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    SECTION("Target friendly")
+    {
+        game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 1);
+        REQUIRE(new_state.current_player().board.get_minion(0).max_health == 1);
+    }
+
+    SECTION("Target enemy")
+    {
+        game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 1);
+        REQUIRE(new_state.opponent().board.get_minion(0).max_health == 1);
     }
 }

@@ -9,7 +9,7 @@ struct LordJaraxxus: public Hero
 
     CLONE_HERO
 
-    std::vector<Game> on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args);
+    void on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args);
 };
 
 #endif

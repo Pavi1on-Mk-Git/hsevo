@@ -6,6 +6,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Hellfire.h"
+#include "logic/cards/HuntersMark.h"
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LordJaraxxusCard.h"
 #include "logic/cards/MoltenGiant.h"
@@ -19,6 +20,7 @@
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/heroes/GulDan.h"
+#include "logic/heroes/Rexxar.h"
 
 Decklist ogre_deck()
 {
@@ -27,7 +29,7 @@ Decklist ogre_deck()
     DecklistDeck deck;
     deck.emplace_back(&BoulderfistOgre::instance, 30);
 
-    return Decklist("Ogre deck", std::move(hero), std::move(deck));
+    return Decklist("Ogre deck", std::move(hero), deck);
 }
 
 Decklist handlock()
@@ -53,5 +55,15 @@ Decklist handlock()
     deck.emplace_back(&MountainGiant::instance, 2);
     deck.emplace_back(&MoltenGiant::instance, 2);
 
-    return Decklist("Handlock", std::move(hero), std::move(deck));
+    return Decklist("Handlock", std::move(hero), deck);
+}
+
+Decklist face_hunter()
+{
+    std::unique_ptr<Hero> hero = std::make_unique<Rexxar>();
+
+    DecklistDeck deck;
+    deck.emplace_back(&HuntersMark::instance, 2);
+
+    return Decklist("Face Hunter", std::move(hero), deck);
 }

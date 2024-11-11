@@ -282,16 +282,14 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
     current_player().mana -= current_player().hero->hero_power_mana_cost;
     current_player().hero->hero_power_active = false;
 
-    auto new_states = current_player().hero->on_hero_power_use(*this, action.args);
+    current_player().hero->on_hero_power_use(*this, action.args);
 
     SPDLOG_INFO("Player has used their hero power");
 
-    std::ranges::for_each(new_states, [](Game& game) {
-        game.current_player().board.remove_dead_minions();
-        game.opponent().board.remove_dead_minions();
-    });
+    current_player().board.remove_dead_minions();
+    opponent().board.remove_dead_minions();
 
-    return new_states;
+    return {*this};
 }
 
 std::vector<Game> Game::do_action(const HeroTradeAction& action)

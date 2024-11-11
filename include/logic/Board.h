@@ -21,6 +21,10 @@ public:
     const Minion& get_minion(unsigned position) const;
     void remove_dead_minions();
     void trigger_end_of_turn();
+    std::vector<Minion>::iterator begin();
+    std::vector<Minion>::const_iterator begin() const;
+    std::vector<Minion>::iterator end();
+    std::vector<Minion>::const_iterator end() const;
 };
 
 #endif

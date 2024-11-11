@@ -45,3 +45,23 @@ void Board::trigger_end_of_turn()
             minion.health = 0;
     });
 }
+
+std::vector<Minion>::iterator Board::begin()
+{
+    return board_.begin();
+}
+
+std::vector<Minion>::const_iterator Board::begin() const
+{
+    return board_.begin();
+}
+
+std::vector<Minion>::iterator Board::end()
+{
+    return board_.end();
+}
+
+std::vector<Minion>::const_iterator Board::end() const
+{
+    return board_.end();
+}

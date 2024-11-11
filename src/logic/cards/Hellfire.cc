@@ -10,8 +10,8 @@ std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>&) c
 
     auto deal_to_all = [&deal_dmg](Player& player) {
         deal_dmg(*player.hero);
-        for(unsigned target_position = 0; target_position < player.board.minion_count(); ++target_position)
-            deal_dmg(player.board.get_minion(target_position));
+        for(auto& minion: player.board)
+            deal_dmg(minion);
     };
 
     deal_to_all(game.current_player());

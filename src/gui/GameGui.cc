@@ -75,8 +75,8 @@ void GameGui::update_begin_turn()
     game_.current_player().hero->hero_power_active = true;
     game_.current_player().hero->active = true;
 
-    for(unsigned minion_index = 0; minion_index < game_.current_player().board.minion_count(); ++minion_index)
-        game_.current_player().board.get_minion(minion_index).active = true;
+    for(auto& minion: game_.current_player().board)
+        minion.active = true;
 
     game_.turn_ended = false;
 

@@ -211,10 +211,10 @@ TEST_CASE("Soulfire")
         {
             auto new_states = actions.at(0)->apply(game);
             REQUIRE(new_states.size() == 5);
-            for(unsigned i = 0; i < new_states.size(); ++i)
+            for(const auto& state: new_states)
             {
-                REQUIRE(new_states.at(i).current_player().hero->health == 26);
-                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+                REQUIRE(state.current_player().hero->health == 26);
+                REQUIRE(state.current_player().hand.size() == 4);
             }
         }
 
@@ -222,10 +222,10 @@ TEST_CASE("Soulfire")
         {
             auto new_states = actions.at(2)->apply(game);
             REQUIRE(new_states.size() == 5);
-            for(unsigned i = 0; i < new_states.size(); ++i)
+            for(const auto& state: new_states)
             {
-                REQUIRE(new_states.at(i).opponent().hero->health == 26);
-                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+                REQUIRE(state.opponent().hero->health == 26);
+                REQUIRE(state.current_player().hand.size() == 4);
             }
         }
 
@@ -233,10 +233,10 @@ TEST_CASE("Soulfire")
         {
             auto new_states = actions.at(1)->apply(game);
             REQUIRE(new_states.size() == 5);
-            for(unsigned i = 0; i < new_states.size(); ++i)
+            for(const auto& state: new_states)
             {
-                REQUIRE(new_states.at(i).current_player().board.get_minion(0).health == 3);
-                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+                REQUIRE(state.current_player().board.get_minion(0).health == 3);
+                REQUIRE(state.current_player().hand.size() == 4);
             }
         }
 
@@ -244,10 +244,10 @@ TEST_CASE("Soulfire")
         {
             auto new_states = actions.at(3)->apply(game);
             REQUIRE(new_states.size() == 5);
-            for(unsigned i = 0; i < new_states.size(); ++i)
+            for(const auto& state: new_states)
             {
-                REQUIRE(new_states.at(i).opponent().board.get_minion(0).health == 3);
-                REQUIRE(new_states.at(i).current_player().hand.size() == 4);
+                REQUIRE(state.opponent().board.get_minion(0).health == 3);
+                REQUIRE(state.current_player().hand.size() == 4);
             }
         }
     }

@@ -11,10 +11,8 @@ std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>&
     unsigned dmg_to_deal = chosen_minion.attack;
     chosen_minion.health = 0;
 
-    auto& opponent_board = game.opponent().board;
-
-    for(unsigned enemy_position = 0; enemy_position < opponent_board.minion_count(); ++enemy_position)
-        opponent_board.get_minion(enemy_position).health -= dmg_to_deal;
+    for(auto& opponent_minion: game.opponent().board)
+        opponent_minion.health -= dmg_to_deal;
 
     return {game};
 }

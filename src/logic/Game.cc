@@ -1,6 +1,7 @@
 #include "logic/Game.h"
 
 #include <algorithm>
+#include <ranges>
 #include <spdlog/spdlog.h>
 
 #include "logic/cards/Coin.h"
@@ -114,18 +115,16 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 
     std::vector<unsigned> taunt_minion_positions;
 
-    for(unsigned opponent_board_position = 0; opponent_board_position < opponent().board.minion_count();
-        ++opponent_board_position)
-        if(opponent().board.get_minion(opponent_board_position).keywords & TAUNT)
-            taunt_minion_positions.push_back(opponent_board_position);
+    for(auto [opponent_board_position, opponent_minion]: opponent().board | std::views::filter([](const auto& minion) {
+                                                             return minion.keywords & TAUNT;
+                                                         }) | std::views::enumerate)
+        taunt_minion_positions.push_back(opponent_board_position);
 
-    for(unsigned current_board_position = 0; current_board_position < current_player().board.minion_count();
-        ++current_board_position)
+    for(auto [current_board_position, current_minion]:
+        current_player().board | std::views::filter([](const auto& minion) {
+            return minion.active && !(minion.keywords & CANT_ATTACK);
+        }) | std::views::enumerate)
     {
-        auto& current_minion = current_player().board.get_minion(current_board_position);
-        if(!current_minion.active || (current_minion.keywords & CANT_ATTACK))
-            continue;
-
         if(taunt_minion_positions.empty())
         {
             attack_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
@@ -167,20 +166,20 @@ HeroInput Game::get_hero_state(unsigned player_index) const
                          HeroStateInput{hero->health, hero->active, hero->weapon->attack, hero->weapon->durability} :
                          HeroStateInput{hero->health, false, 0, 0};
 
-    const auto& board = player.board;
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_heros;
 
-    const unsigned board_size = board.minion_count();
-    for(unsigned minion_index = 0; minion_index < board_size; ++minion_index)
+    for(auto [curr_minion, minion_hero]: std::views::zip(player.board, minion_heros))
     {
-        auto& curr_minion = board.get_minion(minion_index);
-        minion_heros.at(minion_index) = MinionStateInput{
+        minion_hero = MinionStateInput{
             curr_minion.health, curr_minion.attack, curr_minion.active && !(curr_minion.keywords & CANT_ATTACK),
             static_cast<bool>(curr_minion.keywords & TAUNT)
         };
     }
-    for(unsigned empty_space_index = board_size; empty_space_index < Board::MAX_BOARD_SIZE; ++empty_space_index)
-        minion_heros.at(empty_space_index) = MinionStateInput{};
+
+    const unsigned board_size = player.board.minion_count();
+
+    for(auto& minion_hero: minion_heros | std::views::drop(board_size))
+        minion_hero = MinionStateInput{};
 
     return HeroInput{hero_hero, minion_heros, player.hand.size(), board_size, player.mana};
 }

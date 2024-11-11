@@ -3,17 +3,29 @@
 #include "logic/Game.h"
 
 MinionCard::MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health):
-    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(Tribe::NONE)
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS),
+    tribe(Tribe::NONE), has_deathrattle(false)
 {}
 
 MinionCard::MinionCard(
     const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords
-): Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE)
+):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE),
+    has_deathrattle(false)
 {}
 
 MinionCard::MinionCard(
     const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe
-): Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe)
+):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe),
+    has_deathrattle(false)
+{}
+
+MinionCard::MinionCard(
+    const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, bool has_deathrattle
+):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS),
+    tribe(Tribe::NONE), has_deathrattle(has_deathrattle)
 {}
 
 std::vector<Game> MinionCard::on_death(Game& game, unsigned) const

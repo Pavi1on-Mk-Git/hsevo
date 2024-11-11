@@ -272,7 +272,7 @@ HeroInput Game::get_hero_state(unsigned player_index) const
     {
         minion_hero = MinionStateInput{
             curr_minion.health, curr_minion.attack, curr_minion.active && !(curr_minion.keywords & CANT_ATTACK),
-            static_cast<bool>(curr_minion.keywords & TAUNT)
+            static_cast<bool>(curr_minion.keywords & TAUNT), curr_minion.has_deathrattle
         };
     }
 

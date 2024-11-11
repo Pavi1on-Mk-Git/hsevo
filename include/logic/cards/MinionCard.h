@@ -15,10 +15,12 @@ protected:
         const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords
     );
     MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe);
+    MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, bool has_deathrattle);
 public:
     const unsigned base_attack, base_health;
     const MinionKeywords keywords;
     const Tribe tribe;
+    bool has_deathrattle;
 
     virtual ~MinionCard() = default;
     virtual std::vector<Game> on_death(Game& game, unsigned player_id) const;

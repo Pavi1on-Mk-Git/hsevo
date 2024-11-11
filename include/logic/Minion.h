@@ -12,7 +12,7 @@ private:
     const MinionCard* card_;
 public:
     unsigned attack, id;
-    bool active, will_die_horribly, triggered_on_death;
+    bool active, will_die_horribly, triggered_on_death, has_deathrattle;
     MinionKeywords keywords;
     Minion(const MinionCard* card, Game& game, unsigned player_id);
     std::vector<Game> on_death(Game& game);

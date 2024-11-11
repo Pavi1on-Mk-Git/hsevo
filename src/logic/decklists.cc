@@ -1,5 +1,6 @@
 #include "logic/decklists.h"
 
+#include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -64,6 +65,7 @@ Decklist face_hunter()
 
     DecklistDeck deck;
     deck.emplace_back(&HuntersMark::instance, 2);
+    deck.emplace_back(&AbusiveSergeant::instance, 2);
 
     return Decklist("Face Hunter", std::move(hero), deck);
 }

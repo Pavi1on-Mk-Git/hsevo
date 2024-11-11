@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "logic/Game.h"
+#include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
@@ -812,5 +813,35 @@ TEST_CASE("Hunter's Mark")
 
         REQUIRE(new_state.opponent().board.get_minion(0).health == 1);
         REQUIRE(new_state.opponent().board.get_minion(0).max_health == 1);
+    }
+}
+
+TEST_CASE("Abusive Sergeant")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&AbusiveSergeant::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 1;
+
+    game.current_player().board.add_minion(BoulderfistOgre::instance, 0);
+    game.opponent().board.add_minion(BoulderfistOgre::instance, 0);
+
+    auto actions = game.get_possible_actions();
+
+    SECTION("Buff ally minion")
+    {
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(1).attack == 8);
+    }
+
+    SECTION("Buff enemy minion")
+    {
+        auto new_state = actions.at(1)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).attack == 8);
     }
 }

@@ -30,6 +30,7 @@ private:
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
     void clear_dead_minions(Board& board);
     std::vector<Game> trigger_on_death(unsigned last_id_position = 0);
+    std::vector<Game> trigger_on_death_and_cleanup();
 
     HeroInput get_hero_state(unsigned player_index) const;
 public:

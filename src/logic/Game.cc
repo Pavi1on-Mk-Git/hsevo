@@ -171,22 +171,6 @@ unsigned Game::next_minion_id()
     return minion_id;
 }
 
-void Game::clear_dead_minions(Board& board)
-{
-    std::vector<unsigned> ids_to_reuse;
-
-    for(auto& minion: board)
-        if(minion.health <= 0)
-            ids_to_reuse.push_back(minion.id);
-
-    board.remove_dead_minions();
-    for(unsigned id: ids_to_reuse)
-    {
-        std::erase(play_order_, id);
-        minion_ids_.push_back(id);
-    }
-}
-
 std::vector<Game> Game::trigger_on_death(unsigned last_id_position)
 {
     if(last_id_position == play_order_.size())
@@ -203,31 +187,54 @@ std::vector<Game> Game::trigger_on_death(unsigned last_id_position)
             return minion.id == minion_id;
         });
 
-    std::vector<Game> final_states;
-
     if(found->health > 0 || found->triggered_on_death)
-        final_states.push_back(*this);
-    else
+        return {*this};
+
+    found->triggered_on_death = true;
+    auto new_states = found->on_death(*this);
+
+    std::vector<Game> resulting_states, final_states;
+
+    for(auto& state: new_states)
     {
-        found->triggered_on_death = true;
-        auto new_states = found->on_death(*this);
-
-        std::vector<Game> resulting_states;
-
-        for(auto& state: new_states)
-        {
-            auto further_states = state.trigger_on_death(last_id_position + 1);
-            resulting_states.reserve(resulting_states.size() + further_states.size());
-            std::ranges::move(further_states, std::back_inserter(resulting_states));
-        }
-
-        for(auto& state: resulting_states)
-        {
-            auto further_states = state.trigger_on_death();
-            final_states.reserve(final_states.size() + further_states.size());
-            std::ranges::move(further_states, std::back_inserter(final_states));
-        }
+        auto further_states = state.trigger_on_death(last_id_position + 1);
+        resulting_states.reserve(resulting_states.size() + further_states.size());
+        std::ranges::move(further_states, std::back_inserter(resulting_states));
     }
+
+    for(auto& state: resulting_states)
+    {
+        auto further_states = state.trigger_on_death();
+        final_states.reserve(final_states.size() + further_states.size());
+        std::ranges::move(further_states, std::back_inserter(final_states));
+    }
+
+    return final_states;
+}
+
+void Game::clear_dead_minions(Board& board)
+{
+    std::vector<unsigned> ids_to_reuse;
+
+    assert(play_order_.size() == current_player().board.minion_count() + opponent().board.minion_count());
+
+    for(auto& minion: board)
+        if(minion.health <= 0)
+            ids_to_reuse.push_back(minion.id);
+
+    board.remove_dead_minions();
+    for(unsigned id: ids_to_reuse)
+    {
+        std::erase(play_order_, id);
+        minion_ids_.push_back(id);
+    }
+
+    assert(play_order_.size() == current_player().board.minion_count() + opponent().board.minion_count());
+}
+
+std::vector<Game> Game::trigger_on_death_and_cleanup()
+{
+    auto final_states = trigger_on_death();
 
     for(auto& state: final_states)
     {
@@ -240,10 +247,14 @@ std::vector<Game> Game::trigger_on_death(unsigned last_id_position)
 
 void Game::add_minion(const MinionCard* card, unsigned position, bool own_board)
 {
-    if(own_board)
-        current_player().board.add_minion(Minion(card, *this, active_player_), position);
-    else
-        opponent().board.add_minion(Minion(card, *this, 1 - active_player_), position);
+    auto& board = own_board ? current_player().board : opponent().board;
+
+    if(board.minion_count() >= Board::MAX_BOARD_SIZE)
+        return;
+
+    unsigned player_id = own_board ? active_player_ : 1 - active_player_;
+
+    board.add_minion(Minion(card, *this, player_id), position);
 }
 
 HeroInput Game::get_hero_state(unsigned player_index) const
@@ -287,7 +298,7 @@ std::vector<Game> Game::do_action(const EndTurnAction&)
     current_player().board.trigger_end_of_turn();
     opponent().board.trigger_end_of_turn();
 
-    return trigger_on_death();
+    return trigger_on_death_and_cleanup();
 }
 
 std::vector<Game> Game::do_action(const PlayMinionAction& action)
@@ -308,7 +319,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
 
     for(auto& state: new_states)
     {
-        auto final_states = state.trigger_on_death();
+        auto final_states = state.trigger_on_death_and_cleanup();
         resulting_states.reserve(resulting_states.size() + final_states.size());
         std::ranges::move(final_states, std::back_inserter(resulting_states));
     }
@@ -333,7 +344,7 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
 
     for(auto& state: new_states)
     {
-        auto final_states = state.trigger_on_death();
+        auto final_states = state.trigger_on_death_and_cleanup();
         resulting_states.reserve(resulting_states.size() + final_states.size());
         std::ranges::move(final_states, std::back_inserter(resulting_states));
     }
@@ -356,7 +367,7 @@ std::vector<Game> Game::do_action(const TradeAction& action)
         second_minion.name, action.second_target
     );
 
-    return trigger_on_death();
+    return trigger_on_death_and_cleanup();
 }
 
 std::vector<Game> Game::do_action(const HitHeroAction& action)
@@ -380,7 +391,7 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
 
     SPDLOG_INFO("Player has used their hero power");
 
-    return trigger_on_death();
+    return trigger_on_death_and_cleanup();
 }
 
 std::vector<Game> Game::do_action(const HeroTradeAction& action)
@@ -397,7 +408,7 @@ std::vector<Game> Game::do_action(const HeroTradeAction& action)
 
     SPDLOG_INFO("Player has attacked {} in position {}", target_minion.name, action.position);
 
-    return trigger_on_death();
+    return trigger_on_death_and_cleanup();
 }
 
 std::vector<Game> Game::do_action(const HeroHitHeroAction&)

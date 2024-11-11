@@ -8,13 +8,13 @@ std::vector<Game> FacelessManipulator::on_play(Game& game, const std::vector<OnP
     const auto target_position = std::get<unsigned>(args.at(2));
 
     auto& board = game.current_player().board;
-
-    auto target_copy = board.get_minion(target_position);
-
-    board.transform_minion(target_copy, position_played);
-
     auto& faceless = board.get_minion(position_played);
+    unsigned faceless_id = faceless.id;
+
+    board.transform_minion(board.get_minion(target_position), position_played);
+
     faceless.active = faceless.keywords & MinionKeywords::CHARGE;
+    faceless.id = faceless_id;
 
     return {game};
 }

@@ -35,3 +35,13 @@ const Card* const& Hand::get_card(unsigned position) const
 {
     return hand_.at(position);
 }
+
+std::vector<const Card*>::const_iterator Hand::begin() const
+{
+    return hand_.begin();
+}
+
+std::vector<const Card*>::const_iterator Hand::end() const
+{
+    return hand_.end();
+}

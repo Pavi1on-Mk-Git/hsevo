@@ -86,9 +86,8 @@ void Game::draw()
 std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
 {
     std::vector<std::unique_ptr<Action>> possible_actions;
-    for(unsigned hand_position = 0; hand_position < current_player().hand.size(); ++hand_position)
+    for(auto [hand_position, current_card]: std::views::enumerate(current_player().hand))
     {
-        auto& current_card = current_player().hand.get_card(hand_position);
         auto play_card_actions = current_card->create_play_actions(*this, hand_position);
         std::ranges::move(play_card_actions, std::back_inserter(possible_actions));
     }
@@ -115,16 +114,15 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 
     std::vector<unsigned> taunt_minion_positions;
 
-    for(auto [opponent_board_position, opponent_minion]: opponent().board | std::views::filter([](const auto& minion) {
-                                                             return minion.keywords & TAUNT;
-                                                         }) | std::views::enumerate)
-        taunt_minion_positions.push_back(opponent_board_position);
+    for(auto [opponent_board_position, opponent_minion]: std::views::enumerate(opponent().board))
+        if(opponent_minion.keywords & TAUNT)
+            taunt_minion_positions.push_back(opponent_board_position);
 
-    for(auto [current_board_position, current_minion]:
-        current_player().board | std::views::filter([](const auto& minion) {
-            return minion.active && !(minion.keywords & CANT_ATTACK);
-        }) | std::views::enumerate)
+    for(auto [current_board_position, current_minion]: std::views::enumerate(current_player().board))
     {
+        if(!current_minion.active || (current_minion.keywords & CANT_ATTACK))
+            continue;
+
         if(taunt_minion_positions.empty())
         {
             attack_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));

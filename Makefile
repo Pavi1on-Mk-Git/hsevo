@@ -42,4 +42,4 @@ zip:
 	@ zip -r ./code_archives/HSEVO_$$(date '+%d.%m.%Y').zip ./include ./src ./test ./.clang-format ./CMakeLists.txt ./Makefile
 
 %:
-	@ $(MAKE) --no-print-directory -C build $@
+	@ $(MAKE) -j$$(nproc) --no-print-directory -C build $@

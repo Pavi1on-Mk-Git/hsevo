@@ -32,7 +32,7 @@ coverage:
 	@ $(BROWSER) ./build/bin/coverage/index.html
 
 profile:
-	@ $(MAKE) --no-print-directory -C build profile_hsevo
+	@ $(MAKE) -j$$(nproc) --no-print-directory -C build profile_hsevo
 	@ mkdir -p ./build/bin/profiling
 	@ ./build/bin/profile_hsevo
 	@ mv ./gmon.out ./build/bin/profiling

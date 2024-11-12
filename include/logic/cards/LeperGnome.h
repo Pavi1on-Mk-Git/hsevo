@@ -6,7 +6,7 @@
 class LeperGnome: public MinionCard
 {
 private:
-    LeperGnome(): MinionCard("Leper Gnome", 1, 2, 1) {}
+    LeperGnome(): MinionCard("Leper Gnome", 1, 2, 1, true) {}
 public:
     static const LeperGnome instance;
     std::vector<Game> on_death(Game& game, unsigned player_id) const override;

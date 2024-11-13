@@ -10,5 +10,10 @@ Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
 
 std::vector<Game> Minion::on_death(Game& game)
 {
-    return card_->on_death(game, player_id_);
+    return card_->on_death(game, id, player_id_);
+}
+
+void Minion::on_minion_summon(Game& game, Minion& minion)
+{
+    return card_->on_minion_summon(game, minion, id);
 }

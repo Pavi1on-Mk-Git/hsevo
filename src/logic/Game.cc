@@ -187,15 +187,15 @@ std::vector<Game> Game::trigger_on_death(unsigned last_id_position)
             return minion.id == minion_id;
         });
 
+
     if(found->health > 0 || found->triggered_on_death)
-        return {*this};
+        return trigger_on_death(last_id_position + 1);
 
     found->triggered_on_death = true;
-    auto new_states = found->on_death(*this);
 
     std::vector<Game> resulting_states, final_states;
 
-    for(auto& state: new_states)
+    for(auto& state: found->on_death(*this))
     {
         auto further_states = state.trigger_on_death(last_id_position + 1);
         resulting_states.reserve(resulting_states.size() + further_states.size());
@@ -221,6 +221,8 @@ void Game::clear_dead_minions(Board& board)
     for(auto& minion: board)
         if(minion.health <= 0)
             ids_to_reuse.push_back(minion.id);
+        else
+            minion.triggered_on_death = false;
 
     board.remove_dead_minions();
     for(unsigned id: ids_to_reuse)
@@ -254,7 +256,14 @@ void Game::add_minion(const MinionCard* card, unsigned position, bool own_board)
 
     unsigned player_id = own_board ? active_player_ : 1 - active_player_;
 
-    board.add_minion(Minion(card, *this, player_id), position);
+    auto added_minion = Minion(card, *this, player_id);
+
+    for(auto& minion: board)
+    {
+        minion.on_minion_summon(*this, added_minion);
+    }
+
+    board.add_minion(added_minion, position);
 }
 
 HeroInput Game::get_hero_state(unsigned player_index) const

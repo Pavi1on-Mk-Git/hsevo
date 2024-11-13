@@ -23,6 +23,7 @@
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/SunfuryProtector.h"
+#include "logic/cards/TimberWolf.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
@@ -862,4 +863,42 @@ TEST_CASE("Leper Gnome")
     auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.current_player().hero->health == 28);
+}
+
+TEST_CASE("Timber Wolf")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&TimberWolf::instance, 2});
+    deck.push_back({&AncientWatcher::instance, 1});
+    deck.push_back({&SiphonSoul::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.draw();
+    game.current_player().mana = 1;
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
+    game.current_player().board.get_minion(1).tribe = Tribe::BEAST;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().board.get_minion(0).attack == 1);
+    REQUIRE(new_state.current_player().board.get_minion(1).attack == 6);
+    REQUIRE(new_state.current_player().board.get_minion(2).attack == 7);
+
+    new_state.current_player().mana = 1;
+    auto post_play_state = new_state.get_possible_actions().at(0)->apply(new_state).at(0);
+
+    REQUIRE(post_play_state.current_player().board.get_minion(0).attack == 2);
+
+    post_play_state.current_player().mana = 2;
+    auto post_post_play_state = post_play_state.get_possible_actions().at(0)->apply(post_play_state).at(0);
+
+    REQUIRE(post_post_play_state.current_player().board.get_minion(0).attack == 4);
+
+    post_post_play_state.current_player().mana = 6;
+    auto kill_state = post_post_play_state.get_possible_actions().at(2)->apply(post_post_play_state).at(0);
+
+    REQUIRE(kill_state.current_player().board.get_minion(1).attack == 1);
 }

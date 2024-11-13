@@ -7,6 +7,8 @@
 #include "logic/Tribe.h"
 #include "logic/cards/Card.h"
 
+struct Minion;
+
 class MinionCard: public Card
 {
 protected:
@@ -23,7 +25,8 @@ public:
     bool has_deathrattle;
 
     virtual ~MinionCard() = default;
-    virtual std::vector<Game> on_death(Game& game, unsigned player_id) const;
+    virtual std::vector<Game> on_death(Game& game, unsigned id, unsigned player_id) const;
+    virtual void on_minion_summon(Game& game, Minion& minion, unsigned id) const;
     virtual std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
         const override;
 };

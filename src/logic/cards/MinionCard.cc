@@ -28,10 +28,12 @@ MinionCard::MinionCard(
     tribe(Tribe::NONE), has_deathrattle(has_deathrattle)
 {}
 
-std::vector<Game> MinionCard::on_death(Game& game, unsigned) const
+std::vector<Game> MinionCard::on_death(Game& game, unsigned, unsigned) const
 {
     return {game};
 }
+
+void MinionCard::on_minion_summon(Game&, Minion&, unsigned) const {}
 
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)
     const

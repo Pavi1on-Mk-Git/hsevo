@@ -6,6 +6,7 @@ enum class Tribe
     NONE,
     DRAGON,
     DEMON,
+    BEAST,
 };
 
 #endif

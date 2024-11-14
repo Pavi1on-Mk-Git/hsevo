@@ -3,6 +3,7 @@
 #include "logic/Game.h"
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
+#include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -920,4 +921,19 @@ TEST_CASE("Starving Buzzard")
 
     game.add_minion(&BoulderfistOgre::instance, 2);
     REQUIRE(game.current_player().hand.size() == 4);
+}
+
+TEST_CASE("Arcane Golem")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&ArcaneGolem::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 4;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.opponent().mana_crystals == 1);
 }

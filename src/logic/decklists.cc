@@ -2,6 +2,7 @@
 
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
+#include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EarthenRingFarseer.h"
@@ -72,6 +73,7 @@ Decklist face_hunter()
     deck.emplace_back(&LeperGnome::instance, 2);
     deck.emplace_back(&TimberWolf::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
+    deck.emplace_back(&ArcaneGolem::instance, 2);
 
     return Decklist("Face Hunter", std::move(hero), deck);
 }

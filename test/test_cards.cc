@@ -1030,12 +1030,24 @@ TEST_CASE("Unleash The Hounds")
 
     game.current_player().mana = 3;
 
-    const unsigned expected_count = 4;
+    SECTION("Opponent has more minions than you")
+    {
+        const unsigned expected_count = 4;
 
-    for(unsigned i = 0; i < expected_count; ++i)
-        game.add_minion(&BoulderfistOgre::instance, i, false);
+        for(unsigned i = 0; i < expected_count; ++i)
+            game.add_minion(&BoulderfistOgre::instance, i, false);
 
-    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
-    REQUIRE(game.current_player().board.minion_count() == expected_count);
+        REQUIRE(game.current_player().board.minion_count() == expected_count);
+    }
+
+    SECTION("You have more minions than the opponent")
+    {
+        game.add_minion(&BoulderfistOgre::instance, 0);
+
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+        REQUIRE(game.current_player().board.minion_count() == 2);
+    }
 }

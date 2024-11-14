@@ -13,7 +13,7 @@
 int main()
 {
     spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "logs/hsevo.log", true));
-    spdlog::set_pattern(".at(%l) %v");
+    spdlog::set_pattern("[%l] %v");
     spdlog::set_level(spdlog::level::off);
 
     const int SEED = 42;
@@ -48,7 +48,7 @@ int main()
 
     // SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
-    auto deck = handlock();
+    auto deck = face_hunter();
     // std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo);
     std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo.first);
     run_game(logic, logic);

@@ -21,7 +21,7 @@ static const auto FATIGUE_DRAW = nullptr;
 
 std::pair<std::vector<const Card*>, unsigned> Deck::draw(unsigned amount)
 {
-    unsigned actual_amount = std::min<std::size_t>(amount, deck_.size());
+    unsigned actual_amount = std::min<unsigned>(amount, deck_.size());
     std::vector<const Card*> drawn_cards(deck_.begin(), deck_.begin() + actual_amount);
     deck_.erase(deck_.begin(), deck_.begin() + actual_amount);
 

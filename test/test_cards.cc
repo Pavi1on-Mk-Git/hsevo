@@ -27,6 +27,7 @@
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
+#include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
 #include "logic/heroes/GulDan.h"
@@ -1039,7 +1040,7 @@ TEST_CASE("Unleash The Hounds")
 
         auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
-        REQUIRE(game.current_player().board.minion_count() == expected_count);
+        REQUIRE(new_state.current_player().board.minion_count() == expected_count);
     }
 
     SECTION("You have more minions than the opponent")
@@ -1048,6 +1049,29 @@ TEST_CASE("Unleash The Hounds")
 
         auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
-        REQUIRE(game.current_player().board.minion_count() == 2);
+        REQUIRE(new_state.current_player().board.minion_count() == 2);
+    }
+}
+
+TEST_CASE("Tracking")
+{
+    for(unsigned card_count = 0; card_count <= 3; ++card_count)
+    {
+        auto hero = std::make_unique<Rexxar>();
+        DecklistDeck deck;
+        deck.push_back({&Tracking::instance, card_count + 3});
+        Decklist decklist("Test", std::move(hero), std::move(deck));
+        Game game(decklist, decklist);
+
+        game.current_player().mana = 1;
+
+        auto actions = game.get_possible_actions();
+
+        REQUIRE(actions.size() == (card_count > 0 ? card_count : 1) * 3 + 1);
+
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().hand.size() == (card_count > 0 ? 3 : 2));
+        REQUIRE(new_state.current_player().deck.size() == 0);
     }
 }

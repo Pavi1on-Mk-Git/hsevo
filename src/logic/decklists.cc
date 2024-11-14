@@ -24,6 +24,7 @@
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
+#include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
 #include "logic/cards/Wolfrider.h"
@@ -75,6 +76,7 @@ Decklist face_hunter()
     deck.emplace_back(&AbusiveSergeant::instance, 2);
     deck.emplace_back(&LeperGnome::instance, 2);
     deck.emplace_back(&TimberWolf::instance, 2);
+    deck.emplace_back(&Tracking::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
     deck.emplace_back(&KillCommand::instance, 2);

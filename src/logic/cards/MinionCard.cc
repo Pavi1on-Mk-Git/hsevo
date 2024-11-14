@@ -28,6 +28,14 @@ MinionCard::MinionCard(
     tribe(Tribe::NONE), has_deathrattle(has_deathrattle)
 {}
 
+MinionCard::MinionCard(
+    const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords,
+    const Tribe& tribe
+):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(tribe),
+    has_deathrattle(false)
+{}
+
 std::vector<Game> MinionCard::on_death(Game& game, unsigned, unsigned) const
 {
     return {game};

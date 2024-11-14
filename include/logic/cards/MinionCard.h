@@ -18,6 +18,10 @@ protected:
     );
     MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe);
     MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, bool has_deathrattle);
+    MinionCard(
+        const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health,
+        const MinionKeywords& keywords, const Tribe& tribe
+    );
 public:
     const unsigned base_attack, base_health;
     const MinionKeywords keywords;

@@ -25,6 +25,7 @@
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/TwilightDrake.h"
+#include "logic/cards/UnleashTheHounds.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/Rexxar.h"
 
@@ -76,6 +77,7 @@ Decklist face_hunter()
     deck.emplace_back(&StarvingBuzzard::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
     deck.emplace_back(&KillCommand::instance, 2);
+    deck.emplace_back(&UnleashTheHounds::instance, 2);
 
     return Decklist("Face Hunter", std::move(hero), deck);
 }

@@ -28,6 +28,7 @@
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/TwilightDrake.h"
+#include "logic/cards/UnleashTheHounds.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
 #include "logic/heroes/Rexxar.h"
@@ -1017,4 +1018,24 @@ TEST_CASE("Kill Command")
             REQUIRE(new_state.opponent().board.get_minion(0).health == 2);
         }
     }
+}
+
+TEST_CASE("Unleash The Hounds")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&UnleashTheHounds::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+
+    const unsigned expected_count = 4;
+
+    for(unsigned i = 0; i < expected_count; ++i)
+        game.add_minion(&BoulderfistOgre::instance, i, false);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(game.current_player().board.minion_count() == expected_count);
 }

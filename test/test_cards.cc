@@ -12,6 +12,7 @@
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/Infernal.h"
+#include "logic/cards/KillCommand.h"
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
@@ -936,4 +937,84 @@ TEST_CASE("Arcane Golem")
     auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.opponent().mana_crystals == 1);
+}
+
+TEST_CASE("Kill Command")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&KillCommand::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+
+    SECTION("Without a beast")
+    {
+        auto actions = game.get_possible_actions();
+
+        SECTION("Target ally hero")
+        {
+            auto new_state = actions.at(0)->apply(game).at(0);
+
+            REQUIRE(new_state.current_player().hero->health == 27);
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_state = actions.at(2)->apply(game).at(0);
+
+            REQUIRE(new_state.opponent().hero->health == 27);
+        }
+
+        SECTION("Target ally minion")
+        {
+            auto new_state = actions.at(1)->apply(game).at(0);
+
+            REQUIRE(new_state.current_player().board.get_minion(0).health == 4);
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_state = actions.at(3)->apply(game).at(0);
+
+            REQUIRE(new_state.opponent().board.get_minion(0).health == 4);
+        }
+    }
+
+    SECTION("With a beast")
+    {
+        game.add_minion(&StarvingBuzzard::instance, 1);
+        auto actions = game.get_possible_actions();
+
+        SECTION("Target ally hero")
+        {
+            auto new_state = actions.at(0)->apply(game).at(0);
+
+            REQUIRE(new_state.current_player().hero->health == 25);
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_state = actions.at(3)->apply(game).at(0);
+
+            REQUIRE(new_state.opponent().hero->health == 25);
+        }
+
+        SECTION("Target ally minion")
+        {
+            auto new_state = actions.at(1)->apply(game).at(0);
+
+            REQUIRE(new_state.current_player().board.get_minion(0).health == 2);
+        }
+
+        SECTION("Target enemy hero")
+        {
+            auto new_state = actions.at(4)->apply(game).at(0);
+
+            REQUIRE(new_state.opponent().board.get_minion(0).health == 2);
+        }
+    }
 }

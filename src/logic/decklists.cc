@@ -9,6 +9,7 @@
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
+#include "logic/cards/KillCommand.h"
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
@@ -74,6 +75,7 @@ Decklist face_hunter()
     deck.emplace_back(&TimberWolf::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
+    deck.emplace_back(&KillCommand::instance, 2);
 
     return Decklist("Face Hunter", std::move(hero), deck);
 }

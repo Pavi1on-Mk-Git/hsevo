@@ -22,6 +22,7 @@
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
+#include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/TwilightDrake.h"
@@ -869,8 +870,9 @@ TEST_CASE("Timber Wolf")
 {
     auto hero = std::make_unique<Rexxar>();
     DecklistDeck deck;
-    deck.push_back({&TimberWolf::instance, 2});
-    deck.push_back({&AncientWatcher::instance, 1});
+    deck.push_back({&TimberWolf::instance, 1});
+    deck.push_back({&StarvingBuzzard::instance, 1});
+    deck.push_back({&TwilightDrake::instance, 1});
     deck.push_back({&SiphonSoul::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
@@ -878,21 +880,20 @@ TEST_CASE("Timber Wolf")
     game.draw();
     game.current_player().mana = 1;
     game.add_minion(&BoulderfistOgre::instance, 0);
-    game.add_minion(&BoulderfistOgre::instance, 1);
-    game.current_player().board.get_minion(1).tribe = Tribe::BEAST;
+    game.add_minion(&StarvingBuzzard::instance, 1);
 
     auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.current_player().board.get_minion(0).attack == 1);
     REQUIRE(new_state.current_player().board.get_minion(1).attack == 6);
-    REQUIRE(new_state.current_player().board.get_minion(2).attack == 7);
+    REQUIRE(new_state.current_player().board.get_minion(2).attack == 3);
 
-    new_state.current_player().mana = 1;
+    new_state.current_player().mana = 2;
     auto post_play_state = new_state.get_possible_actions().at(0)->apply(new_state).at(0);
 
-    REQUIRE(post_play_state.current_player().board.get_minion(0).attack == 2);
+    REQUIRE(post_play_state.current_player().board.get_minion(0).attack == 3);
 
-    post_play_state.current_player().mana = 2;
+    post_play_state.current_player().mana = 4;
     auto post_post_play_state = post_play_state.get_possible_actions().at(0)->apply(post_play_state).at(0);
 
     REQUIRE(post_post_play_state.current_player().board.get_minion(0).attack == 4);
@@ -900,5 +901,23 @@ TEST_CASE("Timber Wolf")
     post_post_play_state.current_player().mana = 6;
     auto kill_state = post_post_play_state.get_possible_actions().at(2)->apply(post_post_play_state).at(0);
 
-    REQUIRE(kill_state.current_player().board.get_minion(1).attack == 1);
+    REQUIRE(kill_state.current_player().board.get_minion(1).attack == 2);
+}
+
+TEST_CASE("Starving Buzzard")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&StarvingBuzzard::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+
+    game.add_minion(&StarvingBuzzard::instance, 0);
+    game.add_minion(&StarvingBuzzard::instance, 1);
+
+    REQUIRE(game.current_player().hand.size() == 4);
+
+    game.add_minion(&BoulderfistOgre::instance, 2);
+    REQUIRE(game.current_player().hand.size() == 4);
 }

@@ -19,6 +19,7 @@
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
+#include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/TwilightDrake.h"
@@ -70,6 +71,7 @@ Decklist face_hunter()
     deck.emplace_back(&AbusiveSergeant::instance, 2);
     deck.emplace_back(&LeperGnome::instance, 2);
     deck.emplace_back(&TimberWolf::instance, 2);
+    deck.emplace_back(&StarvingBuzzard::instance, 2);
 
     return Decklist("Face Hunter", std::move(hero), deck);
 }

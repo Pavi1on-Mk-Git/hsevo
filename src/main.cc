@@ -22,7 +22,7 @@ int main()
     auto best_evo = NEAT::evolve({
         .population_size = 10,
         .iterations = 20,
-        .scoring_func = [&](const auto& population) { return score_member(population, handlock()); },
+        .scoring_func = [&](const auto& population) { return score_member(population, face_hunter()); },
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,

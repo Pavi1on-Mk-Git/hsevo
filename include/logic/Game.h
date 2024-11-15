@@ -3,14 +3,11 @@
 
 #include "ai/GameStateInput.h"
 #include "logic/EndTurnAction.h"
-#include "logic/HeroHitHeroAction.h"
+#include "logic/FightAction.h"
 #include "logic/HeroPowerAction.h"
-#include "logic/HeroTradeAction.h"
-#include "logic/HitHeroAction.h"
 #include "logic/PlayMinionAction.h"
 #include "logic/PlaySpellAction.h"
 #include "logic/Player.h"
-#include "logic/TradeAction.h"
 
 enum class GameResult
 {
@@ -53,11 +50,8 @@ public:
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);
     std::vector<Game> do_action(const PlaySpellAction& action);
-    std::vector<Game> do_action(const TradeAction& action);
-    std::vector<Game> do_action(const HitHeroAction& action);
+    std::vector<Game> do_action(const FightAction& action);
     std::vector<Game> do_action(const HeroPowerAction& action);
-    std::vector<Game> do_action(const HeroTradeAction& action);
-    std::vector<Game> do_action(const HeroHitHeroAction& action);
 };
 
 #endif

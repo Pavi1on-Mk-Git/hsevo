@@ -5,7 +5,7 @@
 
 struct EndTurnAction: Action
 {
-    std::vector<Game> apply(Game& game) const;
+    std::vector<Game> apply(Game& game) const override;
     std::deque<GuiElementId> element_sequence() const override;
 };
 

@@ -118,6 +118,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
 
 std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 {
+    using enum TargetType;
     std::vector<std::unique_ptr<Action>> attack_actions;
 
     std::vector<unsigned> taunt_minion_positions;
@@ -133,31 +134,35 @@ std::vector<std::unique_ptr<Action>> Game::get_attack_actions() const
 
         if(taunt_minion_positions.empty())
         {
-            attack_actions.push_back(std::make_unique<HitHeroAction>(current_board_position));
+            attack_actions.push_back(std::make_unique<FightAction>(ALLY_MINION, current_board_position, ENEMY_HERO));
 
             for(unsigned opponent_board_position = 0; opponent_board_position < opponent().board.minion_count();
                 ++opponent_board_position)
-                attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, opponent_board_position)
-                );
+                attack_actions.push_back(std::make_unique<FightAction>(
+                    ALLY_MINION, current_board_position, ENEMY_MINION, opponent_board_position
+                ));
         }
         else
             for(unsigned taunt_minion_position: taunt_minion_positions)
-                attack_actions.push_back(std::make_unique<TradeAction>(current_board_position, taunt_minion_position));
+                attack_actions.push_back(std::make_unique<FightAction>(
+                    ALLY_MINION, current_board_position, ENEMY_MINION, taunt_minion_position
+                ));
     }
 
     if(current_player().hero->active && current_player().hero->weapon)
     {
         if(taunt_minion_positions.empty())
         {
-            attack_actions.push_back(std::make_unique<HeroHitHeroAction>());
+            attack_actions.push_back(std::make_unique<FightAction>(ALLY_HERO, ENEMY_HERO));
 
             for(unsigned opponent_board_position = 0; opponent_board_position < opponent().board.minion_count();
                 ++opponent_board_position)
-                attack_actions.push_back(std::make_unique<HeroTradeAction>(opponent_board_position));
+                attack_actions.push_back(std::make_unique<FightAction>(ALLY_HERO, ENEMY_MINION, opponent_board_position)
+                );
         }
         else
             for(unsigned taunt_minion_position: taunt_minion_positions)
-                attack_actions.push_back(std::make_unique<HeroTradeAction>(taunt_minion_position));
+                attack_actions.push_back(std::make_unique<FightAction>(ALLY_HERO, ENEMY_MINION, taunt_minion_position));
     }
 
     return attack_actions;
@@ -361,34 +366,89 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     return resulting_states;
 }
 
-std::vector<Game> Game::do_action(const TradeAction& action)
+std::vector<Game> Game::do_action(const FightAction& action)
 {
-    auto& first_minion = current_player().board.get_minion(action.first_target);
-    auto& second_minion = opponent().board.get_minion(action.second_target);
+    using enum TargetType;
+    unsigned attacker_dmg, defender_dmg;
 
-    first_minion.health -= second_minion.attack;
-    second_minion.health -= first_minion.attack;
+    switch(action.attacker)
+    {
+    case ALLY_MINION: {
+        auto& minion = current_player().board.get_minion(*action.attacker_position);
+        attacker_dmg = minion.attack;
+        minion.active = false;
+        break;
+    }
+    case ALLY_HERO: {
+        auto& hero = current_player().hero;
+        attacker_dmg = hero->weapon ? hero->weapon->attack : 0;
+        hero->active = false;
+        if(--hero->weapon->durability == 0)
+            hero->weapon = std::nullopt;
+        break;
+    }
+    default:
+        break;
+    }
 
-    first_minion.active = false;
+    switch(action.defender)
+    {
+    case ENEMY_MINION:
+        defender_dmg = opponent().board.get_minion(*action.defender_position).attack;
+        break;
+    case ENEMY_HERO:
+        defender_dmg = 0;
+        break;
+    default:
+        break;
+    }
 
-    SPDLOG_INFO(
-        "Player has traded {} from position {} into {} in position {}", first_minion.name, action.first_target,
-        second_minion.name, action.second_target
+    switch(action.attacker)
+    {
+    case ALLY_MINION:
+        switch(action.defender)
+        {
+        case ENEMY_MINION:
+            SPDLOG_INFO(
+                "Minion at position {} has attacked the enemy minion at position {}", action.attacker_position,
+                action.defender_position
+            );
+            break;
+        case ENEMY_HERO:
+            SPDLOG_INFO("Minion at position {} has attacked the enemy hero", action.attacker_position);
+            break;
+        default:
+            break;
+        }
+        break;
+    case ALLY_HERO:
+        switch(action.defender)
+        {
+        case ENEMY_MINION:
+            SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", action.defender_position);
+            break;
+        case ENEMY_HERO:
+            SPDLOG_INFO("Ally hero has attacked the enemy hero");
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+
+    apply_to_entity(
+        *this, std::vector<OnPlayArg>{action.defender, *action.defender_position},
+        [&attacker_dmg](Entity& entity) { entity.health -= attacker_dmg; }
+    );
+
+    apply_to_entity(
+        *this, std::vector<OnPlayArg>{action.attacker, *action.attacker_position},
+        [&defender_dmg](Entity& entity) { entity.health -= defender_dmg; }
     );
 
     return trigger_on_death_and_cleanup();
-}
-
-std::vector<Game> Game::do_action(const HitHeroAction& action)
-{
-    auto& minion = current_player().board.get_minion(action.position);
-
-    opponent().hero->health -= minion.attack;
-    minion.active = false;
-
-    SPDLOG_INFO("Player has attacked the opponent using {} from position {}", minion.name, action.position);
-
-    return {*this};
 }
 
 std::vector<Game> Game::do_action(const HeroPowerAction& action)
@@ -401,35 +461,4 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
     SPDLOG_INFO("Player has used their hero power");
 
     return trigger_on_death_and_cleanup();
-}
-
-std::vector<Game> Game::do_action(const HeroTradeAction& action)
-{
-    auto& target_minion = opponent().board.get_minion(action.position);
-
-    target_minion.health -= current_player().hero->weapon->attack;
-    current_player().hero->health -= target_minion.attack;
-
-    if(--current_player().hero->weapon->durability == 0)
-        current_player().hero->weapon = std::nullopt;
-
-    current_player().hero->active = false;
-
-    SPDLOG_INFO("Player has attacked {} in position {}", target_minion.name, action.position);
-
-    return trigger_on_death_and_cleanup();
-}
-
-std::vector<Game> Game::do_action(const HeroHitHeroAction&)
-{
-    opponent().hero->health -= current_player().hero->weapon->attack;
-
-    if(--current_player().hero->weapon->durability == 0)
-        current_player().hero->weapon = std::nullopt;
-
-    current_player().hero->active = false;
-
-    SPDLOG_INFO("Player has attacked their opponent");
-
-    return {*this};
 }

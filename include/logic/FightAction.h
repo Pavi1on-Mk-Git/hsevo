@@ -1,0 +1,25 @@
+#ifndef FIGHT_ACTION_H
+#define FIGHT_ACTION_H
+
+#include <optional>
+
+#include "logic/Action.h"
+#include "logic/TargetType.h"
+
+struct FightAction: Action
+{
+    const TargetType attacker, defender;
+    const std::optional<unsigned> attacker_position, defender_position;
+
+
+    FightAction(
+        const TargetType& attacker, unsigned attacker_position, const TargetType& defender, unsigned defender_position
+    );
+    FightAction(const TargetType& attacker, const TargetType& defender, unsigned defender_position);
+    FightAction(const TargetType& attacker, unsigned attacker_position, const TargetType& defender);
+    FightAction(const TargetType& attacker, const TargetType& defender);
+    std::vector<Game> apply(Game& game) const override;
+    std::deque<GuiElementId> element_sequence() const override;
+};
+
+#endif

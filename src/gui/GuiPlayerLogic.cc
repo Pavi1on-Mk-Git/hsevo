@@ -10,7 +10,8 @@
 
 GuiPlayerLogic::GuiPlayerLogic(const Decklist& decklist, GameGui& gui): PlayerLogic(decklist), gui_(gui) {}
 
-Game GuiPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const
+Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector<std::unique_ptr<Action>>& actions)
+    const
 {
     auto potential_sequences = actions_to_elements(actions, click_sequence_);
 

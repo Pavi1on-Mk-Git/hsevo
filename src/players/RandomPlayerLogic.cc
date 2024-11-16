@@ -5,7 +5,8 @@
 
 RandomPlayerLogic::RandomPlayerLogic(const Decklist& decklist): PlayerLogic(decklist) {}
 
-Game RandomPlayerLogic::choose_and_apply_action(const Game& game, std::vector<std::unique_ptr<Action>> actions) const
+Game RandomPlayerLogic::choose_and_apply_action(const Game& game, const std::vector<std::unique_ptr<Action>>& actions)
+    const
 {
     auto& action = actions.at(Rng::instance().uniform_int(0, actions.size() - 1));
 

@@ -11,6 +11,8 @@ public:
     static const FreezingTrap instance;
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
     SecretResult on_trigger(Game& game, const FightAction& action) const override;
+    std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
+        const override;
 };
 
 inline const FreezingTrap FreezingTrap::instance;

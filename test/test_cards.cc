@@ -18,6 +18,7 @@
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
+#include "logic/cards/Misdirection.h"
 #include "logic/cards/MoltenGiant.h"
 #include "logic/cards/MortalCoil.h"
 #include "logic/cards/MountainGiant.h"
@@ -1137,7 +1138,67 @@ TEST_CASE("Freezing Trap")
     auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
     REQUIRE(post_attack_state.current_player().board.minion_count() == 0);
-    REQUIRE(post_attack_state.current_player().hero->health == 30);
+    REQUIRE(post_attack_state.opponent().hero->health == 30);
     REQUIRE(post_attack_state.current_player().hand.size() == 6);
     REQUIRE(post_attack_state.current_player().hand.get_card(5).mana_cost(post_attack_state) == 8);
+}
+
+TEST_CASE("Misdirection")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&Misdirection::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().secrets.size() == 1);
+
+    new_state.switch_active_player();
+
+    new_state.add_minion(&BoulderfistOgre::instance, 0);
+    new_state.current_player().board.get_minion(0).active = true;
+
+    SECTION("Redirect to own minion")
+    {
+        new_state.add_minion(&BoulderfistOgre::instance, 1);
+
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 1);
+        REQUIRE(post_attack_state.current_player().board.get_minion(1).health == 1);
+    }
+
+    SECTION("Redirect to enemy minion")
+    {
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
+
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 1);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 1);
+    }
+
+    SECTION("Redirect to enemy face")
+    {
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
+
+        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(1);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 24);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
+    }
+
+    SECTION("Redirect to own face")
+    {
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+        REQUIRE(post_attack_state.current_player().hero->health == 24);
+    }
 }

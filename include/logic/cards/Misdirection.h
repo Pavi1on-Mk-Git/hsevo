@@ -1,20 +1,20 @@
-#ifndef EXPLOSIVE_TRAP_H
-#define EXPLOSIVE_TRAP_H
+#ifndef MISDIRECTION_H
+#define MISDIRECTION_H
 
 #include "logic/cards/SecretCard.h"
 
-class ExplosiveTrap: public SecretCard
+class Misdirection: public SecretCard
 {
 private:
-    ExplosiveTrap(): SecretCard("Explosive Trap", 2) {}
+    Misdirection(): SecretCard("Misdirection", 2) {}
 public:
-    static const ExplosiveTrap instance;
+    static const Misdirection instance;
     std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
     SecretResult on_trigger(Game& game, const FightAction& action) const override;
     std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
         const override;
 };
 
-inline const ExplosiveTrap ExplosiveTrap::instance;
+inline const Misdirection Misdirection::instance;
 
 #endif

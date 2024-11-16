@@ -375,6 +375,8 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     return resulting_states;
 }
 
+#include <iostream>
+
 std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions)
 {
     using enum TargetType;

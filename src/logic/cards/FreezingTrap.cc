@@ -34,3 +34,19 @@ SecretResult FreezingTrap::on_trigger(Game& game, const FightAction& action) con
     }
     return SecretResult();
 }
+
+std::vector<std::unique_ptr<PlayCardAction>> FreezingTrap::create_play_actions(const Game& game, unsigned hand_position)
+    const
+{
+    std::vector<std::unique_ptr<PlayCardAction>> play_self_actions;
+
+    const unsigned mana_cost = this->mana_cost(game);
+
+    if(game.current_player().mana < mana_cost)
+        return {};
+
+    if(std::ranges::find(game.current_player().secrets, this) == game.current_player().secrets.end())
+        play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, mana_cost));
+
+    return play_self_actions;
+}

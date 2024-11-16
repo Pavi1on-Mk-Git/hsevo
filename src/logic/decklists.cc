@@ -15,6 +15,7 @@
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
+#include "logic/cards/Misdirection.h"
 #include "logic/cards/MoltenGiant.h"
 #include "logic/cards/MortalCoil.h"
 #include "logic/cards/MountainGiant.h"
@@ -81,6 +82,7 @@ Decklist face_hunter()
     deck.emplace_back(&Tracking::instance, 2);
     deck.emplace_back(&ExplosiveTrap::instance, 2);
     deck.emplace_back(&FreezingTrap::instance, 2);
+    deck.emplace_back(&Misdirection::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
     deck.emplace_back(&KillCommand::instance, 2);

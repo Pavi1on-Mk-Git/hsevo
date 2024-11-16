@@ -10,8 +10,7 @@ struct GulDan: public Villain
 {
     GulDan(): Villain("Gul'Dan", "Life Tap", 2, 30) {}
 
-    CLONE_HERO
-
+    std::unique_ptr<Hero> clone() const override;
     void on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args) override;
 };
 

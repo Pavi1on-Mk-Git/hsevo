@@ -32,10 +32,4 @@ public:
     void fatigue(unsigned count);
 };
 
-#define CLONE_HERO                                                            \
-    std::unique_ptr<Hero> clone() const override                              \
-    {                                                                         \
-        return std::make_unique<std::remove_cvref_t<decltype(*this)>>(*this); \
-    }
-
 #endif

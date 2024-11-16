@@ -7,8 +7,7 @@ struct LordJaraxxus: public Hero
 {
     LordJaraxxus(): Hero("Lord Jaraxxus", "INFERNO!", 2, 15, Tribe::DEMON) {}
 
-    CLONE_HERO
-
+    std::unique_ptr<Hero> clone() const override;
     void on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args);
 };
 

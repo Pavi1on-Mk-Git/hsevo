@@ -45,6 +45,14 @@ void Board::trigger_end_of_turn()
     });
 }
 
+const MinionCard* Board::remove_minion(unsigned position)
+{
+    auto& to_remove = board_.at(position);
+    const auto* card = to_remove.card;
+    board_.erase(board_.begin() + position);
+    return card;
+}
+
 std::vector<Minion>::iterator Board::begin()
 {
     return board_.begin();

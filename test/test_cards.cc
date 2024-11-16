@@ -10,6 +10,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
+#include "logic/cards/FreezingTrap.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/Infernal.h"
@@ -1112,4 +1113,31 @@ TEST_CASE("ExplosiveTrap")
     {
         // TODO When weapon implemented
     }
+}
+
+TEST_CASE("Freezing Trap")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&FreezingTrap::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().secrets.size() == 1);
+
+    new_state.switch_active_player();
+
+    new_state.add_minion(&BoulderfistOgre::instance, 0);
+    new_state.current_player().board.get_minion(0).active = true;
+
+    auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+    REQUIRE(post_attack_state.current_player().board.minion_count() == 0);
+    REQUIRE(post_attack_state.current_player().hero->health == 30);
+    REQUIRE(post_attack_state.current_player().hand.size() == 6);
+    REQUIRE(post_attack_state.current_player().hand.get_card(5).mana_cost(post_attack_state) == 8);
 }

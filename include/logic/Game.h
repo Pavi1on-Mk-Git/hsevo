@@ -48,6 +48,7 @@ public:
     void draw();
     unsigned next_minion_id();
     void add_minion(const MinionCard* card, unsigned position, bool own_board = true);
+    const MinionCard* bounce_minion(unsigned position);
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);
     std::vector<Game> do_action(const PlaySpellAction& action);

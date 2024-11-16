@@ -9,8 +9,8 @@ class Minion: public Entity
 {
 private:
     unsigned player_id_;
-    const MinionCard* card_;
 public:
+    const MinionCard* card;
     unsigned attack, id;
     bool active, will_die_horribly, triggered_on_death, has_deathrattle;
     MinionKeywords keywords;

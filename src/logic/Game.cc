@@ -79,6 +79,7 @@ void Game::mulligan()
 void Game::draw(unsigned amount)
 {
     auto [drawn_cards, fatigue_count] = current_player().deck.draw(amount);
+
     current_player().hand.add_cards(std::move(drawn_cards));
     current_player().hero->fatigue(fatigue_count);
 }
@@ -87,7 +88,7 @@ void Game::draw()
 {
     auto drawn_card = current_player().deck.draw();
     if(drawn_card)
-        current_player().hand.add_cards(std::move(drawn_card));
+        current_player().hand.add_cards(std::move(*drawn_card));
     else
         current_player().hero->fatigue(1);
 }
@@ -97,7 +98,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
     std::vector<std::unique_ptr<Action>> possible_actions;
     for(auto [hand_position, current_card]: std::views::enumerate(current_player().hand))
     {
-        auto play_card_actions = current_card->create_play_actions(*this, hand_position);
+        auto play_card_actions = current_card.create_play_actions(*this, hand_position);
         std::ranges::move(play_card_actions, std::back_inserter(possible_actions));
     }
 
@@ -222,8 +223,6 @@ void Game::clear_dead_minions(Board& board)
 {
     std::vector<unsigned> ids_to_reuse;
 
-    assert(play_order_.size() == current_player().board.minion_count() + opponent().board.minion_count());
-
     for(auto& minion: board)
         if(minion.health <= 0)
             ids_to_reuse.push_back(minion.id);
@@ -236,8 +235,6 @@ void Game::clear_dead_minions(Board& board)
         std::erase(play_order_, id);
         minion_ids_.push_back(id);
     }
-
-    assert(play_order_.size() == current_player().board.minion_count() + opponent().board.minion_count());
 }
 
 std::vector<Game> Game::trigger_on_death_and_cleanup()
@@ -270,6 +267,15 @@ void Game::add_minion(const MinionCard* card, unsigned position, bool own_board)
     }
 
     board.add_minion(added_minion, position);
+}
+
+const MinionCard* Game::bounce_minion(unsigned position)
+{
+    auto& board = current_player().board;
+    const unsigned removed_id = board.get_minion(position).id;
+    std::erase(play_order_, removed_id);
+    minion_ids_.push_back(removed_id);
+    return current_player().board.remove_minion(position);
 }
 
 HeroInput Game::get_hero_state(unsigned player_index) const
@@ -320,7 +326,9 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
 {
     current_player().mana -= action.card_cost;
 
-    const auto* played_card = static_cast<const MinionCard*>(current_player().hand.remove_card(action.hand_position));
+    const auto* played_card = static_cast<const MinionCard*>(
+        current_player().hand.remove_card(action.hand_position).card
+    );
     add_minion(played_card, action.board_position);
 
     auto new_states = played_card->on_play(*this, action.args);
@@ -348,10 +356,10 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
 
     auto played_card = current_player().hand.remove_card(action.hand_position);
 
-    auto new_states = played_card->on_play(*this, action.args);
+    auto new_states = played_card.on_play(*this, action.args);
 
     SPDLOG_INFO(
-        "Player has played {} from hand position {} for {} mana", played_card->name, action.hand_position,
+        "Player has played {} from hand position {} for {} mana", played_card.card->name, action.hand_position,
         action.card_cost
     );
 
@@ -424,12 +432,12 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
             {
             case ENEMY_MINION:
                 SPDLOG_INFO(
-                    "Minion at position {} has attacked the enemy minion at position {}", action.attacker_position,
-                    action.defender_position
+                    "Minion at position {} has attacked the enemy minion at position {}", *action.attacker_position,
+                    *action.defender_position
                 );
                 break;
             case ENEMY_HERO:
-                SPDLOG_INFO("Minion at position {} has attacked the enemy hero", action.attacker_position);
+                SPDLOG_INFO("Minion at position {} has attacked the enemy hero", *action.attacker_position);
                 break;
             default:
                 break;
@@ -439,7 +447,7 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
             switch(action.defender)
             {
             case ENEMY_MINION:
-                SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", action.defender_position);
+                SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", *action.defender_position);
                 break;
             case ENEMY_HERO:
                 SPDLOG_INFO("Ally hero has attacked the enemy hero");

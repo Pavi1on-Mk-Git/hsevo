@@ -2,9 +2,11 @@
 #define DECK_H
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "logic/cards/Card.h"
+#include "logic/cards/HandCard.h"
 #include "logic/decklists.h"
 
 class Deck
@@ -14,8 +16,8 @@ private:
 public:
     Deck(const DecklistDeck& decklist);
     void shuffle();
-    std::pair<std::vector<const Card*>, unsigned> draw(unsigned amount);
-    const Card* draw();
+    std::pair<std::vector<HandCard>, unsigned> draw(unsigned amount);
+    std::optional<HandCard> draw();
     unsigned size() const;
 };
 

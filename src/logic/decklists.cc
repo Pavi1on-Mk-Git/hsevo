@@ -8,6 +8,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
+#include "logic/cards/FreezingTrap.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/KillCommand.h"
@@ -79,6 +80,7 @@ Decklist face_hunter()
     deck.emplace_back(&TimberWolf::instance, 2);
     deck.emplace_back(&Tracking::instance, 2);
     deck.emplace_back(&ExplosiveTrap::instance, 2);
+    deck.emplace_back(&FreezingTrap::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
     deck.emplace_back(&KillCommand::instance, 2);

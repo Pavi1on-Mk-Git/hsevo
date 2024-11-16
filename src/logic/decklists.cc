@@ -8,6 +8,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
+#include "logic/cards/Flare.h"
 #include "logic/cards/FreezingTrap.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
@@ -77,6 +78,7 @@ Decklist face_hunter()
     DecklistDeck deck;
     deck.emplace_back(&HuntersMark::instance, 2);
     deck.emplace_back(&AbusiveSergeant::instance, 2);
+    deck.emplace_back(&Flare::instance, 1);
     deck.emplace_back(&LeperGnome::instance, 2);
     deck.emplace_back(&TimberWolf::instance, 2);
     deck.emplace_back(&Tracking::instance, 2);

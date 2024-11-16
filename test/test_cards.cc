@@ -10,6 +10,7 @@
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
+#include "logic/cards/Flare.h"
 #include "logic/cards/FreezingTrap.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
@@ -1183,7 +1184,7 @@ TEST_CASE("Misdirection")
     new_state.add_minion(&BoulderfistOgre::instance, 0);
     new_state.current_player().board.get_minion(0).active = true;
 
-    SECTION("Redirect to own minion")
+    SECTION("Redirect minion to own minion")
     {
         new_state.add_minion(&BoulderfistOgre::instance, 1);
 
@@ -1194,7 +1195,7 @@ TEST_CASE("Misdirection")
         REQUIRE(post_attack_state.current_player().board.get_minion(1).health == 1);
     }
 
-    SECTION("Redirect to enemy minion")
+    SECTION("Redirect minion to enemy minion")
     {
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1205,7 +1206,7 @@ TEST_CASE("Misdirection")
         REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 1);
     }
 
-    SECTION("Redirect to enemy face")
+    SECTION("Redirect minion to enemy face")
     {
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1215,11 +1216,29 @@ TEST_CASE("Misdirection")
         REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
     }
 
-    SECTION("Redirect to own face")
+    SECTION("Redirect minion to own face")
     {
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
         REQUIRE(post_attack_state.opponent().hero->health == 30);
         REQUIRE(post_attack_state.current_player().hero->health == 24);
     }
+}
+
+TEST_CASE("Flare")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&Flare::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.opponent().secrets.push_back(&ExplosiveTrap::instance);
+    game.opponent().secrets.push_back(&FreezingTrap::instance);
+    game.opponent().secrets.push_back(&Misdirection::instance);
+
+    game.current_player().mana = 1;
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.opponent().secrets.empty());
 }

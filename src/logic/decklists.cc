@@ -5,6 +5,7 @@
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/DefenderOfArgus.h"
+#include "logic/cards/EaglehornBow.h"
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
@@ -86,6 +87,7 @@ Decklist face_hunter()
     deck.emplace_back(&FreezingTrap::instance, 2);
     deck.emplace_back(&Misdirection::instance, 2);
     deck.emplace_back(&StarvingBuzzard::instance, 2);
+    deck.emplace_back(&EaglehornBow::instance, 2);
     deck.emplace_back(&ArcaneGolem::instance, 2);
     deck.emplace_back(&KillCommand::instance, 2);
     deck.emplace_back(&UnleashTheHounds::instance, 2);

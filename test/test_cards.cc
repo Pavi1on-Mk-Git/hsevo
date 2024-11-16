@@ -8,6 +8,7 @@
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
 #include "logic/cards/DefenderOfArgus.h"
+#include "logic/cards/EaglehornBow.h"
 #include "logic/cards/EarthenRingFarseer.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
@@ -1213,10 +1214,9 @@ TEST_CASE("Misdirection")
 
     new_state.switch_active_player();
 
-    new_state.add_minion(&BoulderfistOgre::instance, 0);
-
     SECTION("Redirect minion to own minion")
     {
+        new_state.add_minion(&BoulderfistOgre::instance, 0);
         new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 1);
 
@@ -1229,6 +1229,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to enemy minion")
     {
+        new_state.add_minion(&BoulderfistOgre::instance, 0);
         new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1241,6 +1242,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to enemy face")
     {
+        new_state.add_minion(&BoulderfistOgre::instance, 0);
         new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1252,6 +1254,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to own face")
     {
+        new_state.add_minion(&BoulderfistOgre::instance, 0);
         new_state.current_player().board.get_minion(0).active = true;
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
@@ -1261,6 +1264,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect hero to own minion")
     {
+        new_state.add_minion(&BoulderfistOgre::instance, 0);
         new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
@@ -1274,7 +1278,7 @@ TEST_CASE("Misdirection")
         new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
-        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(1);
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
         REQUIRE(post_attack_state.opponent().hero->health == 30);
         REQUIRE(post_attack_state.current_player().hero->health == 24);
@@ -1286,10 +1290,19 @@ TEST_CASE("Misdirection")
         new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
-        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(1);
+        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(0);
 
         REQUIRE(post_attack_state.opponent().hero->health == 27);
         REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
+    }
+
+    SECTION("No redirection target")
+    {
+        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
+
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 27);
     }
 }
 
@@ -1309,4 +1322,23 @@ TEST_CASE("Flare")
     auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.opponent().secrets.empty());
+}
+
+TEST_CASE("Eaglehorn Bow")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&EaglehornBow::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().hero->weapon = Weapon(&EaglehornBow::instance);
+    game.current_player().hero->weapon->durability = 1;
+    game.opponent().hero->weapon = Weapon(&EaglehornBow::instance);
+    game.opponent().secrets.push_back(&ExplosiveTrap::instance);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().hero->weapon->durability == 1);
+    REQUIRE(new_state.opponent().hero->weapon->durability == 3);
 }

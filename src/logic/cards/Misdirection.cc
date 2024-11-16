@@ -77,6 +77,9 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
         return SecretResult();
     }
 
+    if(actions.empty())
+        return SecretResult();
+
     std::vector<Game> states;
     for(unsigned i = 0; i < actions.size(); ++i)
         states.push_back(game);

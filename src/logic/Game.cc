@@ -243,6 +243,10 @@ std::vector<Game> Game::trigger_on_death_and_cleanup()
 
     for(auto& state: final_states)
     {
+        auto& current_weapon = state.current_player().hero->weapon;
+        if(current_weapon->durability == 0)
+            current_weapon = std::nullopt;
+
         state.clear_dead_minions(state.current_player().board);
         state.clear_dead_minions(state.opponent().board);
     }
@@ -375,8 +379,6 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     return resulting_states;
 }
 
-#include <iostream>
-
 std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions)
 {
     using enum TargetType;
@@ -397,10 +399,14 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
         }
         case ALLY_HERO: {
             auto& hero = state.current_player().hero;
-            attacker_dmg = hero->weapon ? hero->weapon->attack : 0;
-            hero->active = false;
-            if(--hero->weapon->durability == 0)
-                hero->weapon = std::nullopt;
+            if(hero->weapon)
+            {
+                attacker_dmg = hero->weapon->attack;
+                hero->active = false;
+                --hero->weapon->durability;
+            }
+            else
+                attacker_dmg = 0;
             break;
         }
         default:
@@ -498,7 +504,17 @@ std::vector<Game> Game::do_action(const FightAction& action)
             }
 
             for(auto& [new_state, new_action]: new_states_and_actions)
+            {
+                auto& current_player_weapon = new_state.current_player().hero->weapon;
+                if(current_player_weapon)
+                    current_player_weapon->on_secret_trigger();
+
+                auto& opponent_weapon = new_state.opponent().hero->weapon;
+                if(opponent_weapon)
+                    opponent_weapon->on_secret_trigger();
+
                 std::erase(new_state.opponent().secrets, secret);
+            }
 
             if(!can_continue)
             {

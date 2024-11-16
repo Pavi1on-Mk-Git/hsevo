@@ -502,10 +502,8 @@ std::vector<Game> Game::do_action(const FightAction& action)
 
             if(!can_continue)
             {
-                std::ranges::transform(
-                    new_states_and_actions, std::back_inserter(resulting_states),
-                    [](const auto& state_and_action) { return std::get<0>(state_and_action); }
-                );
+                for(auto& [new_state, new_action]: new_states_and_actions)
+                    std::ranges::move(new_state.trigger_on_death_and_cleanup(), std::back_inserter(resulting_states));
                 continue;
             }
 

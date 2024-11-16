@@ -1,12 +1,17 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-struct Weapon
+#include "logic/cards/WeaponCard.h"
+
+class Weapon
 {
-    const char* name;
+private:
+    const WeaponCard* card_;
+public:
     unsigned attack, durability;
 
-    Weapon(const char* name, unsigned attack, unsigned durability);
+    Weapon(const WeaponCard* card);
+    void on_secret_trigger();
 };
 
 #endif

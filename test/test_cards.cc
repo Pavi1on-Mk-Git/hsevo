@@ -4,6 +4,7 @@
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
+#include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -163,6 +164,46 @@ TEST_CASE("Secrets")
     auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
     REQUIRE(post_attack_state.opponent().secrets.empty());
+}
+
+TEST_CASE("Weapons")
+{
+    auto hero = std::make_unique<GulDan>();
+    DecklistDeck deck;
+    deck.push_back({&BloodFury::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    SECTION("Attack hero and destroy weapon")
+    {
+        new_state.current_player().hero->weapon->durability = 1;
+
+        auto actions = new_state.get_possible_actions();
+        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
+
+        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
+        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
+        REQUIRE(post_attack_state.opponent().hero->health == 27);
+    }
+
+    SECTION("Attack taunt minion and destroy weapon")
+    {
+        new_state.current_player().hero->weapon->durability = 1;
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
+        new_state.opponent().board.get_minion(0).keywords |= TAUNT;
+
+        auto actions = new_state.get_possible_actions();
+        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
+
+        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
+        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
+        REQUIRE(post_attack_state.current_player().hero->health == 24);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 4);
+    }
 }
 
 TEST_CASE("The Coin")
@@ -772,38 +813,10 @@ TEST_CASE("Lord Jaraxxus")
     REQUIRE(std::strcmp(jaraxxus->hero_power_name, "INFERNO!") == 0);
     REQUIRE(std::strcmp(jaraxxus->name, "Lord Jaraxxus") == 0);
     REQUIRE(jaraxxus->tribe == Tribe::DEMON);
-    REQUIRE(std::strcmp(jaraxxus->weapon->name, "Blood Fury") == 0);
     REQUIRE(jaraxxus->weapon->attack == 3);
     REQUIRE(jaraxxus->weapon->durability == 8);
 
     jaraxxus->active = true;
-
-    SECTION("Attack hero and destroy weapon")
-    {
-        new_state.current_player().hero->weapon->durability = 1;
-
-        auto actions = new_state.get_possible_actions();
-        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
-
-        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
-        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
-        REQUIRE(post_attack_state.opponent().hero->health == 27);
-    }
-
-    SECTION("Attack taunt minion and destroy weapon")
-    {
-        new_state.current_player().hero->weapon->durability = 1;
-        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
-        new_state.opponent().board.get_minion(0).keywords |= TAUNT;
-
-        auto actions = new_state.get_possible_actions();
-        auto post_attack_state = actions.at(0)->apply(new_state).at(0);
-
-        REQUIRE_FALSE(post_attack_state.current_player().hero->active);
-        REQUIRE_FALSE(post_attack_state.current_player().hero->weapon);
-        REQUIRE(post_attack_state.current_player().hero->health == 9);
-        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 4);
-    }
 
     SECTION("Hero power")
     {
@@ -1136,9 +1149,28 @@ TEST_CASE("ExplosiveTrap")
         REQUIRE(post_attack_state.opponent().hero->health == 24);
     }
 
+    SECTION("Dying minion attack")
+    {
+        auto& minion = new_state.current_player().board.get_minion(0);
+        minion.health = 2;
+        minion.active = true;
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.current_player().board.minion_count() == 1);
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 5);
+        REQUIRE(post_attack_state.current_player().hero->health == 28);
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+    }
+
     SECTION("Hero attack")
     {
-        // TODO When weapon implemented
+        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 5);
+        REQUIRE(post_attack_state.current_player().board.get_minion(1).health == 5);
+        REQUIRE(post_attack_state.current_player().hero->health == 28);
+        REQUIRE(post_attack_state.opponent().hero->health == 27);
     }
 }
 
@@ -1182,10 +1214,10 @@ TEST_CASE("Misdirection")
     new_state.switch_active_player();
 
     new_state.add_minion(&BoulderfistOgre::instance, 0);
-    new_state.current_player().board.get_minion(0).active = true;
 
     SECTION("Redirect minion to own minion")
     {
+        new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 1);
 
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
@@ -1197,6 +1229,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to enemy minion")
     {
+        new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
@@ -1208,6 +1241,7 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to enemy face")
     {
+        new_state.current_player().board.get_minion(0).active = true;
         new_state.add_minion(&BoulderfistOgre::instance, 0, false);
 
         auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(1);
@@ -1218,10 +1252,44 @@ TEST_CASE("Misdirection")
 
     SECTION("Redirect minion to own face")
     {
+        new_state.current_player().board.get_minion(0).active = true;
         auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
 
         REQUIRE(post_attack_state.opponent().hero->health == 30);
         REQUIRE(post_attack_state.current_player().hero->health == 24);
+    }
+
+    SECTION("Redirect hero to own minion")
+    {
+        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+        REQUIRE(post_attack_state.current_player().hero->health == 24);
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 4);
+    }
+
+    SECTION("Redirect hero to enemy minion")
+    {
+        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
+
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(1);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 30);
+        REQUIRE(post_attack_state.current_player().hero->health == 24);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 4);
+    }
+
+    SECTION("Redirect hero to enemy face")
+    {
+        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
+        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
+
+        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(1);
+
+        REQUIRE(post_attack_state.opponent().hero->health == 27);
+        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
     }
 }
 

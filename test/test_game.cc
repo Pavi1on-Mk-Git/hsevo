@@ -23,6 +23,7 @@ TEST_CASE("Initialize game")
         REQUIRE_FALSE(player.hero->weapon.has_value());
         REQUIRE(player.mana == 0);
         REQUIRE(player.mana_crystals == 0);
+        REQUIRE(player.secrets.empty());
     }
 
     REQUIRE(game.current_player().hand.size() == 3);

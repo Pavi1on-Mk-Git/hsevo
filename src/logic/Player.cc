@@ -6,5 +6,5 @@ Player::Player(const Decklist& decklist):
 
 Player::Player(const Player& other):
     hero(other.hero->clone()), mana_crystals(other.mana_crystals), mana(other.mana), deck(other.deck), hand(other.hand),
-    board(other.board)
+    board(other.board), secrets(other.secrets)
 {}

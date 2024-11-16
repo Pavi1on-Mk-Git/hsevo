@@ -7,6 +7,8 @@
 #include "logic/heroes/Hero.h"
 #include "players/PlayerLogic.h"
 
+struct SecretCard;
+
 struct Player
 {
     static constexpr unsigned MAX_MANA = 10;
@@ -16,6 +18,7 @@ struct Player
     Deck deck;
     Hand hand;
     Board board;
+    std::vector<const SecretCard*> secrets;
 
     Player(const Decklist& decklist);
     Player(const Player& other);

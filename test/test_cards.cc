@@ -8,6 +8,7 @@
 #include "logic/cards/Coin.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EarthenRingFarseer.h"
+#include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
@@ -1073,5 +1074,42 @@ TEST_CASE("Tracking")
 
         REQUIRE(new_state.current_player().hand.size() == (card_count > 0 ? 3 : 2));
         REQUIRE(new_state.current_player().deck.size() == 0);
+    }
+}
+
+TEST_CASE("ExplosiveTrap")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&ExplosiveTrap::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().secrets.size() == 1);
+
+    new_state.switch_active_player();
+
+    new_state.add_minion(&BoulderfistOgre::instance, 0);
+    new_state.add_minion(&BoulderfistOgre::instance, 1);
+
+    SECTION("Minion attack")
+    {
+        new_state.current_player().board.get_minion(0).active = true;
+        auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+        REQUIRE(post_attack_state.current_player().board.get_minion(0).health == 5);
+        REQUIRE(post_attack_state.current_player().board.get_minion(1).health == 5);
+        REQUIRE(post_attack_state.current_player().hero->health == 28);
+        REQUIRE(post_attack_state.opponent().hero->health == 24);
+        REQUIRE(post_attack_state.opponent().secrets.empty());
+    }
+
+    SECTION("Hero attack")
+    {
+        // TODO When weapon implemented
     }
 }

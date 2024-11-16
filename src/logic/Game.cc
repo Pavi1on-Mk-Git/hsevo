@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include "logic/cards/Coin.h"
+#include "logic/cards/SecretCard.h"
 #include "utils/Rng.h"
 
 static const unsigned MAX_MINION_COUNT = Board::MAX_BOARD_SIZE * 2;
@@ -366,89 +367,147 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     return resulting_states;
 }
 
-std::vector<Game> Game::do_action(const FightAction& action)
+std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions)
 {
     using enum TargetType;
-    unsigned attacker_dmg, defender_dmg;
 
-    switch(action.attacker)
-    {
-    case ALLY_MINION: {
-        auto& minion = current_player().board.get_minion(*action.attacker_position);
-        attacker_dmg = minion.attack;
-        minion.active = false;
-        break;
-    }
-    case ALLY_HERO: {
-        auto& hero = current_player().hero;
-        attacker_dmg = hero->weapon ? hero->weapon->attack : 0;
-        hero->active = false;
-        if(--hero->weapon->durability == 0)
-            hero->weapon = std::nullopt;
-        break;
-    }
-    default:
-        break;
-    }
+    std::vector<Game> resulting_states;
 
-    switch(action.defender)
+    for(auto& [state, action]: states_and_actions)
     {
-    case ENEMY_MINION:
-        defender_dmg = opponent().board.get_minion(*action.defender_position).attack;
-        break;
-    case ENEMY_HERO:
-        defender_dmg = 0;
-        break;
-    default:
-        break;
-    }
+        unsigned attacker_dmg, defender_dmg;
 
-    switch(action.attacker)
-    {
-    case ALLY_MINION:
+        switch(action.attacker)
+        {
+        case ALLY_MINION: {
+            auto& minion = state.current_player().board.get_minion(*action.attacker_position);
+            attacker_dmg = minion.attack;
+            minion.active = false;
+            break;
+        }
+        case ALLY_HERO: {
+            auto& hero = state.current_player().hero;
+            attacker_dmg = hero->weapon ? hero->weapon->attack : 0;
+            hero->active = false;
+            if(--hero->weapon->durability == 0)
+                hero->weapon = std::nullopt;
+            break;
+        }
+        default:
+            break;
+        }
+
         switch(action.defender)
         {
+        case ALLY_MINION:
+            defender_dmg = state.current_player().board.get_minion(*action.defender_position).attack;
+            break;
+        case ALLY_HERO: {
+            auto& hero = state.current_player().hero;
+            defender_dmg = hero->weapon ? hero->weapon->attack : 0;
+            break;
+        }
         case ENEMY_MINION:
-            SPDLOG_INFO(
-                "Minion at position {} has attacked the enemy minion at position {}", action.attacker_position,
-                action.defender_position
-            );
+            defender_dmg = state.opponent().board.get_minion(*action.defender_position).attack;
             break;
         case ENEMY_HERO:
-            SPDLOG_INFO("Minion at position {} has attacked the enemy hero", action.attacker_position);
+            defender_dmg = 0;
             break;
         default:
             break;
         }
-        break;
-    case ALLY_HERO:
-        switch(action.defender)
+
+        switch(action.attacker)
         {
-        case ENEMY_MINION:
-            SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", action.defender_position);
+        case ALLY_MINION:
+            switch(action.defender)
+            {
+            case ENEMY_MINION:
+                SPDLOG_INFO(
+                    "Minion at position {} has attacked the enemy minion at position {}", action.attacker_position,
+                    action.defender_position
+                );
+                break;
+            case ENEMY_HERO:
+                SPDLOG_INFO("Minion at position {} has attacked the enemy hero", action.attacker_position);
+                break;
+            default:
+                break;
+            }
             break;
-        case ENEMY_HERO:
-            SPDLOG_INFO("Ally hero has attacked the enemy hero");
+        case ALLY_HERO:
+            switch(action.defender)
+            {
+            case ENEMY_MINION:
+                SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", action.defender_position);
+                break;
+            case ENEMY_HERO:
+                SPDLOG_INFO("Ally hero has attacked the enemy hero");
+                break;
+            default:
+                break;
+            }
             break;
         default:
             break;
         }
-        break;
-    default:
-        break;
+
+        apply_to_entity(
+            state, std::vector<OnPlayArg>{action.defender, *action.defender_position},
+            [&attacker_dmg](Entity& entity) { entity.health -= attacker_dmg; }
+        );
+
+        apply_to_entity(
+            state, std::vector<OnPlayArg>{action.attacker, *action.attacker_position},
+            [&defender_dmg](Entity& entity) { entity.health -= defender_dmg; }
+        );
+
+        std::ranges::move(state.trigger_on_death_and_cleanup(), std::back_inserter(resulting_states));
     }
 
-    apply_to_entity(
-        *this, std::vector<OnPlayArg>{action.defender, *action.defender_position},
-        [&attacker_dmg](Entity& entity) { entity.health -= attacker_dmg; }
-    );
+    return resulting_states;
+}
 
-    apply_to_entity(
-        *this, std::vector<OnPlayArg>{action.attacker, *action.attacker_position},
-        [&defender_dmg](Entity& entity) { entity.health -= defender_dmg; }
-    );
+std::vector<Game> Game::do_action(const FightAction& action)
+{
+    std::vector<std::pair<Game, FightAction>> states_and_actions{{*this, action}};
+    std::vector<Game> resulting_states;
 
-    return trigger_on_death_and_cleanup();
+    for(const auto& secret: opponent().secrets)
+    {
+        std::vector<std::pair<Game, FightAction>> resulting_states_and_actions;
+
+        for(auto& [state, action]: states_and_actions)
+        {
+            auto [new_states_and_actions, triggered, can_continue] = secret->on_trigger(state, action);
+
+            if(!triggered)
+            {
+                resulting_states_and_actions.emplace_back(state, action);
+                continue;
+            }
+
+            for(auto& [new_state, new_action]: new_states_and_actions)
+                std::erase(new_state.opponent().secrets, secret);
+
+            if(!can_continue)
+            {
+                std::ranges::transform(
+                    new_states_and_actions, std::back_inserter(resulting_states),
+                    [](const auto& state_and_action) { return std::get<0>(state_and_action); }
+                );
+                continue;
+            }
+
+            std::ranges::move(new_states_and_actions, std::back_inserter(resulting_states_and_actions));
+        }
+
+        states_and_actions = std::move(resulting_states_and_actions);
+    }
+
+    std::ranges::move(do_fight_actions(states_and_actions), std::back_inserter(resulting_states));
+
+    return resulting_states;
 }
 
 std::vector<Game> Game::do_action(const HeroPowerAction& action)

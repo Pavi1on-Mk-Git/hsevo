@@ -8,9 +8,8 @@
 
 struct FightAction: Action
 {
-    const TargetType attacker, defender;
-    const std::optional<unsigned> attacker_position, defender_position;
-
+    TargetType attacker, defender;
+    std::optional<unsigned> attacker_position, defender_position;
 
     FightAction(
         const TargetType& attacker, unsigned attacker_position, const TargetType& defender, unsigned defender_position

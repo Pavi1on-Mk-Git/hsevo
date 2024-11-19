@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <ranges>
-#include <spdlog/spdlog.h>
 
 #include "logic/cards/Coin.h"
 #include "logic/cards/SecretCard.h"
@@ -306,7 +305,8 @@ HeroInput Game::get_hero_state(unsigned player_index) const
     for(auto& minion_hero: minion_heros | std::views::drop(board_size))
         minion_hero = MinionStateInput{};
 
-    return HeroInput{hero_hero, minion_heros, player.hand.size(), board_size, player.mana};
+    return HeroInput{hero_hero,  minion_heros, player.hand.size(),
+                     board_size, player.mana,  static_cast<unsigned>(player.secrets.size())};
 }
 
 GameStateInput Game::get_state() const
@@ -317,8 +317,6 @@ GameStateInput Game::get_state() const
 std::vector<Game> Game::do_action(const EndTurnAction&)
 {
     turn_ended = true;
-
-    SPDLOG_INFO("Player has ended their turn");
 
     current_player().board.trigger_end_of_turn();
     opponent().board.trigger_end_of_turn();
@@ -336,11 +334,6 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
     add_minion(played_card, action.board_position);
 
     auto new_states = played_card->on_play(*this, action.args);
-
-    SPDLOG_INFO(
-        "Player has played {} from hand position {} for {} mana in board position {}", played_card->name,
-        action.hand_position, action.card_cost, action.board_position
-    );
 
     std::vector<Game> resulting_states;
 
@@ -361,11 +354,6 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     auto played_card = current_player().hand.remove_card(action.hand_position);
 
     auto new_states = played_card.on_play(*this, action.args);
-
-    SPDLOG_INFO(
-        "Player has played {} from hand position {} for {} mana", played_card.card->name, action.hand_position,
-        action.card_cost
-    );
 
     std::vector<Game> resulting_states;
 
@@ -428,41 +416,6 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
             break;
         case ENEMY_HERO:
             defender_dmg = 0;
-            break;
-        default:
-            break;
-        }
-
-        switch(action.attacker)
-        {
-        case ALLY_MINION:
-            switch(action.defender)
-            {
-            case ENEMY_MINION:
-                SPDLOG_INFO(
-                    "Minion at position {} has attacked the enemy minion at position {}", *action.attacker_position,
-                    *action.defender_position
-                );
-                break;
-            case ENEMY_HERO:
-                SPDLOG_INFO("Minion at position {} has attacked the enemy hero", *action.attacker_position);
-                break;
-            default:
-                break;
-            }
-            break;
-        case ALLY_HERO:
-            switch(action.defender)
-            {
-            case ENEMY_MINION:
-                SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", *action.defender_position);
-                break;
-            case ENEMY_HERO:
-                SPDLOG_INFO("Ally hero has attacked the enemy hero");
-                break;
-            default:
-                break;
-            }
             break;
         default:
             break;
@@ -540,8 +493,6 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
     current_player().hero->hero_power_active = false;
 
     current_player().hero->on_hero_power_use(*this, action.args);
-
-    SPDLOG_INFO("Player has used their hero power");
 
     return trigger_on_death_and_cleanup();
 }

@@ -28,7 +28,6 @@ private:
     void clear_dead_minions(Board& board);
     std::vector<Game> trigger_on_death(unsigned last_id_position = 0);
     std::vector<Game> trigger_on_death_and_cleanup();
-    static std::vector<Game> do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions);
 
     HeroInput get_hero_state(unsigned player_index) const;
 public:
@@ -49,6 +48,7 @@ public:
     unsigned next_minion_id();
     void add_minion(const MinionCard* card, unsigned position, bool own_board = true);
     const MinionCard* bounce_minion(unsigned position);
+    static std::vector<Game> do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions);
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);
     std::vector<Game> do_action(const PlaySpellAction& action);

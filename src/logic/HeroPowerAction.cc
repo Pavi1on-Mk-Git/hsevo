@@ -1,10 +1,18 @@
 #include "logic/HeroPowerAction.h"
 
+#include <spdlog/spdlog.h>
+
 #include "logic/Game.h"
 
 HeroPowerAction::HeroPowerAction(const std::vector<OnPlayArg>& args): args(args) {}
 
 std::vector<Game> HeroPowerAction::apply(Game& game) const
+{
+    SPDLOG_INFO("Player has used their hero power");
+    return game.do_action(*this);
+}
+
+std::vector<Game> HeroPowerAction::test_apply(Game& game) const
 {
     return game.do_action(*this);
 }

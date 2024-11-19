@@ -27,6 +27,7 @@ std::array<std::array<double, GameStateInput::INPUT_SIZE>, 2> GameStateInput::ge
         add_to_element(player.hand_size);
         add_to_element(player.deck_size);
         add_to_element(player.mana);
+        add_to_element(player.secret_count);
 
         return result_element;
     });

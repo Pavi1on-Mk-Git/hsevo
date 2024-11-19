@@ -1,5 +1,7 @@
 #include "logic/PlaySpellAction.h"
 
+#include <spdlog/spdlog.h>
+
 #include "logic/Game.h"
 
 PlaySpellAction::PlaySpellAction(unsigned hand_position, unsigned card_cost, const std::vector<OnPlayArg>& args):
@@ -7,6 +9,15 @@ PlaySpellAction::PlaySpellAction(unsigned hand_position, unsigned card_cost, con
 {}
 
 std::vector<Game> PlaySpellAction::apply(Game& game) const
+{
+    SPDLOG_INFO(
+        "Player has played {} from hand position {} for {} mana{}",
+        game.current_player().hand.get_card(hand_position).card->name, hand_position, card_cost, args
+    );
+    return game.do_action(*this);
+}
+
+std::vector<Game> PlaySpellAction::test_apply(Game& game) const
 {
     return game.do_action(*this);
 }

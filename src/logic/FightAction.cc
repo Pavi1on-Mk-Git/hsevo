@@ -1,5 +1,7 @@
 #include "logic/FightAction.h"
 
+#include <spdlog/spdlog.h>
+
 #include "logic/Game.h"
 
 FightAction::FightAction(
@@ -20,7 +22,48 @@ FightAction::FightAction(const TargetType& attacker, const TargetType& defender)
 
 std::vector<Game> FightAction::apply(Game& game) const
 {
+    using enum TargetType;
+    switch(attacker)
+    {
+    case ALLY_MINION:
+        switch(defender)
+        {
+        case ENEMY_MINION:
+            SPDLOG_INFO(
+                "Minion at position {} has attacked the enemy minion at position {}", *attacker_position,
+                *defender_position
+            );
+            break;
+        case ENEMY_HERO:
+            SPDLOG_INFO("Minion at position {} has attacked the enemy hero", *attacker_position);
+            break;
+        default:
+            break;
+        }
+        break;
+    case ALLY_HERO:
+        switch(defender)
+        {
+        case ENEMY_MINION:
+            SPDLOG_INFO("Ally hero has attacked the enemy minion at position {}", *defender_position);
+            break;
+        case ENEMY_HERO:
+            SPDLOG_INFO("Ally hero has attacked the enemy hero");
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
     return game.do_action(*this);
+}
+
+std::vector<Game> FightAction::test_apply(Game& game) const
+{
+    std::vector<std::pair<Game, FightAction>> state_and_action{{game, *this}};
+    return Game::do_fight_actions(state_and_action);
 }
 
 std::deque<GuiElementId> FightAction::element_sequence() const

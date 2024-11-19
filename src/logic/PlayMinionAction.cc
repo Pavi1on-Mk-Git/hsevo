@@ -1,5 +1,7 @@
 #include "logic/PlayMinionAction.h"
 
+#include <spdlog/spdlog.h>
+
 #include "logic/Game.h"
 
 PlayMinionAction::PlayMinionAction(
@@ -8,6 +10,15 @@ PlayMinionAction::PlayMinionAction(
 {}
 
 std::vector<Game> PlayMinionAction::apply(Game& game) const
+{
+    SPDLOG_INFO(
+        "Player has played {} from hand position {} for {} mana in board position {}{}",
+        game.current_player().hand.get_card(hand_position).card->name, hand_position, card_cost, board_position, args
+    );
+    return game.do_action(*this);
+}
+
+std::vector<Game> PlayMinionAction::test_apply(Game& game) const
 {
     return game.do_action(*this);
 }

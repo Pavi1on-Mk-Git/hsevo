@@ -25,12 +25,12 @@ struct HeroInput
 {
     HeroStateInput hero;
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minions;
-    unsigned hand_size, deck_size, mana;
+    unsigned hand_size, deck_size, mana, secret_count;
 };
 
 struct GameStateInput
 {
-    static constexpr unsigned INPUT_SIZE = 4 + 5 * Board::MAX_BOARD_SIZE + 3;
+    static constexpr unsigned INPUT_SIZE = 4 + 5 * Board::MAX_BOARD_SIZE + 4;
     std::array<HeroInput, 2> players;
     std::array<std::array<double, INPUT_SIZE>, 2> get_evo_input() const;
 };

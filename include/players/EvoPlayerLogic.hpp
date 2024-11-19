@@ -39,18 +39,22 @@ struct EvoPlayerLogic: PlayerLogic
             actions, std::back_inserter(states_for_action),
             [&game](const std::unique_ptr<Action>& action) {
                 Game game_copy(game);
-                return action->apply(game_copy);
+                return action->test_apply(game_copy);
             }
         );
 
-        auto best_action = std::ranges::max_element(
-            states_for_action,
-            [this](const std::vector<Game>& first_states, const std::vector<Game>& second_states) {
-                return average_of_states(first_states) < average_of_states(second_states);
-            }
-        );
+        unsigned best_action_id = std::ranges::max_element(
+                                      states_for_action,
+                                      [this](
+                                          const std::vector<Game>& first_states, const std::vector<Game>& second_states
+                                      ) { return average_of_states(first_states) < average_of_states(second_states); }
+                                  ) -
+                                  states_for_action.begin();
 
-        return best_action->at(Rng::instance().uniform_int(0, best_action->size() - 1));
+        Game game_copy(game);
+        auto resulting_states = actions.at(best_action_id)->apply(game_copy);
+
+        return resulting_states.at(Rng::instance().uniform_int(0, resulting_states.size() - 1));
     }
 };
 

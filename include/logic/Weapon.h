@@ -11,6 +11,7 @@ public:
     unsigned attack, durability;
 
     Weapon(const WeaponCard* card);
+    const char* name() const;
     void on_secret_trigger();
 };
 

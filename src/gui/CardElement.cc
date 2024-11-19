@@ -28,7 +28,7 @@ void CardElement::draw_(const Game& game) const
         const auto card_rect = scaled_rect();
         const float number_text_height = scaled_height(CARD_TEXT_HEIGHT_RATIO) * TEXT_HEIGHT_MULTIPLIER;
 
-        draw_centered_text(card->name, scaled_height(CARD_TEXT_HEIGHT_RATIO), true);
+        draw_centered_text(card.card->name, scaled_height(CARD_TEXT_HEIGHT_RATIO), true);
 
         const raylib::Vector2 stat_rect_size(
             card_rect.width / STAT_BOX_WIDTH_RATIO, card_rect.height / STAT_BOX_HEIGHT_RATIO
@@ -45,9 +45,9 @@ void CardElement::draw_(const Game& game) const
         Game game_copy(game);
         if(!gui_.is_player_turn())
             game_copy.switch_active_player();
-        draw_text(std::to_string(card->mana_cost(game_copy)), number_text_height, mana_rect);
+        draw_text(std::to_string(card.card->mana_cost(game_copy)), number_text_height, mana_rect);
 
-        const auto minion = dynamic_cast<const MinionCard*>(card);
+        const auto minion = dynamic_cast<const MinionCard*>(card.card);
         if(minion != nullptr)
         {
             const raylib::Rectangle attack_rect({card_rect.x, down_aligned_y}, stat_rect_size);

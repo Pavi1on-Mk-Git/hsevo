@@ -23,7 +23,7 @@ void WeaponElement::draw_(const Game& game) const
         const auto weapon_rect = scaled_rect();
         const float number_text_height = scaled_height(WEAPON_TEXT_HEIGHT_RATIO) * TEXT_HEIGHT_MULTIPLIER;
 
-        draw_centered_text(weapon->name, scaled_height(WEAPON_TEXT_HEIGHT_RATIO), true);
+        draw_centered_text(weapon->name(), scaled_height(WEAPON_TEXT_HEIGHT_RATIO), true);
 
         if(gui_.is_player_turn() == is_player_side_)
         {

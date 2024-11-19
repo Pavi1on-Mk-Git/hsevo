@@ -1240,18 +1240,6 @@ TEST_CASE("Misdirection")
         REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 1);
     }
 
-    SECTION("Redirect minion to enemy face")
-    {
-        new_state.add_minion(&BoulderfistOgre::instance, 0);
-        new_state.current_player().board.get_minion(0).active = true;
-        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
-
-        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(1);
-
-        REQUIRE(post_attack_state.opponent().hero->health == 24);
-        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
-    }
-
     SECTION("Redirect minion to own face")
     {
         new_state.add_minion(&BoulderfistOgre::instance, 0);
@@ -1283,17 +1271,6 @@ TEST_CASE("Misdirection")
         REQUIRE(post_attack_state.opponent().hero->health == 30);
         REQUIRE(post_attack_state.current_player().hero->health == 24);
         REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 4);
-    }
-
-    SECTION("Redirect hero to enemy face")
-    {
-        new_state.current_player().hero->weapon = Weapon(&BloodFury::instance);
-        new_state.add_minion(&BoulderfistOgre::instance, 0, false);
-
-        auto post_attack_state = new_state.get_possible_actions().at(2)->apply(new_state).at(0);
-
-        REQUIRE(post_attack_state.opponent().hero->health == 27);
-        REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 7);
     }
 
     SECTION("No redirection target")

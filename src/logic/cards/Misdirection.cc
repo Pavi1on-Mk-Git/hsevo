@@ -19,19 +19,6 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
     case ALLY_MINION:
         switch(action.defender)
         {
-        case ENEMY_MINION:
-            for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
-                ++minion_position)
-                if(minion_position != action.attacker_position)
-                    actions.emplace_back(ALLY_MINION, *action.attacker_position, ALLY_MINION, minion_position);
-
-            for(unsigned minion_position = 0; minion_position < game.opponent().board.minion_count(); ++minion_position)
-                if(minion_position != action.defender_position)
-                    actions.emplace_back(ALLY_MINION, *action.attacker_position, ENEMY_MINION, minion_position);
-
-            actions.emplace_back(ALLY_MINION, *action.attacker_position, ALLY_HERO);
-            actions.emplace_back(ALLY_MINION, *action.attacker_position, ENEMY_HERO);
-            break;
         case ENEMY_HERO:
             for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
                 ++minion_position)
@@ -50,17 +37,6 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
     case ALLY_HERO:
         switch(action.defender)
         {
-        case ENEMY_MINION:
-            for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
-                ++minion_position)
-                actions.emplace_back(ALLY_HERO, ALLY_MINION, minion_position);
-
-            for(unsigned minion_position = 0; minion_position < game.opponent().board.minion_count(); ++minion_position)
-                if(minion_position != action.defender_position)
-                    actions.emplace_back(ALLY_HERO, ENEMY_MINION, minion_position);
-
-            actions.emplace_back(ALLY_HERO, ENEMY_HERO);
-            break;
         case ENEMY_HERO:
             for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
                 ++minion_position)

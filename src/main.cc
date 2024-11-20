@@ -22,7 +22,7 @@ int main()
     auto best_evo = NEAT::evolve({
         .population_size = 10,
         .iterations = 20,
-        .scoring_func = [&](const auto& population) { return score_member(population, face_hunter()); },
+        .scoring_func = [&](const auto& population) { return score_member(population, control_warrior()); },
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,
@@ -48,7 +48,7 @@ int main()
 
     // SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
 
-    auto deck = face_hunter();
+    auto deck = control_warrior();
     // std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo);
     std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo.first);
     run_game(logic, logic);

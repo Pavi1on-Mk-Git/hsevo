@@ -6,9 +6,9 @@ const unsigned WHIRLWIND_DMG = 1;
 
 std::vector<Game> Whirlwind::on_play(Game& game, const std::vector<OnPlayArg>&) const
 {
-    auto deal_to_all = [](Player& player) {
+    auto deal_to_all = [&game](Player& player) {
         for(auto& minion: player.board)
-            minion.deal_dmg(WHIRLWIND_DMG);
+            minion.deal_dmg(WHIRLWIND_DMG, game);
     };
 
     deal_to_all(game.current_player());

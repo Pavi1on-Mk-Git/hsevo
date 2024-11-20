@@ -17,9 +17,10 @@ public:
     std::vector<unsigned> auras_applied;
 
     Minion(const MinionCard* card, Game& game, unsigned player_id);
-    void deal_dmg(unsigned amount) override;
+    void deal_dmg(unsigned amount, Game& game) override;
     std::vector<Game> on_death(Game& game);
-    void on_minion_summon(Game& game, Minion& minion);
+    void on_minion_summon(Game& game, Minion& minion) const;
+    void on_minion_damaged(Game& game) const;
 };
 
 

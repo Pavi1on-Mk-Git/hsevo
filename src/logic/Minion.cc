@@ -8,9 +8,11 @@ Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
     has_deathrattle(card->has_deathrattle), keywords(card->keywords)
 {}
 
-void Minion::deal_dmg(unsigned amount)
+void Minion::deal_dmg(unsigned amount, Game& game)
 {
     health -= amount;
+    for(const auto& minion: game.players.at(player_id_).board)
+        minion.on_minion_damaged(game);
 }
 
 std::vector<Game> Minion::on_death(Game& game)
@@ -18,7 +20,12 @@ std::vector<Game> Minion::on_death(Game& game)
     return card->on_death(game, id, player_id_);
 }
 
-void Minion::on_minion_summon(Game& game, Minion& minion)
+void Minion::on_minion_summon(Game& game, Minion& minion) const
 {
-    return card->on_minion_summon(game, minion, id);
+    card->on_minion_summon(game, minion, id);
+}
+
+void Minion::on_minion_damaged(Game& game) const
+{
+    card->on_minion_damaged(game);
 }

@@ -4,6 +4,7 @@
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
+#include "logic/cards/Armorsmith.h"
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
@@ -1336,7 +1337,7 @@ TEST_CASE("Execute")
     game.add_minion(&BoulderfistOgre::instance, 0, true);
     game.add_minion(&BoulderfistOgre::instance, 0, false);
     game.add_minion(&BoulderfistOgre::instance, 1, false);
-    game.opponent().board.get_minion(0).deal_dmg(1);
+    game.opponent().board.get_minion(0).health -= 1;
 
     game.current_player().mana = 1;
 
@@ -1397,12 +1398,37 @@ TEST_CASE("Whirlwind")
     game.add_minion(&BoulderfistOgre::instance, 0, false);
     game.add_minion(&BoulderfistOgre::instance, 1, false);
 
-    auto actions = game.get_possible_actions();
-
-    auto new_state = actions.at(0)->apply(game).at(0);
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.current_player().board.get_minion(0).health == 6);
     REQUIRE(new_state.current_player().board.get_minion(1).health == 6);
     REQUIRE(new_state.opponent().board.get_minion(0).health == 6);
     REQUIRE(new_state.opponent().board.get_minion(1).health == 6);
+}
+
+TEST_CASE("Armorsmith")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Armorsmith::instance, 1});
+    deck.push_back({&Hellfire::instance, 2});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
+
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    new_state.current_player().mana = 4;
+
+    auto post_hellfire_state = new_state.get_possible_actions().at(0)->apply(new_state).at(0);
+
+    REQUIRE(post_hellfire_state.current_player().hero->health == 27);
+    REQUIRE(post_hellfire_state.current_player().hero->armour == 3);
 }

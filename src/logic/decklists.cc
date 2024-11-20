@@ -3,6 +3,7 @@
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
+#include "logic/cards/Armorsmith.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
@@ -109,6 +110,7 @@ Decklist control_warrior()
     deck.emplace_back(&Execute::instance, 2);
     deck.emplace_back(&ShieldSlam::instance, 2);
     deck.emplace_back(&Whirlwind::instance, 2);
+    deck.emplace_back(&Armorsmith::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

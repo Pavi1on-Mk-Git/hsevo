@@ -8,7 +8,7 @@ Hero::Hero(
     hero_power_mana_cost(hero_power_mana_cost), hero_power_active(true), active(true), armour(0)
 {}
 
-void Hero::deal_dmg(unsigned amount)
+void Hero::deal_dmg(unsigned amount, Game&)
 {
     if(amount > armour)
     {

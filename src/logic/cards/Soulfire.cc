@@ -7,7 +7,7 @@ const unsigned SOULFIRE_DMG = 4;
 
 std::vector<Game> Soulfire::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
-    apply_to_entity(game, args, [](Entity& entity) { entity.deal_dmg(SOULFIRE_DMG); });
+    apply_to_entity(game, args, [&game](Entity& entity) { entity.deal_dmg(SOULFIRE_DMG, game); });
 
     auto& hand = game.current_player().hand;
 

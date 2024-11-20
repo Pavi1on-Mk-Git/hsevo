@@ -31,3 +31,17 @@ TEST_CASE("Rexxar")
 
     REQUIRE(new_state.opponent().hero->health == 28);
 }
+
+TEST_CASE("Garrosh Hellscream")
+{
+    Decklist decklist = control_warrior();
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    auto actions = game.get_possible_actions();
+
+    auto new_state = (*(actions.end() - 2))->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().hero->armour == 2);
+}

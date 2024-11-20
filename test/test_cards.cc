@@ -29,6 +29,7 @@
 #include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
+#include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
@@ -37,6 +38,7 @@
 #include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
+#include "logic/cards/Whirlwind.h"
 #include "logic/decklists.h"
 #include "logic/heroes/GarroshHellscream.h"
 #include "logic/heroes/GulDan.h"
@@ -363,7 +365,7 @@ TEST_CASE("Mortal Coil")
 
     game.current_player().mana = 1;
 
-    SECTION("Target friendly")
+    SECTION("Target ally")
     {
         game.add_minion(&BoulderfistOgre::instance, 0);
 
@@ -736,7 +738,7 @@ TEST_CASE("Siphon Soul")
 
     game.current_player().mana = 6;
 
-    SECTION("Target friendly")
+    SECTION("Target ally")
     {
         game.add_minion(&BoulderfistOgre::instance, 0);
 
@@ -850,7 +852,7 @@ TEST_CASE("Hunter's Mark")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    SECTION("Target friendly")
+    SECTION("Target ally")
     {
         game.add_minion(&BoulderfistOgre::instance, 0);
 
@@ -1346,4 +1348,61 @@ TEST_CASE("Execute")
 
     REQUIRE(new_state.current_player().board.minion_count() == 1);
     REQUIRE(new_state.opponent().board.minion_count() == 1);
+}
+
+TEST_CASE("Shield Slam")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&ShieldSlam::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.add_minion(&BoulderfistOgre::instance, 0, true);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+
+    game.current_player().mana = 1;
+    game.current_player().hero->armour = 4;
+
+    auto actions = game.get_possible_actions();
+
+    SECTION("Target ally")
+    {
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 3);
+    }
+
+    SECTION("Target enemy")
+    {
+        auto new_state = actions.at(1)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 3);
+    }
+}
+
+TEST_CASE("Whirlwind")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Whirlwind::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 1;
+
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
+
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
+
+    auto actions = game.get_possible_actions();
+
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().board.get_minion(0).health == 6);
+    REQUIRE(new_state.current_player().board.get_minion(1).health == 6);
+    REQUIRE(new_state.opponent().board.get_minion(0).health == 6);
+    REQUIRE(new_state.opponent().board.get_minion(1).health == 6);
 }

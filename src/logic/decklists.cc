@@ -25,6 +25,7 @@
 #include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
+#include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
@@ -33,6 +34,7 @@
 #include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
+#include "logic/cards/Whirlwind.h"
 #include "logic/cards/Wolfrider.h"
 #include "logic/heroes/GarroshHellscream.h"
 #include "logic/heroes/GulDan.h"
@@ -105,6 +107,8 @@ Decklist control_warrior()
 
     DecklistDeck deck;
     deck.emplace_back(&Execute::instance, 2);
+    deck.emplace_back(&ShieldSlam::instance, 2);
+    deck.emplace_back(&Whirlwind::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

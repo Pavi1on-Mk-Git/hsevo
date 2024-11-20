@@ -15,7 +15,9 @@ public:
     bool active, will_die_horribly, triggered_on_death, has_deathrattle;
     MinionKeywords keywords;
     std::vector<unsigned> auras_applied;
+
     Minion(const MinionCard* card, Game& game, unsigned player_id);
+    void deal_dmg(unsigned amount) override;
     std::vector<Game> on_death(Game& game);
     void on_minion_summon(Game& game, Minion& minion);
 };

@@ -423,12 +423,12 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
 
         apply_to_entity(
             state, std::vector<OnPlayArg>{action.defender, *action.defender_position},
-            [&attacker_dmg](Entity& entity) { entity.health -= attacker_dmg; }
+            [&attacker_dmg](Entity& entity) { entity.deal_dmg(attacker_dmg); }
         );
 
         apply_to_entity(
             state, std::vector<OnPlayArg>{action.attacker, *action.attacker_position},
-            [&defender_dmg](Entity& entity) { entity.health -= defender_dmg; }
+            [&defender_dmg](Entity& entity) { entity.deal_dmg(defender_dmg); }
         );
 
         std::ranges::move(state.trigger_on_death_and_cleanup(), std::back_inserter(resulting_states));

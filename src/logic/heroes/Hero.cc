@@ -5,8 +5,19 @@ Hero::Hero(
     const Tribe& tribe
 ):
     Entity(name, base_health, tribe), fatigue_dmg_(0), hero_power_name(hero_power_name),
-    hero_power_mana_cost(hero_power_mana_cost), hero_power_active(true), active(true)
+    hero_power_mana_cost(hero_power_mana_cost), hero_power_active(true), active(true), armour(0)
 {}
+
+void Hero::deal_dmg(unsigned amount)
+{
+    if(amount > armour)
+    {
+        health -= amount - armour;
+        armour = 0;
+    }
+    else
+        armour -= amount;
+}
 
 std::vector<std::unique_ptr<HeroPowerAction>> Hero::create_hero_power_use_actions(const Game&)
 {

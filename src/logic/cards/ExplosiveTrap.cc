@@ -8,6 +8,8 @@ std::vector<Game> ExplosiveTrap::on_play(Game& game, const std::vector<OnPlayArg
     return {game};
 }
 
+const unsigned EXPLOSIVE_TRAP_DMG = 2;
+
 SecretResult ExplosiveTrap::on_trigger(Game& game, const FightAction& action) const
 {
     using enum TargetType;
@@ -18,9 +20,9 @@ SecretResult ExplosiveTrap::on_trigger(Game& game, const FightAction& action) co
         auto& player = game.current_player();
 
         for(auto& minion: player.board)
-            minion.health -= 2;
+            minion.deal_dmg(EXPLOSIVE_TRAP_DMG);
 
-        player.hero->health -= 2;
+        player.hero->deal_dmg(EXPLOSIVE_TRAP_DMG);
 
         bool can_continue;
         switch(action.attacker)

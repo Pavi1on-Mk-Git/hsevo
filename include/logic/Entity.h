@@ -19,6 +19,7 @@ public:
     Tribe tribe;
 
     void restore_health(unsigned amount);
+    virtual void deal_dmg(unsigned amount) = 0;
 };
 
 void apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func);

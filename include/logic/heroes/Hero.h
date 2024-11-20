@@ -22,10 +22,13 @@ public:
     unsigned hero_power_mana_cost;
     bool hero_power_active;
 
-    std::optional<Weapon> weapon;
     bool active;
+    std::optional<Weapon> weapon;
+    unsigned armour;
 
     virtual ~Hero() = default;
+
+    void deal_dmg(unsigned amount) override;
     virtual void on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args) = 0;
     virtual std::vector<std::unique_ptr<HeroPowerAction>> create_hero_power_use_actions(const Game& game);
     virtual std::unique_ptr<Hero> clone() const = 0;

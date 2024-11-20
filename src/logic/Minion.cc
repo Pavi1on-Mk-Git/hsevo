@@ -8,6 +8,11 @@ Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
     has_deathrattle(card->has_deathrattle), keywords(card->keywords)
 {}
 
+void Minion::deal_dmg(unsigned amount)
+{
+    health -= amount;
+}
+
 std::vector<Game> Minion::on_death(Game& game)
 {
     return card->on_death(game, id, player_id_);

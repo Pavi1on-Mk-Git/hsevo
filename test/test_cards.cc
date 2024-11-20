@@ -10,6 +10,7 @@
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
 #include "logic/cards/EarthenRingFarseer.h"
+#include "logic/cards/Execute.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Flare.h"
@@ -37,6 +38,7 @@
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
 #include "logic/decklists.h"
+#include "logic/heroes/GarroshHellscream.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
 #include "logic/heroes/Rexxar.h"
@@ -1319,4 +1321,29 @@ TEST_CASE("Eaglehorn Bow")
 
     REQUIRE(new_state.current_player().hero->weapon->durability == 1);
     REQUIRE(new_state.opponent().hero->weapon->durability == 3);
+}
+
+TEST_CASE("Execute")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Execute::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.add_minion(&BoulderfistOgre::instance, 0, true);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
+    game.opponent().board.get_minion(0).deal_dmg(1);
+
+    game.current_player().mana = 1;
+
+    auto actions = game.get_possible_actions();
+
+    REQUIRE(actions.size() == 2);
+
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().board.minion_count() == 1);
+    REQUIRE(new_state.opponent().board.minion_count() == 1);
 }

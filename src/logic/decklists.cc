@@ -7,6 +7,7 @@
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
 #include "logic/cards/EarthenRingFarseer.h"
+#include "logic/cards/Execute.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Flare.h"
@@ -103,6 +104,7 @@ Decklist control_warrior()
     std::unique_ptr<Hero> hero = std::make_unique<GarroshHellscream>();
 
     DecklistDeck deck;
+    deck.emplace_back(&Execute::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

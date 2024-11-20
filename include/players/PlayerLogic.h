@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "logic/Action.h"
-#include "logic/decklists.h"
+#include "logic/Decklist.h"
 
 class PlayerLogic
 {

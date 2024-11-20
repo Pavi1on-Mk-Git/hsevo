@@ -36,6 +36,7 @@
 #include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
+#include "logic/decklists.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/LordJaraxxus.h"
 #include "logic/heroes/Rexxar.h"

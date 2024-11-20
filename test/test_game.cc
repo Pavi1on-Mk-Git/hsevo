@@ -2,6 +2,7 @@
 
 #include "logic/Game.h"
 #include "logic/cards/BoulderfistOgre.h"
+#include "logic/decklists.h"
 #include "logic/heroes/GulDan.h"
 
 TEST_CASE("Initialize game")

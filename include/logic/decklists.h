@@ -6,5 +6,6 @@
 Decklist ogre_deck();
 Decklist handlock();
 Decklist face_hunter();
+Decklist control_warrior();
 
 #endif

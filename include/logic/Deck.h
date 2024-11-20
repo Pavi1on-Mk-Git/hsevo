@@ -5,9 +5,9 @@
 #include <optional>
 #include <vector>
 
+#include "logic/Decklist.h"
 #include "logic/cards/Card.h"
 #include "logic/cards/HandCard.h"
-#include "logic/decklists.h"
 
 class Deck
 {

@@ -33,6 +33,7 @@
 #include "logic/cards/TwilightDrake.h"
 #include "logic/cards/UnleashTheHounds.h"
 #include "logic/cards/Wolfrider.h"
+#include "logic/heroes/GarroshHellscream.h"
 #include "logic/heroes/GulDan.h"
 #include "logic/heroes/Rexxar.h"
 
@@ -95,4 +96,13 @@ Decklist face_hunter()
     deck.emplace_back(&LeeroyJenkins::instance, 1);
 
     return Decklist("Face Hunter", std::move(hero), deck);
+}
+
+Decklist control_warrior()
+{
+    std::unique_ptr<Hero> hero = std::make_unique<GarroshHellscream>();
+
+    DecklistDeck deck;
+
+    return Decklist("Control Warrior", std::move(hero), deck);
 }

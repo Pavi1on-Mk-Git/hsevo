@@ -1,6 +1,7 @@
 #include "logic/decklists.h"
 
 #include "logic/cards/AbusiveSergeant.h"
+#include "logic/cards/AcolyteOfPain.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
@@ -117,6 +118,7 @@ Decklist control_warrior()
     deck.emplace_back(&CruelTaskmaster::instance, 2);
     deck.emplace_back(&FieryWarAxe::instance, 2);
     deck.emplace_back(&Slam::instance, 2);
+    deck.emplace_back(&AcolyteOfPain::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

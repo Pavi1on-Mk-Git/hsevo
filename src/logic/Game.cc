@@ -75,21 +75,19 @@ void Game::mulligan()
     switch_active_player();
 }
 
-void Game::draw(unsigned amount)
+void Game::draw(unsigned amount, unsigned player_id)
 {
-    auto [drawn_cards, fatigue_count] = current_player().deck.draw(amount);
+    auto& player = players.at(player_id);
 
-    current_player().hand.add_cards(std::move(drawn_cards));
-    current_player().hero->fatigue(fatigue_count);
+    auto [drawn_cards, fatigue_count] = player.deck.draw(amount);
+
+    player.hand.add_cards(std::move(drawn_cards));
+    player.hero->fatigue(fatigue_count);
 }
 
-void Game::draw()
+void Game::draw(unsigned amount)
 {
-    auto drawn_card = current_player().deck.draw();
-    if(drawn_card)
-        current_player().hand.add_cards(std::move(*drawn_card));
-    else
-        current_player().hero->fatigue(1);
+    draw(amount, active_player_);
 }
 
 std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const

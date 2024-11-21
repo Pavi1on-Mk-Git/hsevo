@@ -2,6 +2,7 @@
 
 #include "logic/Game.h"
 #include "logic/cards/AbusiveSergeant.h"
+#include "logic/cards/AcolyteOfPain.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
@@ -1522,4 +1523,24 @@ TEST_CASE("Slam")
         REQUIRE(new_state.opponent().board.get_minion(0).health == 5);
         REQUIRE(new_state.current_player().hand.size() == 3);
     }
+}
+
+TEST_CASE("Acolyte of Pain")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&AcolyteOfPain::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+
+    game.add_minion(&AcolyteOfPain::instance, 0);
+
+    auto& acolyte = game.current_player().board.get_minion(0);
+
+    acolyte.deal_dmg(1, game);
+    acolyte.deal_dmg(1, game);
+
+    REQUIRE(game.current_player().hand.size() == 5);
 }

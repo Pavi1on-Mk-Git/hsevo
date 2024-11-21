@@ -39,7 +39,7 @@ std::vector<Game> TimberWolf::on_death(Game& game, unsigned id, unsigned player_
     return {game};
 }
 
-void TimberWolf::on_minion_summon(Game&, Minion& minion, unsigned id) const
+void TimberWolf::on_minion_summon(Game&, Minion& minion, unsigned id, unsigned) const
 {
     if(minion.tribe == Tribe::BEAST)
     {

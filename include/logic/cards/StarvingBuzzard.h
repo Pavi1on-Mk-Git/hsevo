@@ -9,7 +9,7 @@ private:
     StarvingBuzzard(): MinionCard("Starving Buzzard", 2, 2, 1, Tribe::BEAST) {}
 public:
     static const StarvingBuzzard instance;
-    void on_minion_summon(Game& game, Minion& minion, unsigned id) const override;
+    void on_minion_summon(Game& game, Minion& minion, unsigned id, unsigned player_id) const override;
 };
 
 inline const StarvingBuzzard StarvingBuzzard::instance;

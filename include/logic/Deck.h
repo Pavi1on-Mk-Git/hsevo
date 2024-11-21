@@ -17,7 +17,6 @@ public:
     Deck(const DecklistDeck& decklist);
     void shuffle();
     std::pair<std::vector<HandCard>, unsigned> draw(unsigned amount);
-    std::optional<HandCard> draw();
     unsigned size() const;
 };
 

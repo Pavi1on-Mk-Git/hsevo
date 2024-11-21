@@ -43,8 +43,8 @@ public:
     const Player& current_player() const;
     const Player& opponent() const;
     GameStateInput get_state() const;
-    void draw(unsigned amount);
-    void draw();
+    void draw(unsigned amount, unsigned player_id);
+    void draw(unsigned amount = 1);
     unsigned next_minion_id();
     void add_minion(const MinionCard* card, unsigned position, bool own_board = true);
     const MinionCard* bounce_minion(unsigned position);

@@ -4,7 +4,7 @@
 
 const unsigned ARMORSMITH_ARMOUR_INCREASE = 1;
 
-void Armorsmith::on_minion_damaged(Game& game) const
+void Armorsmith::on_minion_damaged(Game& game, unsigned player_id) const
 {
-    game.current_player().hero->armour += ARMORSMITH_ARMOUR_INCREASE;
+    game.players.at(player_id).hero->armour += ARMORSMITH_ARMOUR_INCREASE;
 }

@@ -2,10 +2,8 @@
 
 #include "logic/Game.h"
 
-void StarvingBuzzard::on_minion_summon(Game& game, Minion& minion, unsigned) const
+void StarvingBuzzard::on_minion_summon(Game& game, Minion& minion, unsigned, unsigned player_id) const
 {
     if(minion.tribe == Tribe::BEAST)
-    {
-        game.draw();
-    }
+        game.draw(1, player_id);
 }

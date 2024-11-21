@@ -11,6 +11,9 @@ Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
 void Minion::deal_dmg(unsigned amount, Game& game)
 {
     health -= amount;
+
+    card->on_damaged(game, player_id_);
+
     for(const auto& minion: game.players.at(player_id_).board)
         minion.on_minion_damaged(game);
 }
@@ -22,10 +25,10 @@ std::vector<Game> Minion::on_death(Game& game)
 
 void Minion::on_minion_summon(Game& game, Minion& minion) const
 {
-    card->on_minion_summon(game, minion, id);
+    card->on_minion_summon(game, minion, id, player_id_);
 }
 
 void Minion::on_minion_damaged(Game& game) const
 {
-    card->on_minion_damaged(game);
+    card->on_minion_damaged(game, player_id_);
 }

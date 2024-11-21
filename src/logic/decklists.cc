@@ -12,6 +12,7 @@
 #include "logic/cards/Execute.h"
 #include "logic/cards/ExplosiveTrap.h"
 #include "logic/cards/FacelessManipulator.h"
+#include "logic/cards/FieryWarAxe.h"
 #include "logic/cards/Flare.h"
 #include "logic/cards/FreezingTrap.h"
 #include "logic/cards/Hellfire.h"
@@ -113,6 +114,7 @@ Decklist control_warrior()
     deck.emplace_back(&Whirlwind::instance, 2);
     deck.emplace_back(&Armorsmith::instance, 2);
     deck.emplace_back(&CruelTaskmaster::instance, 2);
+    deck.emplace_back(&FieryWarAxe::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

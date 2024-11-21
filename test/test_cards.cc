@@ -8,6 +8,7 @@
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
+#include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
 #include "logic/cards/EarthenRingFarseer.h"
@@ -1431,4 +1432,36 @@ TEST_CASE("Armorsmith")
 
     REQUIRE(post_hellfire_state.current_player().hero->health == 27);
     REQUIRE(post_hellfire_state.current_player().hero->armour == 3);
+}
+
+TEST_CASE("Cruel Taskmaster")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&CruelTaskmaster::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+
+    auto actions = game.get_possible_actions();
+
+    SECTION("Target ally minion")
+    {
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(1).attack == 8);
+        REQUIRE(new_state.current_player().board.get_minion(1).health == 6);
+    }
+
+    SECTION("Target enemy minion")
+    {
+        auto new_state = actions.at(1)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).attack == 8);
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 6);
+    }
 }

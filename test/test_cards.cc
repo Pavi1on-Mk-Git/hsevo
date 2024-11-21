@@ -33,6 +33,7 @@
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
+#include "logic/cards/Slam.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
@@ -1463,5 +1464,62 @@ TEST_CASE("Cruel Taskmaster")
 
         REQUIRE(new_state.opponent().board.get_minion(0).attack == 8);
         REQUIRE(new_state.opponent().board.get_minion(0).health == 6);
+    }
+}
+
+TEST_CASE("Slam")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Slam::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 2;
+
+    SECTION("Target ally")
+    {
+        game.add_minion(&BoulderfistOgre::instance, 0);
+        game.current_player().board.get_minion(0).health = 2;
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hand.size() == 2);
+    }
+
+    SECTION("Draw card from ally")
+    {
+        game.add_minion(&BoulderfistOgre::instance, 0);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.get_minion(0).health == 5);
+        REQUIRE(new_state.current_player().hand.size() == 3);
+    }
+
+    SECTION("Target enemy")
+    {
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
+        game.opponent().board.get_minion(0).health = 2;
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.minion_count() == 0);
+        REQUIRE(new_state.current_player().hand.size() == 2);
+    }
+
+    SECTION("Draw card from enemy")
+    {
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
+
+        auto actions = game.get_possible_actions();
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.get_minion(0).health == 5);
+        REQUIRE(new_state.current_player().hand.size() == 3);
     }
 }

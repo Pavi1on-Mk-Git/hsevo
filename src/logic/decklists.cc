@@ -30,6 +30,7 @@
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
+#include "logic/cards/Slam.h"
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
@@ -115,6 +116,7 @@ Decklist control_warrior()
     deck.emplace_back(&Armorsmith::instance, 2);
     deck.emplace_back(&CruelTaskmaster::instance, 2);
     deck.emplace_back(&FieryWarAxe::instance, 2);
+    deck.emplace_back(&Slam::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

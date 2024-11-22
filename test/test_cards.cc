@@ -33,6 +33,7 @@
 #include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
+#include "logic/cards/ShieldBlock.h"
 #include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Slam.h"
@@ -1560,7 +1561,7 @@ TEST_CASE("Acolyte of Pain")
 
 TEST_CASE("Big Game Hunter")
 {
-    auto hero = std::make_unique<Rexxar>();
+    auto hero = std::make_unique<GarroshHellscream>();
     DecklistDeck deck;
     deck.push_back({&BigGameHunter::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
@@ -1598,4 +1599,20 @@ TEST_CASE("Big Game Hunter")
 
         REQUIRE(new_state.opponent().board.minion_count() == 1);
     }
+}
+
+TEST_CASE("Shield Block")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&ShieldBlock::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().hero->armour == 5);
+    REQUIRE(new_state.current_player().hand.size() == 3);
 }

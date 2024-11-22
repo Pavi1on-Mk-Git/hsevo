@@ -20,6 +20,7 @@
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/KillCommand.h"
+#include "logic/cards/KorkronElite.h"
 #include "logic/cards/LeeroyJenkins.h"
 #include "logic/cards/LeperGnome.h"
 #include "logic/cards/LordJaraxxusCard.h"
@@ -30,6 +31,7 @@
 #include "logic/cards/PowerOverwhelming.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
+#include "logic/cards/ShieldBlock.h"
 #include "logic/cards/ShieldSlam.h"
 #include "logic/cards/SiphonSoul.h"
 #include "logic/cards/Slam.h"
@@ -121,6 +123,8 @@ Decklist control_warrior()
     deck.emplace_back(&Slam::instance, 2);
     deck.emplace_back(&AcolyteOfPain::instance, 2);
     deck.emplace_back(&BigGameHunter::instance, 1);
+    deck.emplace_back(&ShieldBlock::instance, 2);
+    deck.emplace_back(&KorkronElite::instance, 2);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

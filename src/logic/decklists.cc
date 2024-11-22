@@ -5,6 +5,7 @@
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
+#include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -119,6 +120,7 @@ Decklist control_warrior()
     deck.emplace_back(&FieryWarAxe::instance, 2);
     deck.emplace_back(&Slam::instance, 2);
     deck.emplace_back(&AcolyteOfPain::instance, 2);
+    deck.emplace_back(&BigGameHunter::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

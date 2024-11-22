@@ -8,25 +8,28 @@ std::vector<Game> CruelTaskmaster::on_play(Game& game, const std::vector<OnPlayA
 {
     using enum TargetType;
 
-    const auto target_type = std::get<TargetType>(args.at(0));
-    const auto target_position = std::get<unsigned>(args.at(1));
-
-    auto dmg_and_buff = [&game](Minion& minion) {
-        minion.deal_dmg(CRUEL_TASKMASTER_DMG, game);
-        minion.attack += CRUEL_TASKMASTER_BUFF_AMOUNT;
-    };
-
-    switch(target_type)
+    if(!args.empty())
     {
-    case ALLY_MINION:
-        dmg_and_buff(game.current_player().board.get_minion(target_position));
-        break;
-    case ENEMY_MINION:
-        dmg_and_buff(game.opponent().board.get_minion(target_position));
-        break;
+        const auto target_type = std::get<TargetType>(args.at(0));
+        const auto target_position = std::get<unsigned>(args.at(1));
 
-    default:
-        break;
+        auto dmg_and_buff = [&game](Minion& minion) {
+            minion.deal_dmg(CRUEL_TASKMASTER_DMG, game);
+            minion.attack += CRUEL_TASKMASTER_BUFF_AMOUNT;
+        };
+
+        switch(target_type)
+        {
+        case ALLY_MINION:
+            dmg_and_buff(game.current_player().board.get_minion(target_position));
+            break;
+        case ENEMY_MINION:
+            dmg_and_buff(game.opponent().board.get_minion(target_position));
+            break;
+
+        default:
+            break;
+        }
     }
 
     return {game};

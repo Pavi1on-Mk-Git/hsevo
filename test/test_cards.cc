@@ -6,6 +6,7 @@
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
+#include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Coin.h"
@@ -889,6 +890,12 @@ TEST_CASE("Abusive Sergeant")
 
     game.current_player().mana = 1;
 
+    SECTION("No target")
+    {
+        auto actions = game.get_possible_actions();
+        REQUIRE(actions.size() == 2);
+    }
+
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1446,6 +1453,12 @@ TEST_CASE("Cruel Taskmaster")
 
     game.current_player().mana = 2;
 
+    SECTION("No target")
+    {
+        auto actions = game.get_possible_actions();
+        REQUIRE(actions.size() == 3);
+    }
+
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.add_minion(&BoulderfistOgre::instance, 0, false);
 
@@ -1543,4 +1556,46 @@ TEST_CASE("Acolyte of Pain")
     acolyte.deal_dmg(1, game);
 
     REQUIRE(game.current_player().hand.size() == 5);
+}
+
+TEST_CASE("Big Game Hunter")
+{
+    auto hero = std::make_unique<Rexxar>();
+    DecklistDeck deck;
+    deck.push_back({&BigGameHunter::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 3;
+
+    SECTION("No target")
+    {
+        auto actions = game.get_possible_actions();
+        REQUIRE(actions.size() == 3);
+    }
+
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
+    game.current_player().board.get_minion(0).attack += 1;
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
+    game.opponent().board.get_minion(0).attack += 1;
+
+    auto actions = game.get_possible_actions();
+
+    REQUIRE(actions.size() == 8);
+
+    SECTION("Kill ally minion")
+    {
+        auto new_state = actions.at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.current_player().board.minion_count() == 2);
+    }
+
+    SECTION("Kill enemy minion")
+    {
+        auto new_state = actions.at(3)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().board.minion_count() == 1);
+    }
 }

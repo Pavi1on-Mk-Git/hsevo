@@ -34,5 +34,9 @@ std::vector<std::unique_ptr<PlayCardAction>> SingleArgTargetMinionMinionCard::cr
             ));
     }
 
+    if(play_self_actions.empty())
+        for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
+            play_self_actions.push_back(std::make_unique<PlayMinionAction>(hand_position, mana_cost, board_position));
+
     return play_self_actions;
 }

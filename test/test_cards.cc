@@ -7,6 +7,7 @@
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
 #include "logic/cards/AzureDrake.h"
+#include "logic/cards/BaronGeddon.h"
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
@@ -1718,32 +1719,72 @@ TEST_CASE("Sylvanas Windrunner")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist);
 
-    game.current_player().mana = 6;
+    SECTION("Nothing to steal")
+    {
+        game.current_player().mana = 6;
+        REQUIRE(game.get_possible_actions().at(0)->apply(game).size() == 1);
+    }
+
+    SECTION("Something to steal")
+    {
+        game.current_player().mana = 6;
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
+        game.opponent().board.get_minion(0).health = 5;
+
+        game.switch_active_player();
+        game.add_minion(&AzureDrake::instance, 1);
+        game.switch_active_player();
+        game.opponent().board.get_minion(1).active = true;
+
+        game.add_minion(&LeeroyJenkins::instance, 2, false);
+
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+        new_state.current_player().board.get_minion(0).active = true;
+
+        auto post_attack_states = new_state.get_possible_actions().at(1)->apply(new_state);
+
+        REQUIRE(post_attack_states.size() == 2);
+
+        REQUIRE(post_attack_states.at(0).current_player().board.minion_count() == 1);
+        REQUIRE(post_attack_states.at(0).opponent().board.minion_count() == 1);
+        REQUIRE(post_attack_states.at(0).current_player().board.get_minion(0).active == false);
+        REQUIRE(post_attack_states.at(0).opponent().spell_damage == 0);
+        REQUIRE(post_attack_states.at(0).current_player().spell_damage == 1);
+
+        REQUIRE(post_attack_states.at(1).current_player().board.minion_count() == 1);
+        REQUIRE(post_attack_states.at(1).opponent().board.minion_count() == 1);
+        REQUIRE(post_attack_states.at(1).current_player().board.get_minion(0).active == true);
+    }
+}
+
+TEST_CASE("Baron Geddon")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&BaronGeddon::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 7;
+
+    game.add_minion(&BoulderfistOgre::instance, 0);
+    game.add_minion(&BoulderfistOgre::instance, 1);
+
     game.add_minion(&BoulderfistOgre::instance, 0, false);
-    game.opponent().board.get_minion(0).health = 5;
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
 
-    game.switch_active_player();
-    game.add_minion(&AzureDrake::instance, 1);
-    game.switch_active_player();
-    game.opponent().board.get_minion(1).active = true;
+    auto actions = game.get_possible_actions();
 
-    game.add_minion(&LeeroyJenkins::instance, 2, false);
+    auto new_state = actions.at(0)->apply(game).at(0);
 
-    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+    auto eot_state = new_state.get_possible_actions().at(0)->apply(new_state).at(0);
 
-    new_state.current_player().board.get_minion(0).active = true;
-
-    auto post_attack_states = new_state.get_possible_actions().at(1)->apply(new_state);
-
-    REQUIRE(post_attack_states.size() == 2);
-
-    REQUIRE(post_attack_states.at(0).current_player().board.minion_count() == 1);
-    REQUIRE(post_attack_states.at(0).opponent().board.minion_count() == 1);
-    REQUIRE(post_attack_states.at(0).current_player().board.get_minion(0).active == false);
-    REQUIRE(post_attack_states.at(0).opponent().spell_damage == 0);
-    REQUIRE(post_attack_states.at(0).current_player().spell_damage == 1);
-
-    REQUIRE(post_attack_states.at(1).current_player().board.minion_count() == 1);
-    REQUIRE(post_attack_states.at(1).opponent().board.minion_count() == 1);
-    REQUIRE(post_attack_states.at(1).current_player().board.get_minion(0).active == true);
+    REQUIRE(eot_state.current_player().hero->health == 28);
+    REQUIRE(eot_state.opponent().hero->health == 28);
+    REQUIRE(eot_state.current_player().board.get_minion(0).health == 5);
+    REQUIRE(eot_state.current_player().board.get_minion(1).health == 5);
+    REQUIRE(eot_state.current_player().board.get_minion(2).health == 5);
+    REQUIRE(eot_state.opponent().board.get_minion(0).health == 5);
+    REQUIRE(eot_state.opponent().board.get_minion(1).health == 5);
 }

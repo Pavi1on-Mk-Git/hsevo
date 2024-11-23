@@ -212,7 +212,7 @@ std::vector<Game> Game::trigger_on_death()
         minion_ids_.push_back(id);
     }
 
-    std::vector<Game> resulting_states = {*this};
+    std::vector<Game> resulting_states{*this};
 
     for(const auto& minion: dead_minions)
     {
@@ -220,6 +220,34 @@ std::vector<Game> Game::trigger_on_death()
 
         for(auto& state: resulting_states)
             std::ranges::move(minion.on_death(state), std::back_inserter(new_states));
+
+        resulting_states = std::move(new_states);
+    }
+
+    return resulting_states;
+}
+
+std::vector<Game> Game::trigger_end_of_turn()
+{
+    std::vector<Game> resulting_states{*this};
+
+    for(unsigned minion_id: play_order_)
+    {
+        std::vector<Game> new_states;
+
+        for(auto& state: resulting_states)
+        {
+            auto found = std::ranges::find_if(state.current_player().board, [&minion_id](const Minion& minion) {
+                return minion.id == minion_id;
+            });
+
+            if(found == state.current_player().board.end())
+                found = std::ranges::find_if(state.opponent().board, [&minion_id](const Minion& minion) {
+                    return minion.id == minion_id;
+                });
+
+            std::ranges::move(found->on_end_of_turn(state), std::back_inserter(new_states));
+        }
 
         resulting_states = std::move(new_states);
     }
@@ -324,10 +352,12 @@ std::vector<Game> Game::do_action(const EndTurnAction&)
 {
     turn_ended = true;
 
-    current_player().board.trigger_end_of_turn();
-    opponent().board.trigger_end_of_turn();
+    std::vector<Game> resulting_states;
 
-    return trigger_on_death();
+    for(auto& state: trigger_end_of_turn())
+        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
+
+    return resulting_states;
 }
 
 std::vector<Game> Game::do_action(const PlayMinionAction& action)
@@ -344,11 +374,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
     std::vector<Game> resulting_states;
 
     for(auto& state: new_states)
-    {
-        auto final_states = state.trigger_on_death();
-        resulting_states.reserve(resulting_states.size() + final_states.size());
-        std::ranges::move(final_states, std::back_inserter(resulting_states));
-    }
+        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
 
     return resulting_states;
 }
@@ -364,11 +390,7 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     std::vector<Game> resulting_states;
 
     for(auto& state: new_states)
-    {
-        auto final_states = state.trigger_on_death();
-        resulting_states.reserve(resulting_states.size() + final_states.size());
-        std::ranges::move(final_states, std::back_inserter(resulting_states));
-    }
+        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
 
     return resulting_states;
 }

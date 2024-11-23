@@ -51,6 +51,11 @@ void MinionCard::on_summon(Game&, unsigned) const {}
 
 void MinionCard::on_remove(Game&, unsigned, unsigned) const {}
 
+std::vector<Game> MinionCard::on_end_of_turn(Game& game, unsigned, unsigned) const
+{
+    return {game};
+}
+
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)
     const
 {

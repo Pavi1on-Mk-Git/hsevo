@@ -6,6 +6,7 @@
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
 #include "logic/cards/AzureDrake.h"
+#include "logic/cards/BaronGeddon.h"
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Brawl.h"
@@ -133,6 +134,7 @@ Decklist control_warrior()
     deck.emplace_back(&Brawl::instance, 1);
     deck.emplace_back(&CairneBloodhoof::instance, 1);
     deck.emplace_back(&SylvanasWindrunner::instance, 1);
+    deck.emplace_back(&BaronGeddon::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

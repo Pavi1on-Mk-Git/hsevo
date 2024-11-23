@@ -16,5 +16,8 @@ std::vector<Game> SylvanasWindrunner::on_death(Game& game, unsigned player_id) c
         post_steal_states.push_back(game_copy);
     }
 
+    if(post_steal_states.empty())
+        return {game};
+
     return post_steal_states;
 }

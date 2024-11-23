@@ -20,6 +20,7 @@ struct Minion: public Entity
     std::vector<Game> on_death(Game& game) const;
     void on_minion_summon(Game& game, Minion& minion) const;
     void on_minion_damaged(Game& game) const;
+    std::vector<Game> on_end_of_turn(Game& game);
 };
 
 

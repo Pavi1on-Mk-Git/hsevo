@@ -12,7 +12,7 @@ std::vector<Game> Shadowflame::on_play(Game& game, const std::vector<OnPlayArg>&
     chosen_minion.health = 0;
 
     for(auto& opponent_minion: game.opponent().board)
-        opponent_minion.deal_dmg(dmg_to_deal, game);
+        opponent_minion.deal_dmg(dmg_to_deal + game.current_player().spell_damage, game);
 
     return {game};
 }

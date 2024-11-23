@@ -10,9 +10,9 @@ private:
     TimberWolf(): SingleArgSelfPlayPositionCard("Timber Wolf", 1, 1, 1, Tribe::BEAST) {}
 public:
     static const TimberWolf instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
-    std::vector<Game> on_death(Game& game, unsigned id, unsigned player_id) const override;
     void on_minion_summon(Game& game, Minion& minion, unsigned id, unsigned player_id) const override;
+    void on_summon(Game& game, unsigned position_played) const override;
+    void on_remove(Game& game, unsigned id, unsigned player_id) const override;
 };
 
 inline const TimberWolf TimberWolf::instance;

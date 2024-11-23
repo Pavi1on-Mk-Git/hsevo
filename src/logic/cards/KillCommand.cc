@@ -13,7 +13,9 @@ std::vector<Game> KillCommand::on_play(Game& game, const std::vector<OnPlayArg>&
     const unsigned dmg_to_deal = (found_beast == game.current_player().board.end()) ? KILL_COMMAND_DMG :
                                                                                       KILL_COMMAND_DMG_WITH_BEAST;
 
-    apply_to_entity(game, args, [&](Entity& entity) { entity.deal_dmg(dmg_to_deal, game); });
+    apply_to_entity(game, args, [&](Entity& entity) {
+        entity.deal_dmg(dmg_to_deal + game.current_player().spell_damage, game);
+    });
 
     return {game};
 }

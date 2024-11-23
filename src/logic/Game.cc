@@ -222,7 +222,10 @@ void Game::clear_dead_minions(Board& board)
 
     for(auto& minion: board)
         if(minion.health <= 0)
+        {
+            minion.on_remove(*this);
             ids_to_reuse.push_back(minion.id);
+        }
         else
             minion.triggered_on_death = false;
 
@@ -262,6 +265,8 @@ void Game::add_minion(const MinionCard* card, unsigned position, bool own_board)
 
     auto added_minion = Minion(card, *this, player_id);
 
+    added_minion.on_summon(*this, position);
+
     for(auto& minion: board)
     {
         minion.on_minion_summon(*this, added_minion);
@@ -273,7 +278,9 @@ void Game::add_minion(const MinionCard* card, unsigned position, bool own_board)
 const MinionCard* Game::bounce_minion(unsigned position)
 {
     auto& board = current_player().board;
-    const unsigned removed_id = board.get_minion(position).id;
+    auto& minion = board.get_minion(position);
+    minion.on_remove(*this);
+    const unsigned removed_id = minion.id;
     std::erase(play_order_, removed_id);
     minion_ids_.push_back(removed_id);
     return current_player().board.remove_minion(position);

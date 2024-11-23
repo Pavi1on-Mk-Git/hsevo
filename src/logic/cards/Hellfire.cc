@@ -6,7 +6,9 @@ const unsigned HELLFIRE_DMG = 3;
 
 std::vector<Game> Hellfire::on_play(Game& game, const std::vector<OnPlayArg>&) const
 {
-    auto deal_dmg = [&game](Entity& entity) { entity.deal_dmg(HELLFIRE_DMG, game); };
+    auto deal_dmg = [&game](Entity& entity) {
+        entity.deal_dmg(HELLFIRE_DMG + game.current_player().spell_damage, game);
+    };
 
     auto deal_to_all = [&deal_dmg](Player& player) {
         for(auto& minion: player.board)

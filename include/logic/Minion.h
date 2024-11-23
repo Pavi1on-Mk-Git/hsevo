@@ -18,6 +18,8 @@ public:
 
     Minion(const MinionCard* card, Game& game, unsigned player_id);
     void deal_dmg(unsigned amount, Game& game) override;
+    void on_summon(Game& game, unsigned position_played);
+    void on_remove(Game& game);
     std::vector<Game> on_death(Game& game);
     void on_minion_summon(Game& game, Minion& minion) const;
     void on_minion_damaged(Game& game) const;

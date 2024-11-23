@@ -18,9 +18,19 @@ void Minion::deal_dmg(unsigned amount, Game& game)
         minion.on_minion_damaged(game);
 }
 
+void Minion::on_summon(Game& game, unsigned position_played)
+{
+    card->on_summon(game, position_played);
+}
+
+void Minion::on_remove(Game& game)
+{
+    card->on_remove(game, id, player_id_);
+}
+
 std::vector<Game> Minion::on_death(Game& game)
 {
-    return card->on_death(game, id, player_id_);
+    return card->on_death(game, player_id_);
 }
 
 void Minion::on_minion_summon(Game& game, Minion& minion) const

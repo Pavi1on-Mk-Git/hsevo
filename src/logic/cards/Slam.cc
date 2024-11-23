@@ -8,7 +8,7 @@ const unsigned SLAM_DMG = 2;
 std::vector<Game> Slam::on_play(Game& game, const std::vector<OnPlayArg>& args) const
 {
     apply_to_entity(game, args, [&game](Entity& entity) {
-        entity.deal_dmg(SLAM_DMG, game);
+        entity.deal_dmg(SLAM_DMG + game.current_player().spell_damage, game);
         if(entity.health > 0)
             game.draw();
     });

@@ -6,6 +6,7 @@
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
+#include "logic/cards/AzureDrake.h"
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
@@ -1615,4 +1616,34 @@ TEST_CASE("Shield Block")
 
     REQUIRE(new_state.current_player().hero->armour == 5);
     REQUIRE(new_state.current_player().hand.size() == 3);
+}
+
+TEST_CASE("Azure Drake")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&AzureDrake::instance, 1});
+    deck.push_back({&SiphonSoul::instance, 4});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 5;
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(new_state.current_player().spell_damage == 1);
+    REQUIRE(new_state.current_player().hand.size() == 3);
+
+    new_state.current_player().hand.add_cards(&Whirlwind::instance);
+    new_state.current_player().mana = 1;
+
+    auto post_whirlwind_state = new_state.get_possible_actions().at(0)->apply(new_state).at(0);
+
+    REQUIRE(post_whirlwind_state.current_player().board.get_minion(0).health == 2);
+
+    post_whirlwind_state.current_player().mana = 6;
+
+    auto post_kill_state = post_whirlwind_state.get_possible_actions().at(0)->apply(post_whirlwind_state).at(0);
+
+    REQUIRE(post_kill_state.current_player().spell_damage == 0);
 }

@@ -19,6 +19,7 @@ struct Player
     Hand hand;
     Board board;
     std::vector<const SecretCard*> secrets;
+    unsigned spell_damage;
 
     Player(const Decklist& decklist);
     Player(const Player& other);

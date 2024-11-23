@@ -19,10 +19,12 @@ SecretResult ExplosiveTrap::on_trigger(Game& game, const FightAction& action) co
     case ENEMY_HERO: {
         auto& player = game.current_player();
 
-        for(auto& minion: player.board)
-            minion.deal_dmg(EXPLOSIVE_TRAP_DMG, game);
+        const unsigned spell_dmg = game.opponent().spell_damage;
 
-        player.hero->deal_dmg(EXPLOSIVE_TRAP_DMG, game);
+        for(auto& minion: player.board)
+            minion.deal_dmg(EXPLOSIVE_TRAP_DMG + spell_dmg, game);
+
+        player.hero->deal_dmg(EXPLOSIVE_TRAP_DMG + spell_dmg, game);
 
         bool can_continue;
         switch(action.attacker)

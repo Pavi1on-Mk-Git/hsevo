@@ -36,7 +36,7 @@ MinionCard::MinionCard(
     has_deathrattle(false)
 {}
 
-std::vector<Game> MinionCard::on_death(Game& game, unsigned, unsigned) const
+std::vector<Game> MinionCard::on_death(Game& game, unsigned) const
 {
     return {game};
 }
@@ -46,6 +46,10 @@ void MinionCard::on_minion_summon(Game&, Minion&, unsigned, unsigned) const {}
 void MinionCard::on_minion_damaged(Game&, unsigned) const {}
 
 void MinionCard::on_damaged(Game&, unsigned) const {}
+
+void MinionCard::on_summon(Game&, unsigned) const {}
+
+void MinionCard::on_remove(Game&, unsigned, unsigned) const {}
 
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)
     const

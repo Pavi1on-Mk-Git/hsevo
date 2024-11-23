@@ -25,9 +25,7 @@ private:
 
     void mulligan();
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
-    void clear_dead_minions(Board& board);
-    std::vector<Game> trigger_on_death(unsigned last_id_position = 0);
-    std::vector<Game> trigger_on_death_and_cleanup();
+    std::vector<Game> trigger_on_death();
 
     HeroInput get_hero_state(unsigned player_index) const;
 public:
@@ -46,8 +44,10 @@ public:
     void draw(unsigned amount, unsigned player_id);
     void draw(unsigned amount = 1);
     unsigned next_minion_id();
+    void add_minion(const MinionCard* card, unsigned position, unsigned player_id);
     void add_minion(const MinionCard* card, unsigned position, bool own_board = true);
     const MinionCard* bounce_minion(unsigned position);
+    void change_minion_side(unsigned player_id, unsigned position);
     static std::vector<Game> do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions);
     std::vector<Game> do_action(const EndTurnAction& action);
     std::vector<Game> do_action(const PlayMinionAction& action);

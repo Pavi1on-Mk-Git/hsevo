@@ -9,6 +9,7 @@
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Brawl.h"
+#include "logic/cards/CairneBloodhoof.h"
 #include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
@@ -40,6 +41,7 @@
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
+#include "logic/cards/SylvanasWindrunner.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
@@ -129,6 +131,8 @@ Decklist control_warrior()
     deck.emplace_back(&KorkronElite::instance, 2);
     deck.emplace_back(&AzureDrake::instance, 2);
     deck.emplace_back(&Brawl::instance, 1);
+    deck.emplace_back(&CairneBloodhoof::instance, 1);
+    deck.emplace_back(&SylvanasWindrunner::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

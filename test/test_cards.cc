@@ -11,6 +11,7 @@
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
 #include "logic/cards/Brawl.h"
+#include "logic/cards/CairneBloodhoof.h"
 #include "logic/cards/Coin.h"
 #include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -42,6 +43,7 @@
 #include "logic/cards/Soulfire.h"
 #include "logic/cards/StarvingBuzzard.h"
 #include "logic/cards/SunfuryProtector.h"
+#include "logic/cards/SylvanasWindrunner.h"
 #include "logic/cards/TimberWolf.h"
 #include "logic/cards/Tracking.h"
 #include "logic/cards/TwilightDrake.h"
@@ -1685,4 +1687,63 @@ TEST_CASE("Brawl")
         REQUIRE(new_states.at(2).opponent().board.minion_count() == 1);
         REQUIRE(new_states.at(3).opponent().board.minion_count() == 1);
     }
+}
+
+TEST_CASE("Cairne Bloodhoof")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&CairneBloodhoof::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 6;
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    new_state.current_player().board.get_minion(0).active = true;
+
+    auto post_attack_state = new_state.get_possible_actions().at(1)->apply(new_state).at(0);
+
+    REQUIRE(post_attack_state.current_player().board.minion_count() == 1);
+    REQUIRE(post_attack_state.opponent().board.get_minion(0).health == 3);
+}
+
+TEST_CASE("Sylvanas Windrunner")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&SylvanasWindrunner::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 6;
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.opponent().board.get_minion(0).health = 5;
+
+    game.switch_active_player();
+    game.add_minion(&AzureDrake::instance, 1);
+    game.switch_active_player();
+    game.opponent().board.get_minion(1).active = true;
+
+    game.add_minion(&LeeroyJenkins::instance, 2, false);
+
+    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    new_state.current_player().board.get_minion(0).active = true;
+
+    auto post_attack_states = new_state.get_possible_actions().at(1)->apply(new_state);
+
+    REQUIRE(post_attack_states.size() == 2);
+
+    REQUIRE(post_attack_states.at(0).current_player().board.minion_count() == 1);
+    REQUIRE(post_attack_states.at(0).opponent().board.minion_count() == 1);
+    REQUIRE(post_attack_states.at(0).current_player().board.get_minion(0).active == false);
+    REQUIRE(post_attack_states.at(0).opponent().spell_damage == 0);
+    REQUIRE(post_attack_states.at(0).current_player().spell_damage == 1);
+
+    REQUIRE(post_attack_states.at(1).current_player().board.minion_count() == 1);
+    REQUIRE(post_attack_states.at(1).opponent().board.minion_count() == 1);
+    REQUIRE(post_attack_states.at(1).current_player().board.get_minion(0).active == true);
 }

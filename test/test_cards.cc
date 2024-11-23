@@ -10,6 +10,7 @@
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BloodFury.h"
 #include "logic/cards/BoulderfistOgre.h"
+#include "logic/cards/Brawl.h"
 #include "logic/cards/Coin.h"
 #include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
@@ -1646,4 +1647,42 @@ TEST_CASE("Azure Drake")
     auto post_kill_state = post_whirlwind_state.get_possible_actions().at(0)->apply(post_whirlwind_state).at(0);
 
     REQUIRE(post_kill_state.current_player().spell_damage == 0);
+}
+
+TEST_CASE("Brawl")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Brawl::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    SECTION("No minions")
+    {
+        game.current_player().mana = 5;
+
+        auto actions = game.get_possible_actions();
+
+        REQUIRE(actions.size() == 3);
+
+        REQUIRE(actions.at(0)->apply(game).size() == 1);
+    }
+
+    SECTION("Some minions")
+    {
+        game.current_player().mana = 5;
+        game.add_minion(&BoulderfistOgre::instance, 0);
+        game.add_minion(&BoulderfistOgre::instance, 1);
+        game.add_minion(&BoulderfistOgre::instance, 0, false);
+        game.add_minion(&BoulderfistOgre::instance, 1, false);
+
+        auto new_states = game.get_possible_actions().at(0)->apply(game);
+
+        REQUIRE(new_states.size() == 4);
+
+        REQUIRE(new_states.at(0).current_player().board.minion_count() == 1);
+        REQUIRE(new_states.at(1).current_player().board.minion_count() == 1);
+        REQUIRE(new_states.at(2).opponent().board.minion_count() == 1);
+        REQUIRE(new_states.at(3).opponent().board.minion_count() == 1);
+    }
 }

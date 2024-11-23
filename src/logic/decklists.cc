@@ -8,6 +8,7 @@
 #include "logic/cards/AzureDrake.h"
 #include "logic/cards/BigGameHunter.h"
 #include "logic/cards/BoulderfistOgre.h"
+#include "logic/cards/Brawl.h"
 #include "logic/cards/CruelTaskmaster.h"
 #include "logic/cards/DefenderOfArgus.h"
 #include "logic/cards/EaglehornBow.h"
@@ -127,6 +128,7 @@ Decklist control_warrior()
     deck.emplace_back(&ShieldBlock::instance, 2);
     deck.emplace_back(&KorkronElite::instance, 2);
     deck.emplace_back(&AzureDrake::instance, 2);
+    deck.emplace_back(&Brawl::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

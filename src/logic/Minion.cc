@@ -48,5 +48,5 @@ std::vector<Game> Minion::on_end_of_turn(Game& game)
     if(will_die_horribly)
         health = 0;
 
-    return card->on_end_of_turn(game, id, player_id);
+    return card->on_end_of_turn(game, id);
 }

@@ -55,7 +55,7 @@ void MinionCard::on_enrage(Minion&) const {}
 
 void MinionCard::on_no_enrage(Minion&) const {}
 
-std::vector<Game> MinionCard::on_end_of_turn(Game& game, unsigned, unsigned) const
+std::vector<Game> MinionCard::on_end_of_turn(Game& game, unsigned) const
 {
     return {game};
 }

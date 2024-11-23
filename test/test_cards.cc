@@ -36,6 +36,7 @@
 #include "logic/cards/MortalCoil.h"
 #include "logic/cards/MountainGiant.h"
 #include "logic/cards/PowerOverwhelming.h"
+#include "logic/cards/RagnarosTheFirelord.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/ShieldBlock.h"
@@ -1811,4 +1812,31 @@ TEST_CASE("Grommash Hellscream")
     auto post_heal_state = post_dmg_state.get_possible_actions().at(1)->apply(post_dmg_state).at(0);
 
     REQUIRE(post_heal_state.current_player().board.get_minion(1).attack == 4);
+}
+
+TEST_CASE("Ragnaros The Firelord")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&RagnarosTheFirelord::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 8;
+
+    game.add_minion(&BoulderfistOgre::instance, 0, false);
+    game.add_minion(&BoulderfistOgre::instance, 1, false);
+
+    auto actions = game.get_possible_actions();
+
+    auto new_state = actions.at(0)->apply(game).at(0);
+
+    auto eot_states = new_state.get_possible_actions().at(0)->apply(new_state);
+
+    REQUIRE(eot_states.size() == 3);
+
+
+    REQUIRE(eot_states.at(0).opponent().hero->health == 22);
+    REQUIRE(eot_states.at(1).opponent().board.minion_count() == 1);
+    REQUIRE(eot_states.at(2).opponent().board.minion_count() == 1);
 }

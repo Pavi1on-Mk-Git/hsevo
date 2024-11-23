@@ -268,11 +268,9 @@ std::vector<Game> Game::trigger_end_of_turn()
             });
 
             if(found == state.current_player().board.end())
-                found = std::ranges::find_if(state.opponent().board, [&minion_id](const Minion& minion) {
-                    return minion.id == minion_id;
-                });
-
-            std::ranges::move(found->on_end_of_turn(state), std::back_inserter(new_states));
+                new_states.push_back(state);
+            else
+                std::ranges::move(found->on_end_of_turn(state), std::back_inserter(new_states));
         }
 
         resulting_states = std::move(new_states);

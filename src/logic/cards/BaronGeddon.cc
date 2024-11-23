@@ -4,18 +4,18 @@
 
 const unsigned BARON_GEDDON_EOT_DMG = 2;
 
-std::vector<Game> BaronGeddon::on_end_of_turn(Game& game, unsigned id, unsigned player_id) const
+std::vector<Game> BaronGeddon::on_end_of_turn(Game& game, unsigned id) const
 {
     auto deal_dmg = [&game](Entity& entity) { entity.deal_dmg(BARON_GEDDON_EOT_DMG, game); };
 
-    for(auto& minion: game.players.at(player_id).board)
+    for(auto& minion: game.current_player().board)
     {
         if(minion.id == id)
             continue;
         deal_dmg(minion);
     }
 
-    for(auto& minion: game.players.at(1 - player_id).board)
+    for(auto& minion: game.opponent().board)
         deal_dmg(minion);
 
     deal_dmg(*game.current_player().hero);

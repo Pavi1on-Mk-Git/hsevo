@@ -34,6 +34,7 @@
 #include "logic/cards/MortalCoil.h"
 #include "logic/cards/MountainGiant.h"
 #include "logic/cards/PowerOverwhelming.h"
+#include "logic/cards/RagnarosTheFirelord.h"
 #include "logic/cards/SacrificialPact.h"
 #include "logic/cards/Shadowflame.h"
 #include "logic/cards/ShieldBlock.h"
@@ -137,6 +138,7 @@ Decklist control_warrior()
     deck.emplace_back(&SylvanasWindrunner::instance, 1);
     deck.emplace_back(&BaronGeddon::instance, 1);
     deck.emplace_back(&GrommashHellscream::instance, 1);
+    deck.emplace_back(&RagnarosTheFirelord::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

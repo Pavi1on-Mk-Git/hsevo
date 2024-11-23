@@ -18,7 +18,7 @@ public:
     int health;
     Tribe tribe;
 
-    void restore_health(unsigned amount);
+    virtual void restore_health(unsigned amount) = 0;
     virtual void deal_dmg(unsigned amount, Game& game) = 0;
 };
 

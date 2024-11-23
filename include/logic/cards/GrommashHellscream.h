@@ -10,7 +10,7 @@ private:
 public:
     static const GrommashHellscream instance;
     void on_enrage(Minion& minion) const override;
-    void on_no_enrage(Minion& minion) const override;
+    void on_calm_down(Minion& minion) const override;
 };
 
 inline const GrommashHellscream GrommashHellscream::instance;

@@ -6,11 +6,6 @@ Entity::Entity(const char* name, unsigned base_health, const Tribe& tribe):
     name(name), max_health(base_health), health(base_health), tribe(tribe)
 {}
 
-void Entity::restore_health(unsigned amount)
-{
-    health = std::min(max_health, health + amount);
-}
-
 void apply_to_entity(Game& game, const std::vector<OnPlayArg>& args, std::function<void(Entity&)> func)
 {
     using enum TargetType;

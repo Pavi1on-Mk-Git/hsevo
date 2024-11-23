@@ -3,6 +3,7 @@
 #include "logic/Game.h"
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AcolyteOfPain.h"
+#include "logic/cards/Alexstraza.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
@@ -1839,4 +1840,27 @@ TEST_CASE("Ragnaros The Firelord")
     REQUIRE(eot_states.at(0).opponent().hero->health == 22);
     REQUIRE(eot_states.at(1).opponent().board.minion_count() == 1);
     REQUIRE(eot_states.at(2).opponent().board.minion_count() == 1);
+}
+
+TEST_CASE("Alexstraza")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Alexstraza::instance, 5});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.current_player().mana = 9;
+
+    SECTION("Target ally")
+    {
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+        REQUIRE(new_state.current_player().hero->health == 15);
+    }
+
+    SECTION("Target enemy")
+    {
+        auto new_state = game.get_possible_actions().at(1)->apply(game).at(0);
+        REQUIRE(new_state.opponent().hero->health == 15);
+    }
 }

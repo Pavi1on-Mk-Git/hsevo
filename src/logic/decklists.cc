@@ -2,6 +2,7 @@
 
 #include "logic/cards/AbusiveSergeant.h"
 #include "logic/cards/AcolyteOfPain.h"
+#include "logic/cards/Alexstraza.h"
 #include "logic/cards/AncientWatcher.h"
 #include "logic/cards/ArcaneGolem.h"
 #include "logic/cards/Armorsmith.h"
@@ -139,6 +140,7 @@ Decklist control_warrior()
     deck.emplace_back(&BaronGeddon::instance, 1);
     deck.emplace_back(&GrommashHellscream::instance, 1);
     deck.emplace_back(&RagnarosTheFirelord::instance, 1);
+    deck.emplace_back(&Alexstraza::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

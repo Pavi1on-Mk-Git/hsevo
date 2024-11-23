@@ -37,7 +37,7 @@ public:
     virtual void on_remove(Game& game, unsigned id, unsigned player_id) const;
     virtual std::vector<Game> on_end_of_turn(Game& game, unsigned id) const;
     virtual void on_enrage(Minion& minion) const;
-    virtual void on_no_enrage(Minion& minion) const;
+    virtual void on_calm_down(Minion& minion) const;
     virtual std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position)
         const override;
 };

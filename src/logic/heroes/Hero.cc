@@ -8,6 +8,11 @@ Hero::Hero(
     hero_power_mana_cost(hero_power_mana_cost), hero_power_active(true), active(true), armour(0)
 {}
 
+void Hero::restore_health(unsigned amount)
+{
+    health = std::min(max_health, health + amount);
+}
+
 void Hero::deal_dmg(unsigned amount, Game&)
 {
     if(amount > armour)

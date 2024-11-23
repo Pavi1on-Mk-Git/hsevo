@@ -9,7 +9,7 @@ void GrommashHellscream::on_enrage(Minion& minion) const
     minion.attack += GROMMASH_HELLSCREAM_ENRAGE_ATTACK;
 }
 
-void GrommashHellscream::on_no_enrage(Minion& minion) const
+void GrommashHellscream::on_calm_down(Minion& minion) const
 {
     minion.attack -= GROMMASH_HELLSCREAM_ENRAGE_ATTACK;
 }

@@ -25,7 +25,7 @@ private:
 
     void mulligan();
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
-    std::vector<Game> trigger_on_death();
+    std::vector<Game> trigger_post_action();
     std::vector<Game> trigger_end_of_turn();
 
     HeroInput get_hero_state(unsigned player_index) const;

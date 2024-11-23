@@ -21,6 +21,7 @@
 #include "logic/cards/FieryWarAxe.h"
 #include "logic/cards/Flare.h"
 #include "logic/cards/FreezingTrap.h"
+#include "logic/cards/GrommashHellscream.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/KillCommand.h"
@@ -135,6 +136,7 @@ Decklist control_warrior()
     deck.emplace_back(&CairneBloodhoof::instance, 1);
     deck.emplace_back(&SylvanasWindrunner::instance, 1);
     deck.emplace_back(&BaronGeddon::instance, 1);
+    deck.emplace_back(&GrommashHellscream::instance, 1);
 
     return Decklist("Control Warrior", std::move(hero), deck);
 }

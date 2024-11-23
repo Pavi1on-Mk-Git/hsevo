@@ -9,7 +9,7 @@ struct Minion: public Entity
 {
     const MinionCard* card;
     unsigned attack, id, player_id;
-    bool active, will_die_horribly, has_deathrattle;
+    bool active, will_die_horribly, has_deathrattle, enraged;
     MinionKeywords keywords;
     std::vector<unsigned> auras_applied;
 

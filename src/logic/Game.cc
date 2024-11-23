@@ -175,7 +175,24 @@ unsigned Game::next_minion_id()
     return minion_id;
 }
 
-std::vector<Game> Game::trigger_on_death()
+static void enrage_minions(Board& board)
+{
+    for(auto& minion: board)
+    {
+        if(minion.enraged && static_cast<unsigned>(minion.health) == minion.max_health)
+        {
+            minion.enraged = false;
+            minion.card->on_no_enrage(minion);
+        }
+        else if(!minion.enraged && static_cast<unsigned>(minion.health) < minion.max_health)
+        {
+            minion.enraged = true;
+            minion.card->on_enrage(minion);
+        }
+    }
+}
+
+std::vector<Game> Game::trigger_post_action()
 {
     std::vector<Minion> dead_minions;
     std::vector<unsigned> ids_to_reuse;
@@ -212,6 +229,9 @@ std::vector<Game> Game::trigger_on_death()
         minion_ids_.push_back(id);
     }
 
+    for(auto& minion: opponent().board)
+        minion.card->on_enrage(minion);
+
     std::vector<Game> resulting_states{*this};
 
     for(const auto& minion: dead_minions)
@@ -222,6 +242,12 @@ std::vector<Game> Game::trigger_on_death()
             std::ranges::move(minion.on_death(state), std::back_inserter(new_states));
 
         resulting_states = std::move(new_states);
+    }
+
+    for(auto& state: resulting_states)
+    {
+        enrage_minions(state.current_player().board);
+        enrage_minions(state.opponent().board);
     }
 
     return resulting_states;
@@ -355,7 +381,7 @@ std::vector<Game> Game::do_action(const EndTurnAction&)
     std::vector<Game> resulting_states;
 
     for(auto& state: trigger_end_of_turn())
-        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
+        std::ranges::move(state.trigger_post_action(), std::back_inserter(resulting_states));
 
     return resulting_states;
 }
@@ -374,7 +400,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action)
     std::vector<Game> resulting_states;
 
     for(auto& state: new_states)
-        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
+        std::ranges::move(state.trigger_post_action(), std::back_inserter(resulting_states));
 
     return resulting_states;
 }
@@ -390,7 +416,7 @@ std::vector<Game> Game::do_action(const PlaySpellAction& action)
     std::vector<Game> resulting_states;
 
     for(auto& state: new_states)
-        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
+        std::ranges::move(state.trigger_post_action(), std::back_inserter(resulting_states));
 
     return resulting_states;
 }
@@ -457,7 +483,7 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
             entity.deal_dmg(defender_dmg, state);
         });
 
-        std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
+        std::ranges::move(state.trigger_post_action(), std::back_inserter(resulting_states));
     }
 
     return resulting_states;
@@ -498,7 +524,7 @@ std::vector<Game> Game::do_action(const FightAction& action)
             if(!can_continue)
             {
                 for(auto& [new_state, new_action]: new_states_and_actions)
-                    std::ranges::move(new_state.trigger_on_death(), std::back_inserter(resulting_states));
+                    std::ranges::move(new_state.trigger_post_action(), std::back_inserter(resulting_states));
                 continue;
             }
 
@@ -520,5 +546,5 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action)
 
     current_player().hero->on_hero_power_use(*this, action.args);
 
-    return trigger_on_death();
+    return trigger_post_action();
 }

@@ -5,7 +5,7 @@
 Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
     Entity(card->name, card->base_health, card->tribe), card(card), attack(card->base_attack),
     id(game.next_minion_id()), player_id(player_id), active(card->keywords & CHARGE), will_die_horribly(false),
-    has_deathrattle(card->has_deathrattle), keywords(card->keywords)
+    has_deathrattle(card->has_deathrattle), enraged(false), keywords(card->keywords)
 {}
 
 void Minion::deal_dmg(unsigned amount, Game& game)

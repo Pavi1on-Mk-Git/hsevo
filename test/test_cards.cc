@@ -23,6 +23,7 @@
 #include "logic/cards/FacelessManipulator.h"
 #include "logic/cards/Flare.h"
 #include "logic/cards/FreezingTrap.h"
+#include "logic/cards/GrommashHellscream.h"
 #include "logic/cards/Hellfire.h"
 #include "logic/cards/HuntersMark.h"
 #include "logic/cards/Infernal.h"
@@ -1787,4 +1788,27 @@ TEST_CASE("Baron Geddon")
     REQUIRE(eot_state.current_player().board.get_minion(2).health == 5);
     REQUIRE(eot_state.opponent().board.get_minion(0).health == 5);
     REQUIRE(eot_state.opponent().board.get_minion(1).health == 5);
+}
+
+TEST_CASE("Grommash Hellscream")
+{
+    auto hero = std::make_unique<GarroshHellscream>();
+    DecklistDeck deck;
+    deck.push_back({&Whirlwind::instance, 1});
+    deck.push_back({&EarthenRingFarseer::instance, 1});
+    Decklist decklist("Test", std::move(hero), std::move(deck));
+    Game game(decklist, decklist);
+
+    game.add_minion(&GrommashHellscream::instance, 0);
+
+    game.current_player().mana = 1;
+
+    auto post_dmg_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+    REQUIRE(post_dmg_state.current_player().board.get_minion(0).attack == 10);
+
+    post_dmg_state.current_player().mana = 3;
+    auto post_heal_state = post_dmg_state.get_possible_actions().at(1)->apply(post_dmg_state).at(0);
+
+    REQUIRE(post_heal_state.current_player().board.get_minion(1).attack == 4);
 }

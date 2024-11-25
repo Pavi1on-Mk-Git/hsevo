@@ -13,7 +13,7 @@ std::vector<Game> FreezingTrap::on_play(const Game& prev_state, const std::vecto
 
 static const unsigned FREEZING_TRAP_COST_INCREASE = 2;
 
-SecretResult FreezingTrap::on_trigger(const Game& prev_state, const FightAction& action) const
+std::optional<SecretResult> FreezingTrap::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
 
@@ -38,7 +38,7 @@ SecretResult FreezingTrap::on_trigger(const Game& prev_state, const FightAction&
     default:
         break;
     }
-    return SecretResult();
+    return std::nullopt;
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> FreezingTrap::create_play_actions(const Game& game, unsigned hand_position)

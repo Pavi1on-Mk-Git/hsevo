@@ -479,13 +479,15 @@ std::vector<Game> Game::do_action(const FightAction& action) const
 
         for(const auto& [state, action]: states_and_actions)
         {
-            auto [new_states_and_actions, triggered, can_continue] = secret->on_trigger(state, action);
+            auto secret_result = secret->on_trigger(state, action);
 
-            if(!triggered)
+            if(!secret_result)
             {
                 resulting_states_and_actions.emplace_back(state, action);
                 continue;
             }
+
+            auto [new_states_and_actions, can_continue] = *secret_result;
 
             for(auto& [new_state, new_action]: new_states_and_actions)
             {

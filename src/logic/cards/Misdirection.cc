@@ -11,7 +11,7 @@ std::vector<Game> Misdirection::on_play(const Game& prev_state, const std::vecto
     return resulting_states;
 }
 
-SecretResult Misdirection::on_trigger(const Game& prev_state, const FightAction& action) const
+std::optional<SecretResult> Misdirection::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
 
@@ -55,11 +55,12 @@ SecretResult Misdirection::on_trigger(const Game& prev_state, const FightAction&
         }
         break;
     default:
-        return SecretResult();
+        return std::nullopt;
+        ;
     }
 
     if(actions.empty())
-        return SecretResult();
+        return std::nullopt;
 
     std::vector<Game> states;
     for(unsigned i = 0; i < actions.size(); ++i)

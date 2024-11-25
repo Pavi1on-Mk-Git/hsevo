@@ -13,7 +13,7 @@ std::vector<Game> ExplosiveTrap::on_play(const Game& prev_state, const std::vect
 
 const unsigned EXPLOSIVE_TRAP_DMG = 2;
 
-SecretResult ExplosiveTrap::on_trigger(const Game& prev_state, const FightAction& action) const
+std::optional<SecretResult> ExplosiveTrap::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
 
@@ -42,13 +42,13 @@ SecretResult ExplosiveTrap::on_trigger(const Game& prev_state, const FightAction
             can_continue = player.hero->health > 0;
             break;
         default:
-            return SecretResult();
+            return std::nullopt;
         }
 
         return SecretResult(resulting_states, {action}, can_continue);
     }
     default:
-        return SecretResult();
+        return std::nullopt;
     }
 }
 

@@ -37,14 +37,6 @@ void Board::remove_dead_minions()
     std::erase_if(board_, [](const Minion& minion) { return minion.health <= 0; });
 }
 
-void Board::trigger_end_of_turn()
-{
-    std::ranges::for_each(board_, [](Minion& minion) {
-        if(minion.will_die_horribly)
-            minion.health = 0;
-    });
-}
-
 const MinionCard* Board::remove_minion(unsigned position)
 {
     auto& to_remove = board_.at(position);

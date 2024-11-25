@@ -17,8 +17,8 @@ struct FightAction: Action
     FightAction(const TargetType& attacker, const TargetType& defender, unsigned defender_position);
     FightAction(const TargetType& attacker, unsigned attacker_position, const TargetType& defender);
     FightAction(const TargetType& attacker, const TargetType& defender);
-    std::vector<Game> apply(Game& game) const override;
-    std::vector<Game> test_apply(Game& game) const override;
+    std::vector<Game> apply(const Game& game) const override;
+    std::vector<Game> test_apply(const Game& game) const override;
     std::deque<GuiElementId> element_sequence() const override;
 };
 

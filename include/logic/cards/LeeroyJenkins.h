@@ -9,7 +9,7 @@ private:
     LeeroyJenkins(): MinionCard("Leeroy Jenkins", 4, 6, 2, CHARGE) {}
 public:
     static const LeeroyJenkins instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const LeeroyJenkins LeeroyJenkins::instance;

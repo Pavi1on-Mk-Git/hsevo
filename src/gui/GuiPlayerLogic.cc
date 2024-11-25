@@ -38,8 +38,7 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector
     {
         click_sequence_.clear();
         gui_.minion_gap_position = std::nullopt;
-        Game game_copy(game);
-        auto new_states = actions.at(matching_sequence - potential_sequences.begin())->apply(game_copy);
+        auto new_states = actions.at(matching_sequence - potential_sequences.begin())->apply(game);
         return new_states.at(Rng::instance().uniform_int(0, new_states.size() - 1));
     }
     else

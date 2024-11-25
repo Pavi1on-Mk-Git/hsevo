@@ -4,10 +4,13 @@
 
 const unsigned ALEXSTRAZA_HERO_HEALTH = 15;
 
-std::vector<Game> Alexstraza::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> Alexstraza::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     apply_to_entity(game, args, [](Entity& entity) { entity.health = ALEXSTRAZA_HERO_HEALTH; });
-    return {game};
+    return resulting_states;
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> Alexstraza::create_play_actions(const Game& game, unsigned hand_position)

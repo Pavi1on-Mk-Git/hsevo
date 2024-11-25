@@ -21,7 +21,7 @@ protected:
     using Card::Card;
 public:
     virtual ~SecretCard() = default;
-    virtual SecretResult on_trigger(Game& game, const FightAction& action) const = 0;
+    virtual SecretResult on_trigger(const Game& prev_state, const FightAction& action) const = 0;
 };
 
 #endif

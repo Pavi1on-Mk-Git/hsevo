@@ -9,7 +9,7 @@ private:
     LordJaraxxusCard(): Card("Lord Jaraxxus", 9) {}
 public:
     static const LordJaraxxusCard instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const LordJaraxxusCard LordJaraxxusCard::instance;

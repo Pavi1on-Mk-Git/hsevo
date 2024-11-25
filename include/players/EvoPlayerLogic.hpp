@@ -37,10 +37,7 @@ struct EvoPlayerLogic: PlayerLogic
 
         std::ranges::transform(
             actions, std::back_inserter(states_for_action),
-            [&game](const std::unique_ptr<Action>& action) {
-                Game game_copy(game);
-                return action->test_apply(game_copy);
-            }
+            [&game](const std::unique_ptr<Action>& action) { return action->test_apply(game); }
         );
 
         unsigned best_action_id = std::ranges::max_element(
@@ -51,8 +48,7 @@ struct EvoPlayerLogic: PlayerLogic
                                   ) -
                                   states_for_action.begin();
 
-        Game game_copy(game);
-        auto resulting_states = actions.at(best_action_id)->apply(game_copy);
+        auto resulting_states = actions.at(best_action_id)->apply(game);
 
         return resulting_states.at(Rng::instance().uniform_int(0, resulting_states.size() - 1));
     }

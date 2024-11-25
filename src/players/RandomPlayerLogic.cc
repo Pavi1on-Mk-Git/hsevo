@@ -10,9 +10,7 @@ Game RandomPlayerLogic::choose_and_apply_action(const Game& game, const std::vec
 {
     auto& action = actions.at(Rng::instance().uniform_int(0, actions.size() - 1));
 
-    Game game_copy(game);
-
-    auto new_states = action->apply(game_copy);
+    auto new_states = action->apply(game);
 
     return new_states.at(Rng::instance().uniform_int(0, new_states.size() - 1));
 }

@@ -9,7 +9,7 @@ private:
     AzureDrake(): MinionCard("Azure Drake", 5, 4, 4, Tribe::DRAGON) {}
 public:
     static const AzureDrake instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
     void on_summon(Game& game, unsigned position_played) const override;
     void on_remove(Game& game, unsigned id, unsigned player_id) const override;
 };

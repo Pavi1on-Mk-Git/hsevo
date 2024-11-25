@@ -2,17 +2,23 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> FreezingTrap::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> FreezingTrap::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     game.current_player().secrets.push_back(this);
-    return {game};
+    return resulting_states;
 }
 
 static const unsigned FREEZING_TRAP_COST_INCREASE = 2;
 
-SecretResult FreezingTrap::on_trigger(Game& game, const FightAction& action) const
+SecretResult FreezingTrap::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
+
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
 
     switch(action.attacker)
     {
@@ -24,7 +30,7 @@ SecretResult FreezingTrap::on_trigger(Game& game, const FightAction& action) con
             const auto* bounced_minion = game.bounce_minion(*action.attacker_position);
             auto card_with_cost_increase = HandCard(bounced_minion, FREEZING_TRAP_COST_INCREASE);
             game.current_player().hand.add_cards(card_with_cost_increase);
-            return SecretResult({game}, {action}, false);
+            return SecretResult(resulting_states, {action}, false);
         }
         default:
             break;

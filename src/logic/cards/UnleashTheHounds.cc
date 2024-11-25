@@ -3,8 +3,11 @@
 #include "logic/Game.h"
 #include "logic/cards/Hound.h"
 
-std::vector<Game> UnleashTheHounds::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> UnleashTheHounds::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     unsigned current_minion_count = game.current_player().board.minion_count();
     unsigned opponent_minion_count = game.opponent().board.minion_count();
 
@@ -17,5 +20,5 @@ std::vector<Game> UnleashTheHounds::on_play(Game& game, const std::vector<OnPlay
         game.add_minion(&Hound::instance, current_minion_count + summon_offset);
     }
 
-    return {game};
+    return resulting_states;
 }

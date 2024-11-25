@@ -9,9 +9,9 @@ unsigned Card::mana_cost(const Game&) const
     return mana_cost_;
 }
 
-std::vector<Game> Card::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> Card::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
-    return {game};
+    return {prev_state};
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> Card::create_play_actions(const Game& game, unsigned hand_position) const

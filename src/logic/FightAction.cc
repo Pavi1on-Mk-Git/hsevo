@@ -20,7 +20,7 @@ FightAction::FightAction(const TargetType& attacker, unsigned attacker_position,
 FightAction::FightAction(const TargetType& attacker, const TargetType& defender): attacker(attacker), defender(defender)
 {}
 
-std::vector<Game> FightAction::apply(Game& game) const
+std::vector<Game> FightAction::apply(const Game& game) const
 {
     using enum TargetType;
     switch(attacker)
@@ -60,7 +60,7 @@ std::vector<Game> FightAction::apply(Game& game) const
     return game.do_action(*this);
 }
 
-std::vector<Game> FightAction::test_apply(Game& game) const
+std::vector<Game> FightAction::test_apply(const Game& game) const
 {
     std::vector<std::pair<Game, FightAction>> state_and_action{{game, *this}};
     return Game::do_fight_actions(state_and_action);

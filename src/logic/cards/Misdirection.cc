@@ -2,13 +2,16 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> Misdirection::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> Misdirection::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     game.current_player().secrets.push_back(this);
-    return {game};
+    return resulting_states;
 }
 
-SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) const
+SecretResult Misdirection::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
 
@@ -20,12 +23,13 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
         switch(action.defender)
         {
         case ENEMY_HERO:
-            for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
+            for(unsigned minion_position = 0; minion_position < prev_state.current_player().board.minion_count();
                 ++minion_position)
                 if(minion_position != action.attacker_position)
                     actions.emplace_back(ALLY_MINION, *action.attacker_position, ALLY_MINION, minion_position);
 
-            for(unsigned minion_position = 0; minion_position < game.opponent().board.minion_count(); ++minion_position)
+            for(unsigned minion_position = 0; minion_position < prev_state.opponent().board.minion_count();
+                ++minion_position)
                 actions.emplace_back(ALLY_MINION, *action.attacker_position, ENEMY_MINION, minion_position);
 
             actions.emplace_back(ALLY_MINION, *action.attacker_position, ALLY_HERO);
@@ -38,11 +42,12 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
         switch(action.defender)
         {
         case ENEMY_HERO:
-            for(unsigned minion_position = 0; minion_position < game.current_player().board.minion_count();
+            for(unsigned minion_position = 0; minion_position < prev_state.current_player().board.minion_count();
                 ++minion_position)
                 actions.emplace_back(ALLY_HERO, ALLY_MINION, minion_position);
 
-            for(unsigned minion_position = 0; minion_position < game.opponent().board.minion_count(); ++minion_position)
+            for(unsigned minion_position = 0; minion_position < prev_state.opponent().board.minion_count();
+                ++minion_position)
                 actions.emplace_back(ALLY_HERO, ENEMY_MINION, minion_position);
             break;
         default:
@@ -58,7 +63,7 @@ SecretResult Misdirection::on_trigger(Game& game, const FightAction& action) con
 
     std::vector<Game> states;
     for(unsigned i = 0; i < actions.size(); ++i)
-        states.push_back(game);
+        states.push_back(prev_state);
 
     return SecretResult(states, actions, true);
 }

@@ -9,7 +9,7 @@ private:
     HuntersMark(): SingleArgTargetMinionCard("Hunter's Mark", 0) {}
 public:
     static const HuntersMark instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const HuntersMark HuntersMark::instance;

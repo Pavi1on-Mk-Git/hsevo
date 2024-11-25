@@ -9,7 +9,7 @@ private:
     DefenderOfArgus(): SingleArgSelfPlayPositionCard("Defender of Argus", 4, 2, 3) {}
 public:
     static const DefenderOfArgus instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const DefenderOfArgus DefenderOfArgus::instance;

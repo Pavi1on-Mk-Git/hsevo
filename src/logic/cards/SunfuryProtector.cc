@@ -2,8 +2,11 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> SunfuryProtector::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> SunfuryProtector::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     const auto position_played = std::get<unsigned>(args.at(0));
 
     std::vector<unsigned> neighbour_positions;
@@ -16,5 +19,5 @@ std::vector<Game> SunfuryProtector::on_play(Game& game, const std::vector<OnPlay
     for(unsigned board_position: neighbour_positions)
         game.current_player().board.get_minion(board_position).keywords |= TAUNT;
 
-    return {game};
+    return resulting_states;
 }

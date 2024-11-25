@@ -11,8 +11,8 @@ public:
     const Card* card;
 
     HandCard(const Card* card, unsigned mana_cost_increase = 0);
-    unsigned mana_cost(Game& game) const;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const;
+    unsigned mana_cost(const Game& game) const;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const;
     std::vector<std::unique_ptr<PlayCardAction>> create_play_actions(const Game& game, unsigned hand_position) const;
 };
 

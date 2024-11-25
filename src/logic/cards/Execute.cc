@@ -2,12 +2,15 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> Execute::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> Execute::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     const auto target_position = std::get<unsigned>(args.at(1));
 
     game.opponent().board.get_minion(target_position).health = 0;
-    return {game};
+    return resulting_states;
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> Execute::create_play_actions(const Game& game, unsigned hand_position)

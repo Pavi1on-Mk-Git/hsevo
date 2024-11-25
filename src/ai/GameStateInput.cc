@@ -22,6 +22,7 @@ std::array<std::array<double, GameStateInput::INPUT_SIZE>, 2> GameStateInput::ge
             add_to_element(minion.can_attack);
             add_to_element(minion.has_taunt);
             add_to_element(minion.has_deathrattle);
+            add_to_element(minion.has_eot);
         }
 
         add_to_element(player.hand_size);

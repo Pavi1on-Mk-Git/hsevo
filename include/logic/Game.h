@@ -25,8 +25,8 @@ private:
 
     void mulligan();
     std::vector<std::unique_ptr<Action>> get_attack_actions() const;
-    std::vector<Game> trigger_on_death();
-    std::vector<Game> trigger_end_of_turn();
+    std::vector<Game> trigger_on_death() const;
+    std::vector<Game> trigger_end_of_turn() const;
 
     HeroInput get_hero_state(unsigned player_index) const;
 public:
@@ -50,11 +50,11 @@ public:
     const MinionCard* bounce_minion(unsigned position);
     void change_minion_side(unsigned player_id, unsigned position);
     static std::vector<Game> do_fight_actions(std::vector<std::pair<Game, FightAction>>& states_and_actions);
-    std::vector<Game> do_action(const EndTurnAction& action);
-    std::vector<Game> do_action(const PlayMinionAction& action);
-    std::vector<Game> do_action(const PlaySpellAction& action);
-    std::vector<Game> do_action(const FightAction& action);
-    std::vector<Game> do_action(const HeroPowerAction& action);
+    std::vector<Game> do_action(const EndTurnAction& action) const;
+    std::vector<Game> do_action(const PlayMinionAction& action) const;
+    std::vector<Game> do_action(const PlaySpellAction& action) const;
+    std::vector<Game> do_action(const FightAction& action) const;
+    std::vector<Game> do_action(const HeroPowerAction& action) const;
 };
 
 #endif

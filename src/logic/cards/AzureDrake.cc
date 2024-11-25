@@ -2,11 +2,13 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> AzureDrake::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> AzureDrake::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
     game.draw();
 
-    return {game};
+    return resulting_states;
 }
 
 const unsigned AZURE_DRAKE_SPELL_DMG = 1;

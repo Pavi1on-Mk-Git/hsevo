@@ -6,10 +6,10 @@
 class BaronGeddon: public MinionCard
 {
 private:
-    BaronGeddon(): MinionCard("Baron Geddon", 7, 7, 5) {}
+    BaronGeddon(): MinionCard("Baron Geddon", 7, 7, 5, NO_KEYWORDS, true) {}
 public:
     static const BaronGeddon instance;
-    std::vector<Game> on_end_of_turn(Game& game, unsigned id) const override;
+    std::vector<Game> on_end_of_turn(const Game& prev_state, unsigned id) const override;
 };
 
 inline const BaronGeddon BaronGeddon::instance;

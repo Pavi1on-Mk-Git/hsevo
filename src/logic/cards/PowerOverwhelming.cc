@@ -4,8 +4,11 @@
 
 const unsigned POWER_OVERWHELMING_BUFF_AMOUNT = 4;
 
-std::vector<Game> PowerOverwhelming::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> PowerOverwhelming::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     const auto target_position = std::get<unsigned>(args.at(1));
 
     auto& minion = game.current_player().board.get_minion(target_position);
@@ -14,5 +17,5 @@ std::vector<Game> PowerOverwhelming::on_play(Game& game, const std::vector<OnPla
     minion.health += POWER_OVERWHELMING_BUFF_AMOUNT;
     minion.will_die_horribly = true;
 
-    return {game};
+    return resulting_states;
 }

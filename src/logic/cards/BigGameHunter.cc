@@ -2,12 +2,15 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> BigGameHunter::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> BigGameHunter::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     if(!args.empty())
         apply_to_entity(game, args, [](Entity& entity) { entity.health = 0; });
 
-    return {game};
+    return resulting_states;
 }
 
 const unsigned BIG_GAME_HUNTER_ATTACK_THRESHOLD = 7;

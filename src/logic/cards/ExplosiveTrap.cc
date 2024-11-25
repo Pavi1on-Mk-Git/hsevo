@@ -2,17 +2,23 @@
 
 #include "logic/Game.h"
 
-std::vector<Game> ExplosiveTrap::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> ExplosiveTrap::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     game.current_player().secrets.push_back(this);
-    return {game};
+    return resulting_states;
 }
 
 const unsigned EXPLOSIVE_TRAP_DMG = 2;
 
-SecretResult ExplosiveTrap::on_trigger(Game& game, const FightAction& action) const
+SecretResult ExplosiveTrap::on_trigger(const Game& prev_state, const FightAction& action) const
 {
     using enum TargetType;
+
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
 
     switch(action.defender)
     {
@@ -39,7 +45,7 @@ SecretResult ExplosiveTrap::on_trigger(Game& game, const FightAction& action) co
             return SecretResult();
         }
 
-        return SecretResult({game}, {action}, can_continue);
+        return SecretResult(resulting_states, {action}, can_continue);
     }
     default:
         return SecretResult();

@@ -8,7 +8,7 @@ PlaySpellAction::PlaySpellAction(unsigned hand_position, unsigned card_cost, con
     PlayCardAction(hand_position, card_cost, args)
 {}
 
-std::vector<Game> PlaySpellAction::apply(Game& game) const
+std::vector<Game> PlaySpellAction::apply(const Game& game) const
 {
     SPDLOG_INFO(
         "Player has played {} from hand position {} for {} mana{}",
@@ -17,7 +17,7 @@ std::vector<Game> PlaySpellAction::apply(Game& game) const
     return game.do_action(*this);
 }
 
-std::vector<Game> PlaySpellAction::test_apply(Game& game) const
+std::vector<Game> PlaySpellAction::test_apply(const Game& game) const
 {
     return game.do_action(*this);
 }

@@ -4,28 +4,28 @@
 
 MinionCard::MinionCard(const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS),
-    tribe(Tribe::NONE), has_deathrattle(false)
+    tribe(Tribe::NONE), has_deathrattle(false), has_eot(false)
 {}
 
 MinionCard::MinionCard(
     const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords
 ):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE),
-    has_deathrattle(false)
+    has_deathrattle(false), has_eot(false)
 {}
 
 MinionCard::MinionCard(
     const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const Tribe& tribe
 ):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS), tribe(tribe),
-    has_deathrattle(false)
+    has_deathrattle(false), has_eot(false)
 {}
 
 MinionCard::MinionCard(
     const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, bool has_deathrattle
 ):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(NO_KEYWORDS),
-    tribe(Tribe::NONE), has_deathrattle(has_deathrattle)
+    tribe(Tribe::NONE), has_deathrattle(has_deathrattle), has_eot(false)
 {}
 
 MinionCard::MinionCard(
@@ -33,12 +33,20 @@ MinionCard::MinionCard(
     const Tribe& tribe
 ):
     Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(tribe),
-    has_deathrattle(false)
+    has_deathrattle(false), has_eot(false)
 {}
 
-std::vector<Game> MinionCard::on_death(Game& game, unsigned) const
+MinionCard::MinionCard(
+    const char* name, unsigned base_cost, unsigned base_attack, unsigned base_health, const MinionKeywords& keywords,
+    bool has_eot
+):
+    Card(name, base_cost), base_attack(base_attack), base_health(base_health), keywords(keywords), tribe(Tribe::NONE),
+    has_deathrattle(false), has_eot(has_eot)
+{}
+
+std::vector<Game> MinionCard::on_death(const Game& prev_state, unsigned) const
 {
-    return {game};
+    return {prev_state};
 }
 
 void MinionCard::on_minion_summon(Game&, Minion&, unsigned, unsigned) const {}
@@ -55,9 +63,9 @@ void MinionCard::on_enrage(Minion&) const {}
 
 void MinionCard::on_calm_down(Minion&) const {}
 
-std::vector<Game> MinionCard::on_end_of_turn(Game& game, unsigned) const
+std::vector<Game> MinionCard::on_end_of_turn(const Game& prev_state, unsigned) const
 {
-    return {game};
+    return {prev_state};
 }
 
 std::vector<std::unique_ptr<PlayCardAction>> MinionCard::create_play_actions(const Game& game, unsigned hand_position)

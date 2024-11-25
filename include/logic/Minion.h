@@ -9,7 +9,7 @@ struct Minion: public Entity
 {
     const MinionCard* card;
     unsigned attack, id, player_id;
-    bool active, will_die_horribly, has_deathrattle;
+    bool active, will_die_horribly;
     MinionKeywords keywords;
     std::vector<unsigned> auras_applied;
 
@@ -18,10 +18,10 @@ struct Minion: public Entity
     void deal_dmg(unsigned amount, Game& game) override;
     void on_summon(Game& game, unsigned position_played) const;
     void on_remove(Game& game) const;
-    std::vector<Game> on_death(Game& game) const;
+    std::vector<Game> on_death(const Game& prev_state) const;
     void on_minion_summon(Game& game, Minion& minion) const;
     void on_minion_damaged(Game& game) const;
-    std::vector<Game> on_end_of_turn(Game& game);
+    std::vector<Game> on_end_of_turn(const Game& prev_state);
 };
 
 

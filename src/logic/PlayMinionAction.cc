@@ -9,7 +9,7 @@ PlayMinionAction::PlayMinionAction(
 ): PlayCardAction(hand_position, card_cost, args), board_position(board_position)
 {}
 
-std::vector<Game> PlayMinionAction::apply(Game& game) const
+std::vector<Game> PlayMinionAction::apply(const Game& game) const
 {
     SPDLOG_INFO(
         "Player has played {} from hand position {} for {} mana in board position {}{}",
@@ -18,7 +18,7 @@ std::vector<Game> PlayMinionAction::apply(Game& game) const
     return game.do_action(*this);
 }
 
-std::vector<Game> PlayMinionAction::test_apply(Game& game) const
+std::vector<Game> PlayMinionAction::test_apply(const Game& game) const
 {
     return game.do_action(*this);
 }

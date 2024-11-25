@@ -9,7 +9,7 @@ private:
     SylvanasWindrunner(): MinionCard("Sylvanas Windrunner", 6, 5, 5, true) {}
 public:
     static const SylvanasWindrunner instance;
-    std::vector<Game> on_death(Game& game, unsigned player_id) const override;
+    std::vector<Game> on_death(const Game& prev_state, unsigned player_id) const override;
 };
 
 inline const SylvanasWindrunner SylvanasWindrunner::instance;

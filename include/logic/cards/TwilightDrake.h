@@ -9,7 +9,7 @@ private:
     TwilightDrake(): SingleArgSelfPlayPositionCard("Twilight Drake", 4, 4, 1, Tribe::DRAGON) {}
 public:
     static const TwilightDrake instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const TwilightDrake TwilightDrake::instance;

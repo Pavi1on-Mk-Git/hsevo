@@ -19,6 +19,7 @@ struct MinionStateInput
     bool can_attack;
     bool has_taunt;
     bool has_deathrattle;
+    bool has_eot;
 };
 
 struct HeroInput
@@ -30,7 +31,7 @@ struct HeroInput
 
 struct GameStateInput
 {
-    static constexpr unsigned INPUT_SIZE = 4 + 5 * Board::MAX_BOARD_SIZE + 4;
+    static constexpr unsigned INPUT_SIZE = 4 + 6 * Board::MAX_BOARD_SIZE + 4;
     std::array<HeroInput, 2> players;
     std::array<std::array<double, INPUT_SIZE>, 2> get_evo_input() const;
 };

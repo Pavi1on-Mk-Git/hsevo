@@ -9,7 +9,7 @@ private:
     Brawl(): Card("Brawl", 5) {}
 public:
     static const Brawl instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const Brawl Brawl::instance;

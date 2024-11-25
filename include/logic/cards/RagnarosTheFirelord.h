@@ -6,10 +6,10 @@
 class RagnarosTheFirelord: public MinionCard
 {
 private:
-    RagnarosTheFirelord(): MinionCard("Ragnaros The Firelord", 8, 8, 8, CANT_ATTACK) {}
+    RagnarosTheFirelord(): MinionCard("Ragnaros The Firelord", 8, 8, 8, CANT_ATTACK, true) {}
 public:
     static const RagnarosTheFirelord instance;
-    std::vector<Game> on_end_of_turn(Game& game, unsigned id) const override;
+    std::vector<Game> on_end_of_turn(const Game& prev_state, unsigned id) const override;
 };
 
 inline const RagnarosTheFirelord RagnarosTheFirelord::instance;

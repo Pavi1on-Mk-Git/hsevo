@@ -5,10 +5,13 @@
 
 const unsigned WHELP_COUNT = 2;
 
-std::vector<Game> LeeroyJenkins::on_play(Game& game, const std::vector<OnPlayArg>&) const
+std::vector<Game> LeeroyJenkins::on_play(const Game& prev_state, const std::vector<OnPlayArg>&) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     for(unsigned i = 0; i < WHELP_COUNT; ++i)
         game.add_minion(&Whelp::instance, game.opponent().board.minion_count(), false);
 
-    return {game};
+    return resulting_states;
 }

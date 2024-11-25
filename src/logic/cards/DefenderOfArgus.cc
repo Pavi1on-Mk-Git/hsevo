@@ -4,8 +4,11 @@
 
 const unsigned DEFENDER_OF_ARGUS_BUFF_AMOUNT = 1;
 
-std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayArg>& args) const
+std::vector<Game> DefenderOfArgus::on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const
 {
+    std::vector<Game> resulting_states{prev_state};
+    auto& game = resulting_states.at(0);
+
     const auto position_played = std::get<unsigned>(args.at(0));
 
     std::vector<unsigned> neighbour_positions;
@@ -24,5 +27,5 @@ std::vector<Game> DefenderOfArgus::on_play(Game& game, const std::vector<OnPlayA
         current_minion.max_health += DEFENDER_OF_ARGUS_BUFF_AMOUNT;
     }
 
-    return {game};
+    return resulting_states;
 }

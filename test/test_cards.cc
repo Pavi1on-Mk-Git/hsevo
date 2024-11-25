@@ -238,8 +238,8 @@ TEST_CASE("The Coin")
     {
         auto actions = game.get_possible_actions();
         REQUIRE(game.current_player().mana == 0);
-        auto new_state = actions.at(0)->apply(game);
-        REQUIRE(game.current_player().mana == 1);
+        auto new_state = actions.at(0)->apply(game).at(0);
+        REQUIRE(new_state.current_player().mana == 1);
     }
 
     SECTION("Full mana use")
@@ -248,8 +248,8 @@ TEST_CASE("The Coin")
 
         auto actions = game.get_possible_actions();
         REQUIRE(game.current_player().mana == 10);
-        auto new_state = actions.at(0)->apply(game);
-        REQUIRE(game.current_player().mana == 10);
+        auto new_state = actions.at(0)->apply(game).at(0);
+        REQUIRE(new_state.current_player().mana == 10);
     }
 }
 
@@ -440,7 +440,7 @@ TEST_CASE("Power Overwhelming")
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
 
-    auto& ogre = game.current_player().board.get_minion(0);
+    auto& ogre = new_state.current_player().board.get_minion(0);
 
     REQUIRE(ogre.attack == 10);
     REQUIRE(ogre.max_health == 11);
@@ -648,7 +648,7 @@ TEST_CASE("Leeroy Jenkins")
     auto actions = game.get_possible_actions();
     auto new_state = actions.at(0)->apply(game).at(0);
 
-    REQUIRE(game.opponent().board.minion_count() == 2);
+    REQUIRE(new_state.opponent().board.minion_count() == 2);
 }
 
 TEST_CASE("Shadowflame")

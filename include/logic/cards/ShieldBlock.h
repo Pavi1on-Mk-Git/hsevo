@@ -9,7 +9,7 @@ private:
     ShieldBlock(): Card("Shield Block", 3) {}
 public:
     static const ShieldBlock instance;
-    std::vector<Game> on_play(Game& game, const std::vector<OnPlayArg>& args) const override;
+    std::vector<Game> on_play(const Game& prev_state, const std::vector<OnPlayArg>& args) const override;
 };
 
 inline const ShieldBlock ShieldBlock::instance;

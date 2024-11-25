@@ -6,13 +6,13 @@
 
 HeroPowerAction::HeroPowerAction(const std::vector<OnPlayArg>& args): args(args) {}
 
-std::vector<Game> HeroPowerAction::apply(Game& game) const
+std::vector<Game> HeroPowerAction::apply(const Game& game) const
 {
     SPDLOG_INFO("Player has used their hero power");
     return game.do_action(*this);
 }
 
-std::vector<Game> HeroPowerAction::test_apply(Game& game) const
+std::vector<Game> HeroPowerAction::test_apply(const Game& game) const
 {
     return game.do_action(*this);
 }

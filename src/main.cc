@@ -19,7 +19,7 @@ int main()
     const int SEED = 42;
     Rng::instance().seed(SEED);
 
-    auto best_evo = NEAT::evolve({
+    NEATConfig config{
         .population_size = 10,
         .iterations = 20,
         .scoring_func = [&](const auto& population) { return score_member(population, control_warrior()); },
@@ -36,10 +36,20 @@ int main()
         .crossover_prob = 0.75,
         .interspecies_mating_prob = 0.001,
         .inherit_connection_disabled_prob = 0.75,
-    });
+    };
+
+    NEAT population(config);
+    std::optional<std::pair<Network, unsigned>> best_evo;
+
+    for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
+    {
+        auto scores = config.scoring_func(population.networks());
+        best_evo = population.assign_scores(scores);
+        population.epoch();
+    }
 
     std::ofstream out("results/test.txt");
-    best_evo.first.save(out);
+    best_evo->first.save(out);
 
     // std::ifstream in("results/test.txt");
     // Network best_evo(in);
@@ -50,6 +60,6 @@ int main()
 
     auto deck = control_warrior();
     // std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo);
-    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo.first);
+    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo->first);
     run_game(logic, logic);
 }

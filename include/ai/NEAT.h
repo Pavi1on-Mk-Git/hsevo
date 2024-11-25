@@ -12,7 +12,6 @@ private:
 
     std::vector<Genome> population_;
     std::vector<Network> networks_;
-    std::optional<std::pair<Network, unsigned>> best_network_;
     std::vector<unsigned> scores_;
     std::vector<double> adjusted_scores_;
     std::vector<unsigned> genome_to_species_;
@@ -22,9 +21,8 @@ private:
     std::vector<double> species_score_sums_;
     std::vector<unsigned> species_bounds_;
 
-    NEAT(unsigned size);
-    void get_networks(ActivationFunc activation);
-    void score_networks(ScoringFunc scoring_func);
+    NEATConfig config;
+
     void speciate(double similarity_threshold, double excess_coeff, double disjoint_coeff, double weight_coeff);
     void adjust_scores();
     void sort_species();
@@ -39,8 +37,12 @@ private:
         double interspecies_mating_prob, double inherit_connection_disabled_prob
     );
     void cleanup_species();
+    void get_networks(ActivationFunc activation);
 public:
-    static std::pair<Network, unsigned> evolve(const NEATConfig& config);
+    NEAT(const NEATConfig& config);
+    const std::vector<Network>& networks() const;
+    std::pair<Network, unsigned> assign_scores(const std::vector<unsigned>& scores);
+    void epoch();
 };
 
 #endif

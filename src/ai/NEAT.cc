@@ -6,33 +6,6 @@
 
 #include "utils/Rng.h"
 
-NEAT::NEAT(unsigned size)
-{
-    population_.reserve(size);
-    std::ranges::generate_n(std::back_inserter(population_), size, [] { return Genome(); });
-    networks_.reserve(size);
-    scores_.reserve(size);
-    adjusted_scores_.resize(size);
-    genome_to_species_.resize(size);
-}
-
-void NEAT::get_networks(ActivationFunc activation)
-{
-    networks_.clear();
-
-    std::ranges::transform(population_, std::back_inserter(networks_), [&activation](const auto& genome) {
-        return Network(genome, activation);
-    });
-}
-
-void NEAT::score_networks(ScoringFunc scoring_func)
-{
-    scores_ = scoring_func(networks_);
-
-    auto best_score_it = std::ranges::max_element(scores_);
-    best_network_ = {networks_.at(best_score_it - scores_.begin()), *best_score_it};
-}
-
 void NEAT::speciate(double similarity_threshold, double excess_coeff, double disjoint_coeff, double weight_coeff)
 {
     for(auto [genome_id, genome, genome_species]: std::views::zip(std::views::iota(0), population_, genome_to_species_))
@@ -190,25 +163,52 @@ void NEAT::cleanup_species()
     species_score_sums_.resize(species_.size(), 0.);
 }
 
-std::pair<Network, unsigned> NEAT::evolve(const NEATConfig& config)
+NEAT::NEAT(const NEATConfig& config)
 {
-    NEAT population(config.population_size);
+    population_.reserve(config.population_size);
+    std::ranges::generate_n(std::back_inserter(population_), config.population_size, [] { return Genome(); });
+    networks_.reserve(config.population_size);
+    scores_.reserve(config.population_size);
+    adjusted_scores_.resize(config.population_size);
+    genome_to_species_.resize(config.population_size);
 
-    for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
-    {
-        population.get_networks(config.activation);
-        population.score_networks(config.scoring_func);
-        population.speciate(config.weight_coeff, config.excess_coeff, config.disjoint_coeff, config.weight_coeff);
-        population.adjust_scores();
-        population.sort_species();
-        population.calculate_species_bounds();
-        population.offspring(
-            config.weight_mutation_prob, config.add_node_mutation_prob, config.add_connection_prob,
-            config.weight_perturbation_prob, config.mutation_strength, config.crossover_prob,
-            config.interspecies_mating_prob, config.inherit_connection_disabled_prob
-        );
-        population.cleanup_species();
-    }
+    cleanup_species();
+    get_networks(config.activation);
+}
 
-    return *population.best_network_;
+void NEAT::get_networks(ActivationFunc activation)
+{
+    networks_.clear();
+
+    std::ranges::transform(population_, std::back_inserter(networks_), [&activation](const auto& genome) {
+        return Network(genome, activation);
+    });
+}
+
+const std::vector<Network>& NEAT::networks() const
+{
+    return networks_;
+}
+
+std::pair<Network, unsigned> NEAT::assign_scores(const std::vector<unsigned>& scores)
+{
+    scores_ = scores;
+
+    auto best_score_it = std::ranges::max_element(scores_);
+    return {networks_.at(best_score_it - scores_.begin()), *best_score_it};
+}
+
+void NEAT::epoch()
+{
+    speciate(config.weight_coeff, config.excess_coeff, config.disjoint_coeff, config.weight_coeff);
+    adjust_scores();
+    sort_species();
+    calculate_species_bounds();
+    offspring(
+        config.weight_mutation_prob, config.add_node_mutation_prob, config.add_connection_prob,
+        config.weight_perturbation_prob, config.mutation_strength, config.crossover_prob,
+        config.interspecies_mating_prob, config.inherit_connection_disabled_prob
+    );
+    cleanup_species();
+    get_networks(config.activation);
 }

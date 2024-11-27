@@ -20,9 +20,8 @@ int main()
     Rng::instance().seed(SEED);
 
     NEATConfig config{
-        .population_size = 10,
+        .population_size = 20,
         .iterations = 20,
-        .scoring_func = [&](const auto& population) { return score_member(population, control_warrior()); },
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,
@@ -38,28 +37,26 @@ int main()
         .inherit_connection_disabled_prob = 0.75,
     };
 
-    NEAT population(config);
-    std::optional<std::pair<Network, unsigned>> best_evo;
+    const std::vector<Decklist> decklists = get_decklists();
+
+    NEAT warlock_population(config), hunter_population(config), warrior_population(config);
+    std::optional<std::pair<Network, unsigned>> best_warlock, best_hunter, best_warrior;
 
     for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
     {
-        auto scores = config.scoring_func(population.networks());
-        best_evo = population.assign_scores(scores);
-        population.epoch();
+        auto scores = score_populations(
+            std::vector<std::vector<Network>>{
+                warlock_population.networks(), hunter_population.networks(), warrior_population.networks()
+            },
+            decklists
+        );
+
+        best_warlock = warlock_population.assign_scores(scores.at(0));
+        best_hunter = hunter_population.assign_scores(scores.at(1));
+        best_warrior = warrior_population.assign_scores(scores.at(2));
+
+        warlock_population.epoch();
+        hunter_population.epoch();
+        warrior_population.epoch();
     }
-
-    std::ofstream out("results/test.txt");
-    best_evo->first.save(out);
-
-    // std::ifstream in("results/test.txt");
-    // Network best_evo(in);
-
-    spdlog::set_level(spdlog::level::debug);
-
-    // SPDLOG_DEBUG("Best player achieved score: {}", best_evo.second);
-
-    auto deck = control_warrior();
-    // std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo);
-    std::unique_ptr<PlayerLogic> logic = std::make_unique<EvoPlayerLogic<Network>>(deck, best_evo->first);
-    run_game(logic, logic);
 }

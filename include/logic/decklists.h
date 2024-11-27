@@ -8,4 +8,6 @@ Decklist handlock();
 Decklist face_hunter();
 Decklist control_warrior();
 
+std::vector<Decklist> get_decklists();
+
 #endif

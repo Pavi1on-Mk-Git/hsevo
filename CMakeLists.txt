@@ -11,6 +11,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(MAKE_DIRECTORY "./results")
+file(MAKE_DIRECTORY "./results/networks")
+file(MAKE_DIRECTORY "./results/scores")
 
 file(GLOB_RECURSE AI_SOURCES CONFIGURE_DEPENDS "src/ai/*.cc")
 file(GLOB_RECURSE GUI_SOURCES CONFIGURE_DEPENDS "src/gui/*.cc")
@@ -33,7 +35,6 @@ target_compile_options(gui_hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SP
 
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "test/*.cc" ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES})
 
-
 add_executable(test_hsevo ${TEST_SOURCES})
 target_compile_options(test_hsevo PRIVATE ${DEBUG_FLAGS} --coverage -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_OFF)
 target_link_options(test_hsevo PRIVATE --coverage)
@@ -54,15 +55,15 @@ include(FetchContent)
 FetchContent_Declare(
   raylib
   GIT_REPOSITORY https://github.com/raysan5/raylib.git
-  GIT_TAG        5.0
-  GIT_SHALLOW    1
+  GIT_TAG 5.0
+  GIT_SHALLOW 1
 )
 FetchContent_MakeAvailable(raylib)
 
 FetchContent_Declare(
   raylib_cpp
   GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-  GIT_TAG        v5.0.2
+  GIT_TAG v5.0.2
 )
 FetchContent_MakeAvailable(raylib_cpp)
 

@@ -5,15 +5,10 @@
 
 #include "ai/ActivationFunc.hpp"
 
-struct Network;
-
-using ScoringFunc = std::function<std::vector<unsigned>(std::vector<Network>)>;
-
 struct NEATConfig
 {
     unsigned population_size;
     unsigned iterations;
-    ScoringFunc scoring_func;
     ActivationFunc activation;
     double similarity_threshold;
     double excess_coeff;
@@ -27,6 +22,8 @@ struct NEATConfig
     double crossover_prob;
     double interspecies_mating_prob;
     double inherit_connection_disabled_prob;
+
+    std::string name() const;
 };
 
 #endif

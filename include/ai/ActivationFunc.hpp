@@ -3,6 +3,7 @@
 
 #include <boost/serialization/access.hpp>
 #include <functional>
+#include <string>
 
 enum class ActivationFuncType
 {
@@ -24,6 +25,7 @@ private:
 public:
     ActivationFunc(const ActivationFuncType& type = ActivationFuncType::ID);
     double operator()(double input) const;
+    std::string name() const;
 };
 
 #endif

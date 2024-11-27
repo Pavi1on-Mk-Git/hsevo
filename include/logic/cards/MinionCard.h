@@ -37,7 +37,7 @@ public:
     virtual void on_minion_summon(Game& game, Minion& minion, unsigned id, unsigned player_id) const;
     virtual void on_minion_damaged(Game& game, unsigned player_id) const;
     virtual void on_damaged(Game& game, unsigned player_id) const;
-    virtual void on_summon(Game& game, unsigned position_played) const;
+    virtual void on_summon(Game& game, unsigned id) const;
     virtual void on_remove(Game& game, unsigned id, unsigned player_id) const;
     virtual std::vector<Game> on_end_of_turn(const Game& prev_state, unsigned id) const;
     virtual void on_enrage(Minion& minion) const;

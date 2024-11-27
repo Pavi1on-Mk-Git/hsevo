@@ -28,9 +28,9 @@ void Minion::deal_dmg(unsigned amount, Game& game)
         minion.on_minion_damaged(game);
 }
 
-void Minion::on_summon(Game& game, unsigned position_played) const
+void Minion::on_summon(Game& game) const
 {
-    card->on_summon(game, position_played);
+    card->on_summon(game, id);
 }
 
 void Minion::on_remove(Game& game) const

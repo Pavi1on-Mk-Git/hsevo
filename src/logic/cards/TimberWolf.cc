@@ -13,7 +13,7 @@ void TimberWolf::on_minion_summon(Game&, Minion& minion, unsigned id, unsigned) 
     }
 }
 
-void TimberWolf::on_summon(Game& game, unsigned position_played) const
+void TimberWolf::on_summon(Game& game, unsigned id) const
 {
     auto& board = game.current_player().board;
 
@@ -24,7 +24,7 @@ void TimberWolf::on_summon(Game& game, unsigned position_played) const
         if(minion.tribe == Tribe::BEAST)
         {
             minion.attack += TIMBER_WOLF_BUFF_AMOUNT;
-            minion.auras_applied.push_back(board.get_minion(position_played).id);
+            minion.auras_applied.push_back(id);
         }
     }
 }

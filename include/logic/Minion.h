@@ -16,7 +16,7 @@ struct Minion: public Entity
     Minion(const MinionCard* card, Game& game, unsigned player_id);
     void restore_health(unsigned amount);
     void deal_dmg(unsigned amount, Game& game) override;
-    void on_summon(Game& game, unsigned position_played) const;
+    void on_summon(Game& game) const;
     void on_remove(Game& game) const;
     std::vector<Game> on_death(const Game& prev_state) const;
     void on_minion_summon(Game& game, Minion& minion) const;

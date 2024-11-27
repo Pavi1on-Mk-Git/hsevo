@@ -264,7 +264,7 @@ void Game::add_minion(const MinionCard* card, unsigned position, unsigned player
 
     auto added_minion = Minion(card, *this, player_id);
 
-    added_minion.on_summon(*this, position);
+    added_minion.on_summon(*this);
 
     for(const auto& minion: board)
         minion.on_minion_summon(*this, added_minion);
@@ -305,14 +305,13 @@ void Game::change_minion_side(unsigned player_id, unsigned position)
     minion.active = minion.card->keywords & CHARGE;
 
     auto& opposite_board = players.at(1 - player_id).board;
-    const unsigned opposite_board_position = opposite_board.minion_count();
 
-    minion.on_summon(*this, opposite_board_position);
+    minion.on_summon(*this);
 
     for(const auto& opposite_minion: opposite_board)
         opposite_minion.on_minion_summon(*this, minion);
 
-    opposite_board.add_minion(minion, opposite_board_position);
+    opposite_board.add_minion(minion, opposite_board.minion_count());
 }
 
 HeroInput Game::get_hero_state(unsigned player_index) const

@@ -21,7 +21,7 @@ int main()
 
     NEATConfig config{
         .population_size = 20,
-        .iterations = 20,
+        .iterations = 5,
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,
@@ -37,26 +37,24 @@ int main()
         .inherit_connection_disabled_prob = 0.75,
     };
 
-    const std::vector<Decklist> decklists = get_decklists();
+    const auto decklists = get_decklists();
 
-    NEAT warlock_population(config), hunter_population(config), warrior_population(config);
-    std::optional<std::pair<Network, unsigned>> best_warlock, best_hunter, best_warrior;
+    std::array<NEAT, DECK_COUNT> populations{config, config, config};
+    std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> current_bests;
 
     for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
     {
-        auto scores = score_populations(
-            std::vector<std::vector<Network>>{
-                warlock_population.networks(), hunter_population.networks(), warrior_population.networks()
-            },
-            decklists
-        );
+        std::array<std::vector<Network>, DECK_COUNT> iteration_networks;
+        std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
+            return neat.networks();
+        });
 
-        best_warlock = warlock_population.assign_scores(scores.at(0));
-        best_hunter = hunter_population.assign_scores(scores.at(1));
-        best_warrior = warrior_population.assign_scores(scores.at(2));
+        auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
 
-        warlock_population.epoch();
-        hunter_population.epoch();
-        warrior_population.epoch();
+        for(auto [best, population, new_scores]: std::views::zip(current_bests, populations, iteration_scores))
+        {
+            best = population.assign_scores(new_scores);
+            population.epoch();
+        }
     }
 }

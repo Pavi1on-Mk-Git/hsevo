@@ -8,6 +8,8 @@ Decklist handlock();
 Decklist face_hunter();
 Decklist control_warrior();
 
-std::vector<Decklist> get_decklists();
+const unsigned DECK_COUNT = 3;
+
+std::array<Decklist, DECK_COUNT> get_decklists();
 
 #endif

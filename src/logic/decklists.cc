@@ -145,11 +145,8 @@ Decklist control_warrior()
     return Decklist("Control Warrior", std::move(hero), deck);
 }
 
-std::vector<Decklist> get_decklists()
+std::array<Decklist, DECK_COUNT> get_decklists()
 {
-    std::vector<Decklist> decklists;
-    decklists.push_back(handlock());
-    decklists.push_back(face_hunter());
-    decklists.push_back(control_warrior());
+    std::array<Decklist, DECK_COUNT> decklists{handlock(), face_hunter(), control_warrior()};
     return decklists;
 };

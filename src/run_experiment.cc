@@ -9,82 +9,70 @@
 
 static const unsigned SEED_COUNT = 20;
 
-static const std::vector<Decklist> decklists = get_decklists();
+static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void experiment(const NEATConfig& config)
 {
-    std::vector<unsigned> warlock_scores, hunter_scores, warrior_scores;
-    warlock_scores.resize(config.iterations, 0);
-    hunter_scores.resize(config.iterations, 0);
-    warrior_scores.resize(config.iterations, 0);
+    std::array<std::vector<unsigned>, DECK_COUNT> scores;
 
-    std::vector<Network> best_warlocks, best_hunters, best_warriors;
-    best_warlocks.reserve(SEED_COUNT);
-    best_hunters.reserve(SEED_COUNT);
-    best_warriors.reserve(SEED_COUNT);
+    for(auto& score_vec: scores)
+        score_vec.resize(config.iterations, 0);
+
+    std::array<std::vector<Network>, DECK_COUNT> best_networks;
+
+    for(auto& network_vec: best_networks)
+        network_vec.reserve(SEED_COUNT);
 
     for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
     {
         Rng::instance().seed(seed);
 
-        NEAT warlock_population(config), hunter_population(config), warrior_population(config);
-        std::optional<std::pair<Network, unsigned>> best_warlock, best_hunter, best_warrior;
+        std::array<NEAT, DECK_COUNT> populations{config, config, config};
+        std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> current_bests;
 
         for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
         {
-            auto scores = score_populations(
-                std::vector<std::vector<Network>>{
-                    warlock_population.networks(), hunter_population.networks(), warrior_population.networks()
-                },
-                decklists
-            );
+            std::array<std::vector<Network>, DECK_COUNT> iteration_networks;
+            std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
+                return neat.networks();
+            });
 
-            best_warlock = warlock_population.assign_scores(scores.at(0));
-            best_hunter = hunter_population.assign_scores(scores.at(1));
-            best_warrior = warrior_population.assign_scores(scores.at(2));
+            auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
 
-            warlock_scores.at(iteration) += best_warlock->second;
-            hunter_scores.at(iteration) += best_hunter->second;
-            warrior_scores.at(iteration) += best_warrior->second;
+            for(auto [best, population, new_scores, total_scores]:
+                std::views::zip(current_bests, populations, iteration_scores, scores))
+            {
+                best = population.assign_scores(new_scores);
+                total_scores.at(iteration) += best->second;
+                population.epoch();
+            }
 
-            warlock_population.epoch();
-            hunter_population.epoch();
-            warrior_population.epoch();
+            for(auto [bests, current_best]: std::views::zip(best_networks, current_bests))
+                bests.push_back(current_best->first);
         }
-
-        best_warlocks.push_back(best_warlock->first);
-        best_hunters.push_back(best_hunter->first);
-        best_warriors.push_back(best_warrior->first);
     }
 
     auto average_over_seeds = [](unsigned sum) { return sum / SEED_COUNT; };
 
-    std::ranges::transform(warlock_scores, warlock_scores.begin(), average_over_seeds);
-    std::ranges::transform(hunter_scores, hunter_scores.begin(), average_over_seeds);
-    std::ranges::transform(warrior_scores, warrior_scores.begin(), average_over_seeds);
-
-    auto final_scores = score_populations(
-        std::vector<std::vector<Network>>{best_warlocks, best_hunters, best_warriors}, decklists
-    );
-
-    auto best_warlock = best_warlocks.at(std::ranges::max_element(final_scores.at(0)) - final_scores.at(0).begin());
-    auto best_hunter = best_hunters.at(std::ranges::max_element(final_scores.at(1)) - final_scores.at(1).begin());
-    auto best_warrior = best_warriors.at(std::ranges::max_element(final_scores.at(2)) - final_scores.at(2).begin());
-
     auto file_suffix = config.name();
-
-    std::ofstream warlock_out(std::format("results/networks/warlock_{}.txt", file_suffix));
-    std::ofstream hunter_out(std::format("results/networks/hunter_{}.txt", file_suffix));
-    std::ofstream warrior_out(std::format("results/networks/warrior_{}.txt", file_suffix));
-
-    best_warlock.save(warlock_out);
-    best_hunter.save(hunter_out);
-    best_warrior.save(warrior_out);
-
     std::ofstream results(std::format("results/scores/{}", file_suffix));
     boost::archive::text_oarchive archive(results);
 
-    archive << warlock_scores << hunter_scores << warrior_scores;
+    for(auto& score_vec: scores)
+    {
+        std::ranges::transform(score_vec, score_vec.begin(), average_over_seeds);
+        archive << score_vec;
+    }
+
+    auto final_scores = score_populations<Network, DECK_COUNT>(best_networks, decklists);
+
+    for(auto [bests, deck_final_scores, decklist]: std::views::zip(best_networks, final_scores, decklists))
+    {
+        auto the_best = bests.at(std::ranges::max_element(deck_final_scores) - deck_final_scores.begin());
+
+        std::ofstream out(std::format("results/networks/{}_{}.txt", decklist.name, file_suffix));
+        the_best.save(out);
+    }
 }
 
 int main()

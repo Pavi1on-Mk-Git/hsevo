@@ -8,26 +8,22 @@
 #include "logic/run_game.h"
 #include "players/EvoPlayerLogic.hpp"
 
-template <typename Evo>
-std::vector<std::vector<unsigned>> score_populations(
-    const std::vector<std::vector<Evo>>& populations, const std::vector<Decklist>& decklists
+template <typename Evo, unsigned Count>
+std::array<std::vector<unsigned>, Count> score_populations(
+    const std::array<std::vector<Evo>, Count>& populations, const std::array<Decklist, Count>& decklists
 )
 {
-    assert(!populations.empty());
-
-    const unsigned population_count = populations.size();
     const unsigned population_size = populations.at(0).size();
 
-    assert(populations.size() == decklists.size());
     assert(std::ranges::all_of(populations, [&populations](const auto& population) {
         return populations.at(0).size() == population.size();
     }));
 
-    std::vector<std::vector<unsigned>> scores(population_count);
+    std::array<std::vector<unsigned>, Count> scores;
     for(auto& score: scores)
         score.resize(population_size, 0);
 
-    std::vector<std::vector<std::unique_ptr<PlayerLogic>>> deck_players(population_count);
+    std::array<std::vector<std::unique_ptr<PlayerLogic>>, Count> deck_players;
     for(auto [players, decklist, population]: std::views::zip(deck_players, decklists, populations))
     {
         players.reserve(population_size);
@@ -35,7 +31,7 @@ std::vector<std::vector<unsigned>> score_populations(
             players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
     }
 
-    auto deck_ids = std::views::iota(0u, population_count);
+    auto deck_ids = std::views::iota(0u, Count);
     auto player_ids = std::views::iota(0u, population_size);
 
     for(auto [fst_deck_id, fst_player_id, snd_deck_id, snd_player_id]:

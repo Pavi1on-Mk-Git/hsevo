@@ -13,6 +13,9 @@ debug:
 experiment:
 	@ ./build/bin/experiment_hsevo
 
+debug_exp:
+	@ gdb ./build/bin/experiment_hsevo
+
 gui:
 	@ ./build/bin/gui_hsevo
 

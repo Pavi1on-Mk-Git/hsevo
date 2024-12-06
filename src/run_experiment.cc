@@ -7,7 +7,7 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 20;
+static const unsigned SEED_COUNT = 1;
 
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
@@ -28,7 +28,8 @@ void experiment(const NEATConfig& config)
         Rng::instance().seed(seed);
 
         std::array<NEAT, DECK_COUNT> populations{config, config, config};
-        std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> current_bests;
+        std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
+        unsigned champion_score = 0;
 
         for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
         {
@@ -36,20 +37,30 @@ void experiment(const NEATConfig& config)
             std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
                 return neat.networks();
             });
+            std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> iteration_bests;
 
             auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
 
-            for(auto [best, population, new_scores, total_scores]:
-                std::views::zip(current_bests, populations, iteration_scores, scores))
+            for(auto [best, population, new_scores, champions, decklist, total_scores]:
+                std::views::zip(iteration_bests, populations, iteration_scores, hall_of_champions, decklists, scores))
             {
                 best = population.assign_scores(new_scores);
-                total_scores.at(iteration) += best->second;
+
+                auto contender_score = score_hall_of_champions(champions, best->first, decklist);
+
+                if(contender_score > champions.size() / 2)
+                {
+                    champions.push_back(best->first);
+                    champion_score = best->second;
+                }
+
+                total_scores.at(iteration) += champion_score;
                 population.epoch();
             }
-
-            for(auto [bests, current_best]: std::views::zip(best_networks, current_bests))
-                bests.push_back(current_best->first);
         }
+
+        for(auto [network_vec, champions]: std::views::zip(best_networks, hall_of_champions))
+            network_vec.push_back(champions.back());
     }
 
     auto average_over_seeds = [](unsigned sum) { return sum / SEED_COUNT; };

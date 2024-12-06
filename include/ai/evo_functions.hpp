@@ -15,8 +15,8 @@ std::array<std::vector<unsigned>, Count> score_populations(
 {
     const unsigned population_size = populations.at(0).size();
 
-    assert(std::ranges::all_of(populations, [&populations](const auto& population) {
-        return populations.at(0).size() == population.size();
+    assert(std::ranges::all_of(populations, [&](const auto& population) {
+        return population_size == population.size();
     }));
 
     std::array<std::vector<unsigned>, Count> scores;
@@ -37,6 +37,9 @@ std::array<std::vector<unsigned>, Count> score_populations(
     for(auto [fst_deck_id, fst_player_id, snd_deck_id, snd_player_id]:
         std::views::cartesian_product(deck_ids, player_ids, deck_ids, player_ids))
     {
+        if(fst_player_id == snd_player_id && fst_deck_id == snd_deck_id)
+            continue;
+
         const auto& fst_player = deck_players.at(fst_deck_id).at(fst_player_id);
         const auto& snd_player = deck_players.at(snd_deck_id).at(snd_player_id);
 
@@ -55,6 +58,25 @@ std::array<std::vector<unsigned>, Count> score_populations(
         }
     }
     return scores;
+}
+
+template <typename Evo>
+unsigned score_hall_of_champions(const std::vector<Evo>& champions, const Evo& contender, const Decklist& decklist)
+{
+    if(champions.empty())
+        return 1;
+
+    std::vector<std::unique_ptr<PlayerLogic>> players;
+    players.reserve(champions.size());
+
+    for(const auto& member: champions)
+        players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
+
+    std::unique_ptr<PlayerLogic> contender_player = std::make_unique<EvoPlayerLogic<Evo>>(decklist, contender);
+
+    return std::ranges::fold_left(players, 0, [&](unsigned total, const auto& player) {
+        return total + (run_game(contender_player, player) == GameResult::PLAYER_1 ? 1 : 0);
+    });
 }
 
 #endif

@@ -8,6 +8,9 @@
 enum class ActivationFuncType
 {
     ID,
+    SIGMOID,
+    TANH,
+    EXP,
 };
 
 class ActivationFunc

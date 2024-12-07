@@ -7,19 +7,19 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 1;
-
+static const unsigned SEED_COUNT = 30;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void experiment(const NEATConfig& config)
 {
-    std::array<std::vector<unsigned>, DECK_COUNT> scores;
+    const auto file_suffix = config.name();
 
-    for(auto& score_vec: scores)
-        score_vec.resize(config.iterations, 0);
+    std::array<std::ofstream, DECK_COUNT> result_files;
+    std::ranges::transform(decklists, result_files.begin(), [&](const Decklist& deck) {
+        return std::ofstream(std::format("results/scores/{}_{}", deck.name, file_suffix));
+    });
 
     std::array<std::vector<Network>, DECK_COUNT> best_networks;
-
     for(auto& network_vec: best_networks)
         network_vec.reserve(SEED_COUNT);
 
@@ -29,7 +29,7 @@ void experiment(const NEATConfig& config)
 
         std::array<NEAT, DECK_COUNT> populations{config, config, config};
         std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
-        unsigned champion_score = 0;
+        std::array<unsigned, DECK_COUNT> champion_scores;
 
         for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
         {
@@ -41,8 +41,10 @@ void experiment(const NEATConfig& config)
 
             auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
 
-            for(auto [best, population, new_scores, champions, decklist, total_scores]:
-                std::views::zip(iteration_bests, populations, iteration_scores, hall_of_champions, decklists, scores))
+            for(auto [best, population, new_scores, champions, decklist, champion_score, result_file]: std::views::zip(
+                    iteration_bests, populations, iteration_scores, hall_of_champions, decklists, champion_scores,
+                    result_files
+                ))
             {
                 best = population.assign_scores(new_scores);
 
@@ -54,25 +56,16 @@ void experiment(const NEATConfig& config)
                     champion_score = best->second;
                 }
 
-                total_scores.at(iteration) += champion_score;
+                result_file << champion_score << ',';
                 population.epoch();
             }
         }
 
         for(auto [network_vec, champions]: std::views::zip(best_networks, hall_of_champions))
             network_vec.push_back(champions.back());
-    }
 
-    auto average_over_seeds = [](unsigned sum) { return sum / SEED_COUNT; };
-
-    auto file_suffix = config.name();
-    std::ofstream results(std::format("results/scores/{}", file_suffix));
-    boost::archive::text_oarchive archive(results);
-
-    for(auto& score_vec: scores)
-    {
-        std::ranges::transform(score_vec, score_vec.begin(), average_over_seeds);
-        archive << score_vec;
+        for(auto& result_file: result_files)
+            result_file << '\n';
     }
 
     auto final_scores = score_populations<Network, DECK_COUNT>(best_networks, decklists);
@@ -88,23 +81,7 @@ void experiment(const NEATConfig& config)
 
 int main()
 {
-    NEATConfig config{
-        .population_size = 20,
-        .iterations = 5,
-        .activation = ActivationFuncType::ID,
-        .similarity_threshold = 4.,
-        .excess_coeff = 1.,
-        .disjoint_coeff = 1.,
-        .weight_coeff = 3.,
-        .weight_mutation_prob = 0.8,
-        .add_node_mutation_prob = 0.02,
-        .add_connection_prob = 0.05,
-        .weight_perturbation_prob = 0.9,
-        .mutation_strength = 0.2,
-        .crossover_prob = 0.75,
-        .interspecies_mating_prob = 0.001,
-        .inherit_connection_disabled_prob = 0.75,
-    };
+    const auto config = default_config();
 
     experiment(config);
 }

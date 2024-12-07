@@ -81,7 +81,22 @@ void experiment(const NEATConfig& config)
 
 int main()
 {
+    using enum ActivationFuncType;
+
     const auto config = default_config();
+
+    const std::vector<ActivationFunc> activations{ID, SIGMOID, TANH, EXP};
+    const std::vector<std::tuple<double, double, double, double>> similarities{
+        {4., 1., 1., 3.},
+        {3., 1., 1., 0.4},
+    };
+    const std::vector<double> weight_mutation_probs{0.2, 0.4, 0.6, 0.8};
+    const std::vector<double> add_node_mutation_probs{0.01, 0.02, 0.05, 0.2};
+    const std::vector<double> add_connection_probs{0.02, 0.05, 0.1, 0.4};
+    const std::vector<double> weight_perturbation_probs{0.3, 0.5, 0.7, 0.9};
+    const std::vector<double> mutation_strengths{0.1, 0.2, 0.4, 0.6};
+    const std::vector<double> crossover_probs{0.25, 0.5, 0.75, 0.9};
+    const std::vector<double> inherit_connection_disabled_probs{0.25, 0.5, 0.75, 0.9};
 
     experiment(config);
 }

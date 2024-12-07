@@ -28,13 +28,12 @@ private:
     void sort_species();
     void calculate_species_bounds();
     std::optional<Genome> crossover(
-        const Species& species, unsigned bound, double crossover_prob, double interspecies_mating_prob,
-        double inherit_connection_disabled_prob
+        const Species& species, unsigned bound, double crossover_prob, double inherit_connection_disabled_prob
     );
     void offspring(
         double weight_mutation_prob, double add_node_mutation_prob, double add_connection_prob,
         double weight_perturbation_prob, double mutation_strength, double crossover_prob,
-        double interspecies_mating_prob, double inherit_connection_disabled_prob
+        double inherit_connection_disabled_prob
     );
     void cleanup_species();
     void get_networks(ActivationFunc activation);

@@ -64,8 +64,7 @@ void NEAT::calculate_species_bounds()
 }
 
 std::optional<Genome> NEAT::crossover(
-    const Species& species, unsigned bound, double crossover_prob, double interspecies_mating_prob,
-    double inherit_connection_disabled_prob
+    const Species& species, unsigned bound, double crossover_prob, double inherit_connection_disabled_prob
 )
 {
     auto& rng = Rng::instance();
@@ -76,42 +75,20 @@ std::optional<Genome> NEAT::crossover(
         const Genome& first_parent = population_.at(first_parent_id);
         const double first_parent_score = adjusted_scores_.at(first_parent_id);
 
-        if(rng.uniform_real() < interspecies_mating_prob)
-        {
-            std::vector<unsigned> alive_species;
-            for(auto [alive_species_id, species]: std::views::enumerate(species_))
-                if(!species.empty())
-                    alive_species.push_back(alive_species_id);
+        const unsigned second_parent_id = species.at(rng.uniform_int(0, bound - 1));
+        const Genome& second_parent = population_.at(second_parent_id);
+        const double second_parent_score = adjusted_scores_.at(second_parent_id);
 
-            const unsigned second_parent_species_id = alive_species.at(rng.uniform_int(0, alive_species.size() - 1));
-
-            const Species& second_parent_species = species_.at(second_parent_species_id);
-            const unsigned second_bound = species_bounds_.at(second_parent_species_id);
-            const unsigned second_parent_id = second_parent_species.at(rng.uniform_int(0, second_bound - 1));
-            const Genome& second_parent = population_.at(second_parent_id);
-            const double second_parent_score = adjusted_scores_.at(second_parent_id);
-
-            return Genome::crossover(
-                first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob
-            );
-        }
-        else
-        {
-            const unsigned second_parent_id = species.at(rng.uniform_int(0, bound - 1));
-            const Genome& second_parent = population_.at(second_parent_id);
-            const double second_parent_score = adjusted_scores_.at(second_parent_id);
-
-            return Genome::crossover(
-                first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob
-            );
-        }
+        return Genome::crossover(
+            first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob
+        );
     }
     return std::nullopt;
 }
 
 void NEAT::offspring(
     double weight_mutation_prob, double add_node_mutation_prob, double add_connection_prob,
-    double weight_perturbation_prob, double mutation_strength, double crossover_prob, double interspecies_mating_prob,
+    double weight_perturbation_prob, double mutation_strength, double crossover_prob,
     double inherit_connection_disabled_prob
 )
 {
@@ -131,9 +108,7 @@ void NEAT::offspring(
         {
             Genome& to_replace = population_.at(new_genome_id);
 
-            auto new_genome = crossover(
-                species, bound, crossover_prob, interspecies_mating_prob, inherit_connection_disabled_prob
-            );
+            auto new_genome = crossover(species, bound, crossover_prob, inherit_connection_disabled_prob);
 
             if(new_genome)
                 to_replace = *new_genome;
@@ -207,7 +182,7 @@ void NEAT::epoch()
     offspring(
         config.weight_mutation_prob, config.add_node_mutation_prob, config.add_connection_prob,
         config.weight_perturbation_prob, config.mutation_strength, config.crossover_prob,
-        config.interspecies_mating_prob, config.inherit_connection_disabled_prob
+        config.inherit_connection_disabled_prob
     );
     cleanup_species();
     get_networks(config.activation);

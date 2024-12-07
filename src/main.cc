@@ -33,7 +33,6 @@ int main()
         .weight_perturbation_prob = 0.9,
         .mutation_strength = 0.2,
         .crossover_prob = 0.75,
-        .interspecies_mating_prob = 0.001,
         .inherit_connection_disabled_prob = 0.75,
     };
 

@@ -20,7 +20,6 @@ struct NEATConfig
     double weight_perturbation_prob;
     double mutation_strength;
     double crossover_prob;
-    double interspecies_mating_prob;
     double inherit_connection_disabled_prob;
 
     std::string name() const;

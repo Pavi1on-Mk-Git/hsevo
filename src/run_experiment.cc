@@ -7,7 +7,7 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 30;
+static const unsigned SEED_COUNT = 1;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void experiment(const NEATConfig& config)

@@ -26,4 +26,6 @@ struct NEATConfig
     std::string name() const;
 };
 
+NEATConfig default_config();
+
 #endif

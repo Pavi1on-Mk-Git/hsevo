@@ -27,3 +27,24 @@ std::string NEATConfig::name() const
 
     return name_stream.str();
 }
+
+NEATConfig default_config()
+{
+    return NEATConfig{
+        .population_size = 20,
+        .iterations = 5,
+        .activation = ActivationFuncType::ID,
+        .similarity_threshold = 4.,
+        .excess_coeff = 1.,
+        .disjoint_coeff = 1.,
+        .weight_coeff = 3.,
+        .weight_mutation_prob = 0.8,
+        .add_node_mutation_prob = 0.02,
+        .add_connection_prob = 0.05,
+        .weight_perturbation_prob = 0.9,
+        .mutation_strength = 0.2,
+        .crossover_prob = 0.75,
+        .interspecies_mating_prob = 0.001,
+        .inherit_connection_disabled_prob = 0.75,
+    };
+}

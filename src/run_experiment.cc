@@ -1,3 +1,4 @@
+#include <boost/archive/text_oarchive.hpp>
 #include <format>
 #include <fstream>
 #include <thread>
@@ -7,7 +8,7 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 3;
+static const unsigned SEED_COUNT = 30;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void single_seed_experiment(
@@ -105,8 +106,6 @@ int main()
 {
     using enum ActivationFuncType;
 
-    const auto config = default_config();
-
     const std::vector<ActivationFunc> activations{ID, SIGMOID, TANH, EXP};
     const std::vector<std::tuple<double, double, double, double>> similarities{
         {4., 1., 1., 3.},
@@ -120,5 +119,55 @@ int main()
     const std::vector<double> crossover_probs{0.25, 0.5, 0.75, 0.9};
     const std::vector<double> inherit_connection_disabled_probs{0.25, 0.5, 0.75, 0.9};
 
-    experiment(config);
+    NEATConfig config = default_config();
+    std::array<std::vector<Network>, DECK_COUNT> populations;
+
+    for(const auto& activation: activations)
+    {
+        auto changed_config = config;
+        changed_config.activation = activation;
+
+        const auto file_suffix = changed_config.name();
+
+        experiment(changed_config);
+
+        std::vector<Network> results;
+        std::ranges::transform(decklists, std::back_inserter(results), [&](const auto& decklist) {
+            std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, file_suffix));
+            return Network(in);
+        });
+
+        for(auto [result, population]: std::views::zip(results, populations))
+            population.push_back(result);
+    }
+
+    std::mutex score_mutex;
+    std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+    for(auto& total_score_vec: total_scores)
+        total_score_vec.resize(activations.size(), 0);
+
+    auto score_once = [&](unsigned seed) {
+        Rng::instance().seed(seed);
+
+        for(auto [total_score_vec, current_score_vec]:
+            std::views::zip(total_scores, score_populations<Network, DECK_COUNT>(populations, decklists)))
+        {
+            std::lock_guard(score_mutex);
+
+            for(auto [total, current]: std::views::zip(total_score_vec, current_score_vec))
+                total += current;
+        }
+    };
+
+    {
+        std::vector<std::jthread> threads;
+        for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+            threads.push_back(std::jthread([&]() { score_once(seed); }));
+    }
+
+    std::ofstream out("results/hyper.txt");
+    boost::archive::text_oarchive archive(out);
+
+    for(const auto& total_score_vec: total_scores)
+        archive << activations.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
 }

@@ -31,7 +31,7 @@ NEATConfig default_config()
 {
     return NEATConfig{
         .population_size = 20,
-        .iterations = 5,
+        .iterations = 1000,
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,

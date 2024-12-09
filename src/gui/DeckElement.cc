@@ -16,7 +16,9 @@ static const unsigned MANA_TEXT_HEIGHT_DIVISOR = 4;
 
 void DeckElement::draw_(const Game& game) const
 {
-    const auto& deck = to_draw(game).deck;
+    const auto& player = to_draw(game);
+
+    const auto& deck = player.deck;
 
     auto deck_rect = scaled_rect();
     unsigned text_height = scaled_height(DECK_TEXT_HEIGHT_RATIO);
@@ -31,8 +33,6 @@ void DeckElement::draw_(const Game& game) const
     const raylib::Rectangle mana_rect({deck_rect.x, deck_rect.y + deck_rect.height - stat_rect_size.y}, stat_rect_size);
 
     mana_rect.Draw(MANA_COLOUR);
-
-    const auto& player = game.current_player();
     draw_text(
         std::format("{}/{}", player.mana, player.mana_crystals), text_height / MANA_TEXT_HEIGHT_DIVISOR, mana_rect
     );

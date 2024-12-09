@@ -21,7 +21,8 @@ private:
     std::vector<double> species_score_sums_;
     std::vector<unsigned> species_bounds_;
 
-    NEATConfig config;
+    const NEATConfig config_;
+    Rng rng_;
 
     void speciate(double similarity_threshold, double excess_coeff, double disjoint_coeff, double weight_coeff);
     void adjust_scores();
@@ -38,7 +39,7 @@ private:
     void cleanup_species();
     void get_networks(ActivationFunc activation);
 public:
-    NEAT(const NEATConfig& config);
+    NEAT(const NEATConfig& config, Rng& rng_);
     const std::vector<Network>& networks() const;
     std::pair<Network, unsigned> assign_scores(const std::vector<unsigned>& scores);
     void epoch();

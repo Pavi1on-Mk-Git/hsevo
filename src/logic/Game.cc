@@ -9,8 +9,9 @@
 
 static const unsigned MAX_MINION_COUNT = Board::MAX_BOARD_SIZE * 2;
 
-Game::Game(const Decklist& first_decklist, const Decklist& second_decklist, bool reverse_player_order):
-    active_player_(reverse_player_order ? 1 : 0), players({first_decklist, second_decklist}), turn_ended(false)
+Game::Game(const Decklist& first_decklist, const Decklist& second_decklist, Rng& rng, bool reverse_player_order):
+    active_player_(reverse_player_order ? 1 : 0), players({Player(first_decklist, rng), Player(second_decklist, rng)}),
+    turn_ended(false)
 {
     minion_ids_.reserve(MAX_MINION_COUNT);
     play_order_.reserve(MAX_MINION_COUNT);

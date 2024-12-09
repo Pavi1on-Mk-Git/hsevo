@@ -33,7 +33,7 @@ public:
     std::array<Player, 2> players;
     bool turn_ended;
 
-    Game(const Decklist& first_decklist, const Decklist& second_decklist, bool reverse_player_order = false);
+    Game(const Decklist& first_decklist, const Decklist& second_decklist, Rng& rng, bool reverse_player_order = false);
     std::optional<GameResult> check_winner() const;
     void switch_active_player();
     std::vector<std::unique_ptr<Action>> get_possible_actions() const;

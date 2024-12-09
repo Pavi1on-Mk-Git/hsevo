@@ -3,10 +3,12 @@
 #include "logic/Game.h"
 #include "logic/decklists.h"
 
+static Rng rng(42);
+
 TEST_CASE("Gul'Dan")
 {
     Decklist decklist = handlock();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -21,7 +23,7 @@ TEST_CASE("Gul'Dan")
 TEST_CASE("Rexxar")
 {
     Decklist decklist = face_hunter();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -35,7 +37,7 @@ TEST_CASE("Rexxar")
 TEST_CASE("Garrosh Hellscream")
 {
     Decklist decklist = control_warrior();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 

@@ -1,17 +1,6 @@
 #include "utils/Rng.h"
 
-Rng::Rng() {}
-
-Rng& Rng::instance()
-{
-    static Rng instance;
-    return instance;
-}
-
-void Rng::seed(int seed_nr)
-{
-    random_engine_.seed(seed_nr);
-}
+Rng::Rng(unsigned seed_nr): random_engine_(seed_nr) {}
 
 std::ranlux24& Rng::generator()
 {

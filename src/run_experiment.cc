@@ -16,9 +16,9 @@ void single_seed_experiment(
     std::array<std::ofstream, DECK_COUNT>& result_files, std::array<std::vector<Network>, DECK_COUNT>& best_networks
 )
 {
-    Rng::instance().seed(seed);
+    Rng rng(seed);
 
-    std::array<NEAT, DECK_COUNT> populations{config, config, config};
+    std::array<NEAT, DECK_COUNT> populations{NEAT(config, rng), NEAT(config, rng), NEAT(config, rng)};
     std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
     std::array<unsigned, DECK_COUNT> champion_scores;
     std::array<std::vector<unsigned>, DECK_COUNT> score_history;
@@ -33,7 +33,7 @@ void single_seed_experiment(
         });
         std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> iteration_bests;
 
-        auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
+        auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists, rng);
 
         for(auto [best, population, new_scores, champions, decklist, champion_score, score_vec]: std::views::zip(
                 iteration_bests, populations, iteration_scores, hall_of_champions, decklists, champion_scores,
@@ -42,7 +42,7 @@ void single_seed_experiment(
         {
             best = population.assign_scores(new_scores);
 
-            auto contender_score = score_hall_of_champions(champions, best->first, decklist);
+            auto contender_score = score_hall_of_champions(champions, best->first, decklist, rng);
 
             if(contender_score > champions.size() / 2)
             {
@@ -66,6 +66,8 @@ void single_seed_experiment(
         result_file << '\n';
     }
 }
+
+const unsigned COMPARISON_SEED = 42;
 
 void experiment(const NEATConfig& config)
 {
@@ -91,7 +93,9 @@ void experiment(const NEATConfig& config)
             }));
     }
 
-    auto final_scores = score_populations<Network, DECK_COUNT>(best_networks, decklists);
+    Rng rng(COMPARISON_SEED);
+
+    auto final_scores = score_populations<Network, DECK_COUNT>(best_networks, decklists, rng);
 
     for(auto [bests, deck_final_scores, decklist]: std::views::zip(best_networks, final_scores, decklists))
     {
@@ -147,12 +151,12 @@ int main()
         total_score_vec.resize(activations.size(), 0);
 
     auto score_once = [&](unsigned seed) {
-        Rng::instance().seed(seed);
+        Rng rng(seed);
 
         for(auto [total_score_vec, current_score_vec]:
-            std::views::zip(total_scores, score_populations<Network, DECK_COUNT>(populations, decklists)))
+            std::views::zip(total_scores, score_populations<Network, DECK_COUNT>(populations, decklists, rng)))
         {
-            std::lock_guard(score_mutex);
+            std::lock_guard lock(score_mutex);
 
             for(auto [total, current]: std::views::zip(total_score_vec, current_score_vec))
                 total += current;

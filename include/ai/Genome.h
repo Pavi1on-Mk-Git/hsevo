@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ai/Connection.h"
+#include "utils/Rng.h"
 
 using NodeId = std::uint32_t;
 using ConnectionHash = std::uint64_t;
@@ -13,6 +14,8 @@ using ConnectionHash = std::uint64_t;
 class Genome
 {
 private:
+    std::reference_wrapper<Rng> rng_;
+
     static ConnectionHash get_connection_hash(NodeId from, NodeId to);
     std::optional<Connection> find_connection(NodeId from, NodeId to);
     void add_connection(NodeId from, NodeId to, double weight);
@@ -27,11 +30,11 @@ public:
     std::vector<unsigned> node_to_layer;
     std::vector<std::pair<ConnectionHash, Connection>> connections;
 
-    Genome();
+    Genome(Rng& rng);
     Genome(
         NodeId next_node_id, const std::vector<std::pair<unsigned, std::vector<NodeId>>>& layers,
         const std::vector<unsigned>& node_to_layer,
-        const std::vector<std::pair<ConnectionHash, Connection>>& connections
+        const std::vector<std::pair<ConnectionHash, Connection>>& connections, Rng& rng
     );
     double similarity(const Genome& other, double excess_coeff, double disjoint_coeff, double weight_coeff) const;
     void mutate(
@@ -40,7 +43,7 @@ public:
     );
     static Genome crossover(
         const Genome& first, double first_score, const Genome& second, double second_score,
-        double inherit_connection_disabled_prob
+        double inherit_connection_disabled_prob, Rng& rng
     );
 };
 

@@ -4,10 +4,14 @@
 
 #include "logic/Action.h"
 #include "players/PlayerLogic.h"
+#include "utils/Rng.h"
 
-struct RandomPlayerLogic: PlayerLogic
+class RandomPlayerLogic: PlayerLogic
 {
-    RandomPlayerLogic(const Decklist& decklist);
+private:
+    Rng& rng_;
+public:
+    RandomPlayerLogic(const Decklist& decklist, Rng& rng);
     Game choose_and_apply_action(const Game& game, const std::vector<std::unique_ptr<Action>>& actions) const override;
 };
 

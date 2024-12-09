@@ -31,7 +31,8 @@ public:
     std::optional<unsigned> minion_gap_position;
 
     GameGui(
-        raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file
+        raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file,
+        Rng& rng
     );
     GameResult run();
     bool is_player_turn() const;

@@ -67,20 +67,18 @@ std::optional<Genome> NEAT::crossover(
     const Species& species, unsigned bound, double crossover_prob, double inherit_connection_disabled_prob
 )
 {
-    auto& rng = Rng::instance();
-
-    if(rng.uniform_real() < crossover_prob && bound > 0)
+    if(rng_.uniform_real() < crossover_prob && bound > 0)
     {
-        const unsigned first_parent_id = species.at(rng.uniform_int(0, bound - 1));
+        const unsigned first_parent_id = species.at(rng_.uniform_int(0, bound - 1));
         const Genome& first_parent = population_.at(first_parent_id);
         const double first_parent_score = adjusted_scores_.at(first_parent_id);
 
-        const unsigned second_parent_id = species.at(rng.uniform_int(0, bound - 1));
+        const unsigned second_parent_id = species.at(rng_.uniform_int(0, bound - 1));
         const Genome& second_parent = population_.at(second_parent_id);
         const double second_parent_score = adjusted_scores_.at(second_parent_id);
 
         return Genome::crossover(
-            first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob
+            first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob, rng_
         );
     }
     return std::nullopt;
@@ -128,7 +126,7 @@ void NEAT::cleanup_species()
 
     for(auto [species, kept_count]: std::views::zip(species_, species_bounds_))
         if(!species.empty() && kept_count > 0)
-            clean_representatives.push_back(population_.at(species.at(Rng::instance().uniform_int(0, kept_count - 1))));
+            clean_representatives.push_back(population_.at(species.at(rng_.uniform_int(0, kept_count - 1))));
 
     species_.clear();
     species_.resize(clean_representatives.size());
@@ -138,10 +136,10 @@ void NEAT::cleanup_species()
     species_score_sums_.resize(species_.size(), 0.);
 }
 
-NEAT::NEAT(const NEATConfig& config)
+NEAT::NEAT(const NEATConfig& config, Rng& rng): config_(config), rng_(rng)
 {
     population_.reserve(config.population_size);
-    std::ranges::generate_n(std::back_inserter(population_), config.population_size, [] { return Genome(); });
+    std::ranges::generate_n(std::back_inserter(population_), config.population_size, [&] { return Genome(rng); });
     networks_.reserve(config.population_size);
     scores_.reserve(config.population_size);
     adjusted_scores_.resize(config.population_size);
@@ -175,15 +173,15 @@ std::pair<Network, unsigned> NEAT::assign_scores(const std::vector<unsigned>& sc
 
 void NEAT::epoch()
 {
-    speciate(config.weight_coeff, config.excess_coeff, config.disjoint_coeff, config.weight_coeff);
+    speciate(config_.weight_coeff, config_.excess_coeff, config_.disjoint_coeff, config_.weight_coeff);
     adjust_scores();
     sort_species();
     calculate_species_bounds();
     offspring(
-        config.weight_mutation_prob, config.add_node_mutation_prob, config.add_connection_prob,
-        config.weight_perturbation_prob, config.mutation_strength, config.crossover_prob,
-        config.inherit_connection_disabled_prob
+        config_.weight_mutation_prob, config_.add_node_mutation_prob, config_.add_connection_prob,
+        config_.weight_perturbation_prob, config_.mutation_strength, config_.crossover_prob,
+        config_.inherit_connection_disabled_prob
     );
     cleanup_species();
-    get_networks(config.activation);
+    get_networks(config_.activation);
 }

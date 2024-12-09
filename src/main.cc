@@ -17,7 +17,7 @@ int main()
     spdlog::set_level(spdlog::level::off);
 
     const int SEED = 42;
-    Rng::instance().seed(SEED);
+    Rng rng(SEED);
 
     NEATConfig config{
         .population_size = 20,
@@ -38,7 +38,7 @@ int main()
 
     const auto decklists = get_decklists();
 
-    std::array<NEAT, DECK_COUNT> populations{config, config, config};
+    std::array<NEAT, DECK_COUNT> populations{NEAT(config, rng), NEAT(config, rng), NEAT(config, rng)};
     std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> current_bests;
 
     for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
@@ -48,7 +48,7 @@ int main()
             return neat.networks();
         });
 
-        auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists);
+        auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists, rng);
 
         for(auto [best, population, new_scores]: std::views::zip(current_bests, populations, iteration_scores))
         {

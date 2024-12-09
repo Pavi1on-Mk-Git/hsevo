@@ -59,13 +59,15 @@
 #include "logic/heroes/LordJaraxxus.h"
 #include "logic/heroes/Rexxar.h"
 
+static Rng rng(42);
+
 TEST_CASE("Play cards")
 {
     auto hero = std::make_unique<GulDan>();
     DecklistDeck deck;
     deck.push_back({&BoulderfistOgre::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 6;
 
@@ -90,7 +92,7 @@ TEST_CASE("Play cards")
 TEST_CASE("Minion attacks")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).active = true;
@@ -121,7 +123,7 @@ TEST_CASE("Keywords")
     SECTION("Can't attack")
     {
         Decklist decklist = ogre_deck();
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         game.add_minion(&AncientWatcher::instance, 0);
         game.current_player().board.get_minion(0).active = true;
@@ -132,7 +134,7 @@ TEST_CASE("Keywords")
     SECTION("Taunt")
     {
         Decklist decklist = ogre_deck();
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         game.add_minion(&BoulderfistOgre::instance, 0);
         game.current_player().board.get_minion(0).active = true;
@@ -150,7 +152,7 @@ TEST_CASE("Keywords")
     SECTION("Charge")
     {
         Decklist decklist = ogre_deck();
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         game.add_minion(&LeeroyJenkins::instance, 0);
 
@@ -164,7 +166,7 @@ TEST_CASE("Secrets")
     DecklistDeck deck;
     deck.push_back({&ExplosiveTrap::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -192,7 +194,7 @@ TEST_CASE("Weapons")
     DecklistDeck deck;
     deck.push_back({&BloodFury::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -232,7 +234,7 @@ TEST_CASE("The Coin")
     DecklistDeck deck;
     deck.push_back({&Coin::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     SECTION("Normal use")
     {
@@ -259,7 +261,7 @@ TEST_CASE("Sacrificial Pact")
     DecklistDeck deck;
     deck.push_back({&SacrificialPact::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&Infernal::instance, 0);
     game.add_minion(&Infernal::instance, 0, false);
@@ -302,7 +304,7 @@ TEST_CASE("Soulfire")
         deck.push_back({&Soulfire::instance, 1});
         deck.push_back({&BoulderfistOgre::instance, 5});
         Decklist decklist("Test", std::move(hero), std::move(deck));
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         game.draw(3);
         game.add_minion(&BoulderfistOgre::instance, 0);
@@ -361,7 +363,7 @@ TEST_CASE("Soulfire")
         DecklistDeck deck;
         deck.push_back({&Soulfire::instance, 1});
         Decklist decklist("Test", std::move(hero), std::move(deck));
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         auto actions = game.get_possible_actions();
 
@@ -375,7 +377,7 @@ TEST_CASE("Mortal Coil")
     DecklistDeck deck;
     deck.push_back({&MortalCoil::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 1;
 
@@ -432,7 +434,7 @@ TEST_CASE("Power Overwhelming")
     DecklistDeck deck;
     deck.push_back({&PowerOverwhelming::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().mana = 1;
@@ -459,7 +461,7 @@ TEST_CASE("Sunfury Protector")
     DecklistDeck deck;
     deck.push_back({&SunfuryProtector::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.add_minion(&BoulderfistOgre::instance, 1);
@@ -499,7 +501,7 @@ TEST_CASE("Earthen Ring Farseer")
     DecklistDeck deck;
     deck.push_back({&EarthenRingFarseer::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -546,7 +548,7 @@ TEST_CASE("Defender of Argus")
     DecklistDeck deck;
     deck.push_back({&DefenderOfArgus::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.add_minion(&BoulderfistOgre::instance, 1);
@@ -613,7 +615,7 @@ TEST_CASE("Hellfire")
     DecklistDeck deck;
     deck.push_back({&Hellfire::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 4;
 
@@ -641,7 +643,7 @@ TEST_CASE("Leeroy Jenkins")
     DecklistDeck deck;
     deck.push_back({&LeeroyJenkins::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 5;
 
@@ -657,7 +659,7 @@ TEST_CASE("Shadowflame")
     DecklistDeck deck;
     deck.push_back({&Shadowflame::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 4;
 
@@ -679,7 +681,7 @@ TEST_CASE("Twilight Drake")
     DecklistDeck deck;
     deck.push_back({&TwilightDrake::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 4;
 
@@ -710,7 +712,7 @@ TEST_CASE("Faceless Manipulator")
     DecklistDeck deck;
     deck.push_back({&FacelessManipulator::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 5;
     game.add_minion(&BoulderfistOgre::instance, 0);
@@ -748,7 +750,7 @@ TEST_CASE("Siphon Soul")
     DecklistDeck deck;
     deck.push_back({&SiphonSoul::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 6;
 
@@ -782,7 +784,7 @@ TEST_CASE("Mountain Giant")
     deck.push_back({&MountainGiant::instance, 1});
     deck.push_back({&BoulderfistOgre::instance, 8});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 4;
 
@@ -800,7 +802,7 @@ TEST_CASE("Molten Giant")
     deck.push_back({&MoltenGiant::instance, 1});
     deck.push_back({&BoulderfistOgre::instance, 2});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     REQUIRE(game.get_possible_actions().size() == 1);
 
@@ -815,7 +817,7 @@ TEST_CASE("Lord Jaraxxus")
     DecklistDeck deck;
     deck.push_back({&LordJaraxxusCard::instance, 4});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 9;
     game.current_player().hero->active = false;
@@ -864,7 +866,7 @@ TEST_CASE("Hunter's Mark")
     DecklistDeck deck;
     deck.push_back({&HuntersMark::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     SECTION("Target ally")
     {
@@ -895,7 +897,7 @@ TEST_CASE("Abusive Sergeant")
     DecklistDeck deck;
     deck.push_back({&AbusiveSergeant::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 1;
 
@@ -931,7 +933,7 @@ TEST_CASE("Leper Gnome")
     DecklistDeck deck;
     deck.push_back({&SiphonSoul::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 6;
     game.add_minion(&LeperGnome::instance, 0, false);
@@ -950,7 +952,7 @@ TEST_CASE("Timber Wolf")
     deck.push_back({&TwilightDrake::instance, 1});
     deck.push_back({&SiphonSoul::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.draw();
     game.current_player().mana = 1;
@@ -985,7 +987,7 @@ TEST_CASE("Starving Buzzard")
     DecklistDeck deck;
     deck.push_back({&StarvingBuzzard::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
 
     game.add_minion(&StarvingBuzzard::instance, 0);
@@ -1003,7 +1005,7 @@ TEST_CASE("Arcane Golem")
     DecklistDeck deck;
     deck.push_back({&ArcaneGolem::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 4;
 
@@ -1018,7 +1020,7 @@ TEST_CASE("Kill Command")
     DecklistDeck deck;
     deck.push_back({&KillCommand::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
     game.add_minion(&BoulderfistOgre::instance, 0);
@@ -1098,7 +1100,7 @@ TEST_CASE("Unleash The Hounds")
     DecklistDeck deck;
     deck.push_back({&UnleashTheHounds::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -1132,7 +1134,7 @@ TEST_CASE("Tracking")
         DecklistDeck deck;
         deck.push_back({&Tracking::instance, card_count + 3});
         Decklist decklist("Test", std::move(hero), std::move(deck));
-        Game game(decklist, decklist);
+        Game game(decklist, decklist, rng);
 
         game.current_player().mana = 1;
 
@@ -1153,7 +1155,7 @@ TEST_CASE("ExplosiveTrap")
     DecklistDeck deck;
     deck.push_back({&ExplosiveTrap::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1206,7 +1208,7 @@ TEST_CASE("Freezing Trap")
     DecklistDeck deck;
     deck.push_back({&FreezingTrap::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1231,7 +1233,7 @@ TEST_CASE("Misdirection")
     DecklistDeck deck;
     deck.push_back({&Misdirection::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1314,7 +1316,7 @@ TEST_CASE("Flare")
     DecklistDeck deck;
     deck.push_back({&Flare::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.opponent().secrets.push_back(&ExplosiveTrap::instance);
     game.opponent().secrets.push_back(&FreezingTrap::instance);
@@ -1332,7 +1334,7 @@ TEST_CASE("Eaglehorn Bow")
     DecklistDeck deck;
     deck.push_back({&EaglehornBow::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().hero->weapon = Weapon(&EaglehornBow::instance);
     game.current_player().hero->weapon->durability = 1;
@@ -1351,7 +1353,7 @@ TEST_CASE("Execute")
     DecklistDeck deck;
     deck.push_back({&Execute::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0, true);
     game.add_minion(&BoulderfistOgre::instance, 0, false);
@@ -1376,7 +1378,7 @@ TEST_CASE("Shield Slam")
     DecklistDeck deck;
     deck.push_back({&ShieldSlam::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&BoulderfistOgre::instance, 0, true);
     game.add_minion(&BoulderfistOgre::instance, 0, false);
@@ -1407,7 +1409,7 @@ TEST_CASE("Whirlwind")
     DecklistDeck deck;
     deck.push_back({&Whirlwind::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 1;
 
@@ -1432,7 +1434,7 @@ TEST_CASE("Armorsmith")
     deck.push_back({&Armorsmith::instance, 1});
     deck.push_back({&Hellfire::instance, 2});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1458,7 +1460,7 @@ TEST_CASE("Cruel Taskmaster")
     DecklistDeck deck;
     deck.push_back({&CruelTaskmaster::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1496,7 +1498,7 @@ TEST_CASE("Slam")
     DecklistDeck deck;
     deck.push_back({&Slam::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 2;
 
@@ -1553,7 +1555,7 @@ TEST_CASE("Acolyte of Pain")
     DecklistDeck deck;
     deck.push_back({&AcolyteOfPain::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -1573,7 +1575,7 @@ TEST_CASE("Big Game Hunter")
     DecklistDeck deck;
     deck.push_back({&BigGameHunter::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -1615,7 +1617,7 @@ TEST_CASE("Shield Block")
     DecklistDeck deck;
     deck.push_back({&ShieldBlock::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 3;
 
@@ -1632,7 +1634,7 @@ TEST_CASE("Azure Drake")
     deck.push_back({&AzureDrake::instance, 1});
     deck.push_back({&SiphonSoul::instance, 4});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 5;
 
@@ -1661,7 +1663,7 @@ TEST_CASE("Brawl")
     DecklistDeck deck;
     deck.push_back({&Brawl::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     SECTION("No minions")
     {
@@ -1699,7 +1701,7 @@ TEST_CASE("Cairne Bloodhoof")
     DecklistDeck deck;
     deck.push_back({&CairneBloodhoof::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 6;
     game.add_minion(&BoulderfistOgre::instance, 0, false);
@@ -1720,7 +1722,7 @@ TEST_CASE("Sylvanas Windrunner")
     DecklistDeck deck;
     deck.push_back({&SylvanasWindrunner::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     SECTION("Nothing to steal")
     {
@@ -1767,7 +1769,7 @@ TEST_CASE("Baron Geddon")
     DecklistDeck deck;
     deck.push_back({&BaronGeddon::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 7;
 
@@ -1799,7 +1801,7 @@ TEST_CASE("Grommash Hellscream")
     deck.push_back({&Whirlwind::instance, 1});
     deck.push_back({&EarthenRingFarseer::instance, 1});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.add_minion(&GrommashHellscream::instance, 0);
 
@@ -1821,7 +1823,7 @@ TEST_CASE("Ragnaros The Firelord")
     DecklistDeck deck;
     deck.push_back({&RagnarosTheFirelord::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 8;
 
@@ -1848,7 +1850,7 @@ TEST_CASE("Alexstraza")
     DecklistDeck deck;
     deck.push_back({&Alexstraza::instance, 5});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().mana = 9;
 

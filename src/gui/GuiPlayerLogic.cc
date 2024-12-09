@@ -6,9 +6,10 @@
 #include "gui/GameGui.h"
 #include "gui/utils.h"
 #include "logic/Game.h"
-#include "utils/Rng.h"
 
-GuiPlayerLogic::GuiPlayerLogic(const Decklist& decklist, GameGui& gui): PlayerLogic(decklist), gui_(gui) {}
+GuiPlayerLogic::GuiPlayerLogic(const Decklist& decklist, GameGui& gui, Rng& rng):
+    PlayerLogic(decklist), gui_(gui), rng_(rng)
+{}
 
 Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector<std::unique_ptr<Action>>& actions)
     const
@@ -39,7 +40,7 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector
         click_sequence_.clear();
         gui_.minion_gap_position = std::nullopt;
         auto new_states = actions.at(matching_sequence - potential_sequences.begin())->apply(game);
-        return new_states.at(Rng::instance().uniform_int(0, new_states.size() - 1));
+        return new_states.at(rng_.uniform_int(0, new_states.size() - 1));
     }
     else
     {

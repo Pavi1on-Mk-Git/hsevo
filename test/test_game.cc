@@ -5,10 +5,12 @@
 #include "logic/decklists.h"
 #include "logic/heroes/GulDan.h"
 
+static Rng rng(42);
+
 TEST_CASE("Initialize game")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     for(const auto& player: {game.current_player(), game.opponent()})
     {
@@ -34,7 +36,7 @@ TEST_CASE("Initialize game")
 TEST_CASE("Draw cards")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.draw();
 
@@ -51,7 +53,7 @@ TEST_CASE("Fatigue")
     DecklistDeck deck;
     deck.push_back({&BoulderfistOgre::instance, 4});
     Decklist decklist("Test", std::move(hero), std::move(deck));
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.draw(3);
 
@@ -65,7 +67,7 @@ TEST_CASE("Fatigue")
 TEST_CASE("End turn")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     auto actions = game.get_possible_actions();
 
@@ -77,7 +79,7 @@ TEST_CASE("End turn")
 TEST_CASE("Tie")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     game.current_player().hero->health = 0;
     game.opponent().hero->health = 0;
@@ -88,7 +90,7 @@ TEST_CASE("Tie")
 TEST_CASE("Game unfinished")
 {
     Decklist decklist = ogre_deck();
-    Game game(decklist, decklist);
+    Game game(decklist, decklist, rng);
 
     REQUIRE_FALSE(game.check_winner());
 }

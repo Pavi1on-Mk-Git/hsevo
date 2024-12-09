@@ -2,19 +2,17 @@
 
 #include <algorithm>
 
-#include "utils/Rng.h"
-
-Deck::Deck(const DecklistDeck& decklist)
+Deck::Deck(const DecklistDeck& decklist, Rng& rng)
 {
     for(const auto& [card, amount]: decklist)
         for(unsigned i = 0; i < amount; ++i)
             deck_.push_back(card);
-    shuffle();
+    shuffle(rng);
 }
 
-void Deck::shuffle()
+void Deck::shuffle(Rng& rng)
 {
-    std::ranges::shuffle(deck_, Rng::instance().generator());
+    std::ranges::shuffle(deck_, rng.generator());
 }
 
 std::pair<std::vector<HandCard>, unsigned> Deck::draw(unsigned amount)

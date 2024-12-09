@@ -6,6 +6,7 @@
 #include "logic/Hand.h"
 #include "logic/heroes/Hero.h"
 #include "players/PlayerLogic.h"
+#include "utils/Rng.h"
 
 struct SecretCard;
 
@@ -21,7 +22,7 @@ struct Player
     std::vector<const SecretCard*> secrets;
     unsigned spell_damage;
 
-    Player(const Decklist& decklist);
+    Player(const Decklist& decklist, Rng& rng);
     Player(const Player& other);
     Player& operator=(Player&& other) = default;
 };

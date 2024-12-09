@@ -2,8 +2,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include "utils/Rng.h"
-
 std::optional<GameResult> do_turn(Game& game, const std::unique_ptr<PlayerLogic>& logic)
 {
     std::optional<GameResult> winner;
@@ -38,9 +36,11 @@ std::optional<GameResult> do_turn(Game& game, const std::unique_ptr<PlayerLogic>
     return std::nullopt;
 }
 
-GameResult run_game(const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player)
+GameResult run_game(
+    const std::unique_ptr<PlayerLogic>& first_player, const std::unique_ptr<PlayerLogic>& second_player, Rng& rng
+)
 {
-    Game game(first_player->decklist, second_player->decklist);
+    Game game(first_player->decklist, second_player->decklist, rng);
 
     std::optional<GameResult> winner = game.check_winner();
 

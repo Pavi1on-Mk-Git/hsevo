@@ -148,12 +148,13 @@ const float HERO_WIDTH = 0.15f, HERO_HEIGHT = 0.3f, HERO_POWER_WIDTH = HERO_WIDT
             EOT_WIDTH = 1 - HERO_WIDTH - ALL_ENTITIES_WIDTH, DECK_HEIGHT = (1.f - EOT_HEIGHT) / 2;
 
 GameGui::GameGui(
-    raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file
+    raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file,
+    Rng& rng
 ):
-    window_(window), is_bot_first_(Rng::instance().uniform_int(0, 1)), is_turn_started_(false),
-    player_logic_(new GuiPlayerLogic(*player_deck, *this)),
-    bot_logic_(new EvoPlayerLogic<Network>(*bot_deck, bot_logic_file)), game_(*player_deck, *bot_deck, is_bot_first_),
-    winner_(game_.check_winner()), current_turn_(1)
+    window_(window), is_bot_first_(rng.uniform_int(0, 1)), is_turn_started_(false),
+    player_logic_(new GuiPlayerLogic(*player_deck, *this, rng)),
+    bot_logic_(new EvoPlayerLogic<Network>(*bot_deck, bot_logic_file, rng)),
+    game_(*player_deck, *bot_deck, rng, is_bot_first_), winner_(game_.check_winner()), current_turn_(1)
 {
     for(bool is_player_side: {false, true})
     {

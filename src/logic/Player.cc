@@ -1,7 +1,7 @@
 #include "logic/Player.h"
 
-Player::Player(const Decklist& decklist):
-    hero(decklist.hero->clone()), mana_crystals(0), mana(0), deck(decklist.cards_w_counts), spell_damage(0)
+Player::Player(const Decklist& decklist, Rng& rng):
+    hero(decklist.hero->clone()), mana_crystals(0), mana(0), deck(decklist.cards_w_counts, rng), spell_damage(0)
 {}
 
 Player::Player(const Player& other):

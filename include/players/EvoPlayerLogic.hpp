@@ -8,13 +8,16 @@
 #include "utils/Rng.h"
 
 template <typename Evo>
-struct EvoPlayerLogic: PlayerLogic
+class EvoPlayerLogic: public PlayerLogic
 {
+private:
+    Rng& rng_;
+public:
     Evo evo;
 
-    EvoPlayerLogic(const Decklist& decklist, Evo evo): PlayerLogic(decklist), evo(evo) {}
+    EvoPlayerLogic(const Decklist& decklist, Evo evo, Rng& rng): PlayerLogic(decklist), rng_(rng), evo(evo) {}
 
-    EvoPlayerLogic(const Decklist& decklist, std::istream& in): PlayerLogic(decklist), evo(in) {}
+    EvoPlayerLogic(const Decklist& decklist, std::istream& in, Rng& rng): PlayerLogic(decklist), rng_(rng), evo(in) {}
 
     double add_game_score(double sum, const Game& game) const
     {
@@ -50,7 +53,7 @@ struct EvoPlayerLogic: PlayerLogic
 
         auto resulting_states = actions.at(best_action_id)->apply(game);
 
-        return resulting_states.at(Rng::instance().uniform_int(0, resulting_states.size() - 1));
+        return resulting_states.at(rng_.uniform_int(0, resulting_states.size() - 1));
     }
 };
 

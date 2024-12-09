@@ -7,10 +7,11 @@
 #include "logic/Decklist.h"
 #include "logic/run_game.h"
 #include "players/EvoPlayerLogic.hpp"
+#include "utils/Rng.h"
 
 template <typename Evo, unsigned Count>
 std::array<std::vector<unsigned>, Count> score_populations(
-    const std::array<std::vector<Evo>, Count>& populations, const std::array<Decklist, Count>& decklists
+    const std::array<std::vector<Evo>, Count>& populations, const std::array<Decklist, Count>& decklists, Rng& rng
 )
 {
     const unsigned population_size = populations.at(0).size();
@@ -28,7 +29,7 @@ std::array<std::vector<unsigned>, Count> score_populations(
     {
         players.reserve(population_size);
         for(const auto& member: population)
-            players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
+            players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member, rng));
     }
 
     auto deck_ids = std::views::iota(0u, Count);
@@ -43,7 +44,7 @@ std::array<std::vector<unsigned>, Count> score_populations(
         const auto& fst_player = deck_players.at(fst_deck_id).at(fst_player_id);
         const auto& snd_player = deck_players.at(snd_deck_id).at(snd_player_id);
 
-        auto winner = run_game(fst_player, snd_player);
+        auto winner = run_game(fst_player, snd_player, rng);
 
         switch(winner)
         {
@@ -61,7 +62,9 @@ std::array<std::vector<unsigned>, Count> score_populations(
 }
 
 template <typename Evo>
-unsigned score_hall_of_champions(const std::vector<Evo>& champions, const Evo& contender, const Decklist& decklist)
+unsigned score_hall_of_champions(
+    const std::vector<Evo>& champions, const Evo& contender, const Decklist& decklist, Rng& rng
+)
 {
     if(champions.empty())
         return 1;
@@ -70,12 +73,12 @@ unsigned score_hall_of_champions(const std::vector<Evo>& champions, const Evo& c
     players.reserve(champions.size());
 
     for(const auto& member: champions)
-        players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member));
+        players.push_back(std::make_unique<EvoPlayerLogic<Evo>>(decklist, member, rng));
 
-    std::unique_ptr<PlayerLogic> contender_player = std::make_unique<EvoPlayerLogic<Evo>>(decklist, contender);
+    std::unique_ptr<PlayerLogic> contender_player = std::make_unique<EvoPlayerLogic<Evo>>(decklist, contender, rng);
 
     return std::ranges::fold_left(players, 0, [&](unsigned total, const auto& player) {
-        return total + (run_game(contender_player, player) == GameResult::PLAYER_1 ? 1 : 0);
+        return total + (run_game(contender_player, player, rng) == GameResult::PLAYER_1 ? 1 : 0);
     });
 }
 

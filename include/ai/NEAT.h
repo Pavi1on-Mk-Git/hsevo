@@ -1,5 +1,5 @@
-#ifndef POPULATION_H
-#define POPULATION_H
+#ifndef NEAT_H
+#define NEAT_H
 
 #include "ai/Genome.h"
 #include "ai/NEATConfig.h"

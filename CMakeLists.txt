@@ -29,6 +29,7 @@ target_link_options(profile_hsevo PRIVATE -pg)
 
 add_executable(experiment_hsevo ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/run_experiment.cc")
 target_compile_options(experiment_hsevo PRIVATE ${OPTIMIZED_FLAGS})
+target_link_options(experiment_hsevo PRIVATE -static)
 
 add_executable(gui_hsevo ${AI_SOURCES} ${GUI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/gui.cc")
 target_compile_options(gui_hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
@@ -43,7 +44,14 @@ find_package(Catch2 3 REQUIRED)
 
 target_link_libraries(test_hsevo PRIVATE Catch2::Catch2WithMain)
 
-find_package(spdlog REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.14.1
+)
+FetchContent_MakeAvailable(spdlog)
 
 target_link_libraries(hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(profile_hsevo PRIVATE spdlog::spdlog)
@@ -51,7 +59,6 @@ target_link_libraries(experiment_hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(gui_hsevo PRIVATE spdlog::spdlog)
 target_link_libraries(test_hsevo PRIVATE spdlog::spdlog)
 
-include(FetchContent)
 FetchContent_Declare(
   raylib
   GIT_REPOSITORY https://github.com/raysan5/raylib.git
@@ -69,6 +76,7 @@ FetchContent_MakeAvailable(raylib_cpp)
 
 target_link_libraries(gui_hsevo PRIVATE raylib raylib_cpp)
 
+set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.83 REQUIRED serialization)
 target_link_libraries(hsevo PRIVATE Boost::serialization)
 target_link_libraries(profile_hsevo PRIVATE Boost::serialization)

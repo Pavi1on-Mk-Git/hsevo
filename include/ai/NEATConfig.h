@@ -8,7 +8,6 @@
 struct NEATConfig
 {
     unsigned population_size;
-    unsigned iterations;
     ActivationFunc activation;
     double similarity_threshold;
     double excess_coeff;

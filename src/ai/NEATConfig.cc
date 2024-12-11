@@ -10,7 +10,6 @@ std::string NEATConfig::name() const
     auto concat = [&name_stream](const auto& value) { name_stream << value << '_'; };
 
     concat(population_size);
-    concat(iterations);
     concat(activation.name());
     concat(similarity_threshold);
     concat(excess_coeff);
@@ -31,7 +30,6 @@ NEATConfig default_config()
 {
     return NEATConfig{
         .population_size = 20,
-        .iterations = 1000,
         .activation = ActivationFuncType::ID,
         .similarity_threshold = 4.,
         .excess_coeff = 1.,

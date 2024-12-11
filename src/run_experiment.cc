@@ -9,23 +9,28 @@
 #include "utils/Rng.h"
 
 static const unsigned SEED_COUNT = 30;
+static const unsigned ITERATIONS = 1000;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void single_seed_experiment(
-    unsigned seed, const NEATConfig& config, std::mutex& data_mutex,
+    unsigned seed, const std::array<NEATConfig, DECK_COUNT>& configs, std::mutex& data_mutex,
     std::array<std::ofstream, DECK_COUNT>& result_files, std::array<std::vector<Network>, DECK_COUNT>& best_networks
 )
 {
     Rng rng(seed);
 
-    std::array<NEAT, DECK_COUNT> populations{NEAT(config, rng), NEAT(config, rng), NEAT(config, rng)};
+    std::vector<NEAT> populations;
+    std::ranges::transform(configs, std::back_inserter(populations), [&](const NEATConfig& config) {
+        return NEAT(config, rng);
+    });
+
     std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
     std::array<unsigned, DECK_COUNT> champion_scores;
     std::array<std::vector<unsigned>, DECK_COUNT> score_history;
-    for(auto& score_vec: score_history)
-        score_vec.reserve(config.iterations);
+    for(auto [score_vec, config]: std::views::zip(score_history, configs))
+        score_vec.reserve(ITERATIONS);
 
-    for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
+    for(unsigned iteration = 0; iteration < ITERATIONS; ++iteration)
     {
         std::array<std::vector<Network>, DECK_COUNT> iteration_networks;
         std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
@@ -69,16 +74,16 @@ void single_seed_experiment(
 
 const unsigned COMPARISON_SEED = 42;
 
-void experiment(const NEATConfig& config)
+void experiment(const std::array<NEATConfig, DECK_COUNT>& configs)
 {
-    const auto file_suffix = config.name();
+    std::array<std::string, DECK_COUNT> file_suffixes;
+    std::ranges::transform(configs, file_suffixes.begin(), [](const NEATConfig& config) { return config.name(); });
 
     std::mutex data_mutex;
 
     std::array<std::ofstream, DECK_COUNT> result_files;
-    std::ranges::transform(decklists, result_files.begin(), [&](const Decklist& deck) {
-        return std::ofstream(std::format("results/scores/{}_{}", deck.name, file_suffix));
-    });
+    for(auto [file, decklist, suffix]: std::views::zip(result_files, decklists, file_suffixes))
+        file = std::ofstream(std::format("results/scores/{}_{}", decklist.name, suffix));
 
     std::array<std::vector<Network>, DECK_COUNT> best_networks;
     for(auto& network_vec: best_networks)
@@ -89,7 +94,7 @@ void experiment(const NEATConfig& config)
 
         for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
             threads.push_back(std::jthread([&]() {
-                single_seed_experiment(seed, config, data_mutex, result_files, best_networks);
+                single_seed_experiment(seed, configs, data_mutex, result_files, best_networks);
             }));
     }
 
@@ -97,11 +102,12 @@ void experiment(const NEATConfig& config)
 
     auto final_scores = score_populations<Network, DECK_COUNT>(best_networks, decklists, rng);
 
-    for(auto [bests, deck_final_scores, decklist]: std::views::zip(best_networks, final_scores, decklists))
+    for(auto [bests, deck_final_scores, decklist, suffix]:
+        std::views::zip(best_networks, final_scores, decklists, file_suffixes))
     {
         auto the_best = bests.at(std::ranges::max_element(deck_final_scores) - deck_final_scores.begin());
 
-        std::ofstream out(std::format("results/networks/{}_{}.txt", decklist.name, file_suffix));
+        std::ofstream out(std::format("results/networks/{}_{}.txt", decklist.name, suffix));
         the_best.save(out);
     }
 }
@@ -123,23 +129,23 @@ int main()
     const std::vector<double> crossover_probs{0.25, 0.5, 0.75, 0.9};
     const std::vector<double> inherit_connection_disabled_probs{0.25, 0.5, 0.75, 0.9};
 
-    NEATConfig config = default_config();
+    std::array<NEATConfig, DECK_COUNT> configs{default_config(), default_config(), default_config()};
     std::array<std::vector<Network>, DECK_COUNT> populations;
 
     for(const auto& activation: activations)
     {
-        auto changed_config = config;
-        changed_config.activation = activation;
+        auto changed_configs = configs;
+        for(auto& changed_config: changed_configs)
+            changed_config.activation = activation;
 
-        const auto file_suffix = changed_config.name();
-
-        experiment(changed_config);
+        experiment(changed_configs);
 
         std::vector<Network> results;
-        std::ranges::transform(decklists, std::back_inserter(results), [&](const auto& decklist) {
-            std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, file_suffix));
-            return Network(in);
-        });
+        for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+        {
+            std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+            results.emplace_back(in);
+        }
 
         for(auto [result, population]: std::views::zip(results, populations))
             population.push_back(result);

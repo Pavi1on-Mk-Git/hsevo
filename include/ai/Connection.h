@@ -1,14 +1,18 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include <cstdint>
+
+using NodeId = std::uint32_t;
+
 struct Connection
 {
     static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
-    unsigned from, to;
+    NodeId from, to;
     double weight;
     bool enabled;
 
-    Connection(unsigned from, unsigned to, double weight, bool enabled = true);
+    Connection(NodeId from, NodeId to, double weight, bool enabled = true);
 };
 
 #endif

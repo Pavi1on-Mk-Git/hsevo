@@ -2,8 +2,8 @@
 #define ON_PLAY_ARG_H
 
 #include <deque>
-#include <fmt/format.h>
 #include <ranges>
+#include <spdlog/fmt/fmt.h>
 #include <variant>
 #include <vector>
 

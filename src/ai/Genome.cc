@@ -27,7 +27,7 @@ std::optional<Connection> Genome::find_connection(NodeId from, NodeId to)
 
 void Genome::add_connection(NodeId from, NodeId to, double weight)
 {
-    connections.emplace_back(get_connection_hash(from, to), Connection{from, to, weight, true});
+    connections.emplace_back(get_connection_hash(from, to), Connection(from, to, weight));
 }
 
 void Genome::add_node_to_layer(unsigned layer)
@@ -70,13 +70,15 @@ void Genome::mutate_add_node()
     Connection& connection = connections.at(connection_id).second;
 
     connection.enabled = false;
+    const unsigned from = connection.from, to = connection.to;
+    const double weight = connection.weight;
 
-    add_connection(connection.from, next_node_id, 1.);
-    add_connection(next_node_id, connection.to, connection.weight);
+    add_connection(from, next_node_id, 1.);
+    add_connection(next_node_id, to, weight);
 
     add_connection(0, next_node_id, 0.);
 
-    add_node_to_layer(node_to_layer.at(connection.from) + node_to_layer.at(connection.to) / 2);
+    add_node_to_layer(node_to_layer.at(from) + node_to_layer.at(to) / 2);
 }
 
 void Genome::mutate_add_connection()
@@ -105,21 +107,21 @@ void Genome::mutate_add_connection()
         add_connection(node_from, node_to, rng_.get().uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT));
 }
 
-Genome::Genome(Rng& rng): rng_(rng)
+Genome::Genome(Rng& rng): rng_(rng), next_node_id(0)
 {
-    connections.reserve(GameStateInput::INPUT_SIZE);
-    for(unsigned from = 0; from <= GameStateInput::INPUT_SIZE; ++from)
-        add_connection(
-            from, GameStateInput::INPUT_SIZE + 1,
-            rng_.get().uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT)
-        );
-
     node_to_layer.reserve(GameStateInput::INPUT_SIZE + 1);
 
     for(NodeId node_id = 0; node_id <= GameStateInput::INPUT_SIZE; ++node_id)
         add_node_to_layer(0);
 
     add_node_to_layer(std::numeric_limits<unsigned>::max());
+
+    connections.reserve(GameStateInput::INPUT_SIZE);
+    for(unsigned from = 0; from <= GameStateInput::INPUT_SIZE; ++from)
+        add_connection(
+            from, GameStateInput::INPUT_SIZE + 1,
+            rng_.get().uniform_real(Connection::MIN_WEIGHT, Connection::MAX_WEIGHT)
+        );
 }
 
 Genome::Genome(
@@ -149,7 +151,9 @@ double Genome::similarity(const Genome& other, double excess_coeff, double disjo
         }
         else
         {
-            const auto &this_connection = connections.at(this_id), other_connection = other.connections.at(other_id);
+            const auto& this_connection = connections.at(this_id);
+            const auto& other_connection = other.connections.at(other_id);
+
             if(this_connection.first == other_connection.first)
             {
                 ++matching_count;

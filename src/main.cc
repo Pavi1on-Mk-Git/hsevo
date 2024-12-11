@@ -16,43 +16,50 @@ int main()
     spdlog::set_pattern("[%l] %v");
     spdlog::set_level(spdlog::level::off);
 
-    const int SEED = 42;
-    Rng rng(SEED);
+    unsigned seed = 12;
+    std::array<NEATConfig, DECK_COUNT> configs{default_config(), default_config(), default_config()};
+    const unsigned ITERATIONS = 500;
+    const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
-    NEATConfig config{
-        .population_size = 20,
-        .iterations = 5,
-        .activation = ActivationFuncType::ID,
-        .similarity_threshold = 4.,
-        .excess_coeff = 1.,
-        .disjoint_coeff = 1.,
-        .weight_coeff = 3.,
-        .weight_mutation_prob = 0.8,
-        .add_node_mutation_prob = 0.02,
-        .add_connection_prob = 0.05,
-        .weight_perturbation_prob = 0.9,
-        .mutation_strength = 0.2,
-        .crossover_prob = 0.75,
-        .inherit_connection_disabled_prob = 0.75,
-    };
+    Rng rng(seed);
 
-    const auto decklists = get_decklists();
+    std::vector<NEAT> populations;
+    std::ranges::transform(configs, std::back_inserter(populations), [&](const NEATConfig& config) {
+        return NEAT(config, rng);
+    });
 
-    std::array<NEAT, DECK_COUNT> populations{NEAT(config, rng), NEAT(config, rng), NEAT(config, rng)};
-    std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> current_bests;
+    std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
+    std::array<unsigned, DECK_COUNT> champion_scores;
+    std::array<std::vector<unsigned>, DECK_COUNT> score_history;
+    for(auto [score_vec, config]: std::views::zip(score_history, configs))
+        score_vec.reserve(ITERATIONS);
 
-    for(unsigned iteration = 0; iteration < config.iterations; ++iteration)
+    for(unsigned iteration = 0; iteration < ITERATIONS; ++iteration)
     {
         std::array<std::vector<Network>, DECK_COUNT> iteration_networks;
         std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
             return neat.networks();
         });
+        std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> iteration_bests;
 
         auto iteration_scores = score_populations<Network, DECK_COUNT>(iteration_networks, decklists, rng);
 
-        for(auto [best, population, new_scores]: std::views::zip(current_bests, populations, iteration_scores))
+        for(auto [best, population, new_scores, champions, decklist, champion_score, score_vec]: std::views::zip(
+                iteration_bests, populations, iteration_scores, hall_of_champions, decklists, champion_scores,
+                score_history
+            ))
         {
             best = population.assign_scores(new_scores);
+
+            auto contender_score = score_hall_of_champions(champions, best->first, decklist, rng);
+
+            if(contender_score > champions.size() / 2)
+            {
+                champions.push_back(best->first);
+                champion_score = best->second;
+            }
+
+            score_vec.push_back(champion_score);
             population.epoch();
         }
     }

@@ -1,14 +1,12 @@
 #ifndef GENOME_HPP
 #define GENOME_HPP
 
-#include <cstdint>
 #include <optional>
 #include <vector>
 
 #include "ai/Connection.h"
 #include "utils/Rng.h"
 
-using NodeId = std::uint32_t;
 using ConnectionHash = std::uint64_t;
 
 class Genome
@@ -24,7 +22,7 @@ private:
     void mutate_add_node();
     void mutate_add_connection();
 public:
-    NodeId next_node_id = 0;
+    NodeId next_node_id;
 
     std::vector<std::pair<unsigned, std::vector<NodeId>>> layers;
     std::vector<unsigned> node_to_layer;

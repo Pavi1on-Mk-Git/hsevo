@@ -4,31 +4,31 @@ BROWSER = powershell.exe
 
 .PHONY: test
 
-run:
+run: hsevo
 	@ ./build/bin/hsevo
 
-debug:
+debug: hsevo
 	@ gdb ./build/bin/hsevo
 
-experiment:
+experiment: experiment_hsevo
 	@ ./build/bin/experiment_hsevo
 
-debug_exp:
+debug_exp: experiment_hsevo
 	@ gdb ./build/bin/experiment_hsevo
 
-gui:
+gui: gui_hsevo
 	@ ./build/bin/gui_hsevo
 
-debug_gui:
+debug_gui: gui_hsevo
 	@ gdb ./build/bin/gui_hsevo
 
-test:
+test: test_hsevo
 	@ ./build/bin/test_hsevo
 
-debug_test:
+debug_test: test_hsevo
 	@ gdb ./build/bin/test_hsevo
 
-coverage:
+coverage: test_hsevo
 	@ ./build/bin/test_hsevo
 	@ lcov -q -no-external -d ./src -d ./include -d ./build/CMakeFiles/test_hsevo.dir -c --ignore-errors empty -o ./build/bin/test_coverage.info 2> /dev/null
 	@ genhtml -q ./build/bin/test_coverage.info --output-directory ./build/bin/coverage 2> /dev/null

@@ -1,4 +1,7 @@
+#include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/array.hpp>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <thread>
@@ -14,7 +17,7 @@ static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void single_seed_experiment(
     unsigned seed, const std::array<NEATConfig, DECK_COUNT>& configs, std::mutex& data_mutex,
-    std::array<std::ofstream, DECK_COUNT>& result_files, std::array<std::vector<Network>, DECK_COUNT>& best_networks
+    std::vector<std::ofstream>& result_files, std::array<std::vector<Network>, DECK_COUNT>& best_networks
 )
 {
     Rng rng(seed);
@@ -27,7 +30,7 @@ void single_seed_experiment(
     std::array<std::vector<Network>, DECK_COUNT> hall_of_champions;
     std::array<unsigned, DECK_COUNT> champion_scores;
     std::array<std::vector<unsigned>, DECK_COUNT> score_history;
-    for(auto [score_vec, config]: std::views::zip(score_history, configs))
+    for(auto& score_vec: score_history)
         score_vec.reserve(ITERATIONS);
 
     for(unsigned iteration = 0; iteration < ITERATIONS; ++iteration)
@@ -79,11 +82,17 @@ void experiment(const std::array<NEATConfig, DECK_COUNT>& configs)
     std::array<std::string, DECK_COUNT> file_suffixes;
     std::ranges::transform(configs, file_suffixes.begin(), [](const NEATConfig& config) { return config.name(); });
 
+    for(auto [decklist, suffix]: std::views::zip(decklists, file_suffixes))
+        if(std::filesystem::exists(
+               std::filesystem::path(std::format("results/networks/{}_{}.txt", decklist.name, suffix))
+           ))
+            return;
+
     std::mutex data_mutex;
 
-    std::array<std::ofstream, DECK_COUNT> result_files;
-    for(auto [file, decklist, suffix]: std::views::zip(result_files, decklists, file_suffixes))
-        file = std::ofstream(std::format("results/scores/{}_{}", decklist.name, suffix));
+    std::vector<std::ofstream> result_files;
+    for(auto [decklist, suffix]: std::views::zip(decklists, file_suffixes))
+        result_files.push_back(std::ofstream(std::format("results/scores/{}_{}", decklist.name, suffix)));
 
     std::array<std::vector<Network>, DECK_COUNT> best_networks;
     for(auto& network_vec: best_networks)
@@ -93,7 +102,7 @@ void experiment(const std::array<NEATConfig, DECK_COUNT>& configs)
         std::vector<std::jthread> threads;
 
         for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
-            threads.push_back(std::jthread([&]() {
+            threads.push_back(std::jthread([&, seed]() {
                 single_seed_experiment(seed, configs, data_mutex, result_files, best_networks);
             }));
     }
@@ -112,14 +121,31 @@ void experiment(const std::array<NEATConfig, DECK_COUNT>& configs)
     }
 }
 
+void score_once(
+    unsigned seed, const std::array<std::vector<Network>, DECK_COUNT>& populations,
+    std::array<std::vector<unsigned>, DECK_COUNT>& total_scores, std::mutex& score_mutex
+)
+{
+    Rng rng(seed);
+
+    for(auto [total_score_vec, current_score_vec]:
+        std::views::zip(total_scores, score_populations<Network, DECK_COUNT>(populations, decklists, rng)))
+    {
+        std::lock_guard lock(score_mutex);
+
+        for(auto [total, current]: std::views::zip(total_score_vec, current_score_vec))
+            total += current;
+    }
+};
+
 int main()
 {
     using enum ActivationFuncType;
 
     const std::vector<ActivationFunc> activations{ID, SIGMOID, TANH, EXP};
-    const std::vector<std::tuple<double, double, double, double>> similarities{
-        {4., 1., 1., 3.},
-        {3., 1., 1., 0.4},
+    const std::vector<std::vector<double>> similarities{
+        {1., 1., 3., 4.},
+        {1., 1., 0.4, 3.},
     };
     const std::vector<double> weight_mutation_probs{0.2, 0.4, 0.6, 0.8};
     const std::vector<double> add_node_mutation_probs{0.01, 0.02, 0.05, 0.2};
@@ -130,54 +156,453 @@ int main()
     const std::vector<double> inherit_connection_disabled_probs{0.25, 0.5, 0.75, 0.9};
 
     std::array<NEATConfig, DECK_COUNT> configs{default_config(), default_config(), default_config()};
-    std::array<std::vector<Network>, DECK_COUNT> populations;
 
-    for(const auto& activation: activations)
+    // Activations
     {
-        auto changed_configs = configs;
-        for(auto& changed_config: changed_configs)
-            changed_config.activation = activation;
+        std::array<std::vector<Network>, DECK_COUNT> populations;
 
-        experiment(changed_configs);
-
-        std::vector<Network> results;
-        for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+        for(const auto& activation: activations)
         {
-            std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
-            results.emplace_back(in);
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.activation = activation;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
         }
 
-        for(auto [result, population]: std::views::zip(results, populations))
-            population.push_back(result);
-    }
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(activations.size(), 0);
 
-    std::mutex score_mutex;
-    std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
-    for(auto& total_score_vec: total_scores)
-        total_score_vec.resize(activations.size(), 0);
-
-    auto score_once = [&](unsigned seed) {
-        Rng rng(seed);
-
-        for(auto [total_score_vec, current_score_vec]:
-            std::views::zip(total_scores, score_populations<Network, DECK_COUNT>(populations, decklists, rng)))
         {
-            std::lock_guard lock(score_mutex);
-
-            for(auto [total, current]: std::views::zip(total_score_vec, current_score_vec))
-                total += current;
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
         }
-    };
 
-    {
-        std::vector<std::jthread> threads;
-        for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
-            threads.push_back(std::jthread([&]() { score_once(seed); }));
+        std::ofstream out("results/hyper_activations.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << activations.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
     }
 
-    std::ofstream out("results/hyper.txt");
-    boost::archive::text_oarchive archive(out);
+    // Similarities
+    {
+        std::ifstream in("results/hyper_activations.txt");
+        boost::archive::text_iarchive iarchive(in);
 
-    for(const auto& total_score_vec: total_scores)
-        archive << activations.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.activation;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& similarity: similarities)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+            {
+                auto excess = similarity.at(0);
+                auto disjoint = similarity.at(1);
+                auto weight = similarity.at(2);
+                auto threshold = similarity.at(3);
+
+                changed_config.excess_coeff = excess;
+                changed_config.disjoint_coeff = disjoint;
+                changed_config.weight_coeff = weight;
+                changed_config.similarity_threshold = threshold;
+            }
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(similarities.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_similarities.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+        {
+            oarchive << similarities.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+        }
+    }
+
+    // Weight mutations
+    {
+        std::ifstream in("results/hyper_similarities.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+        {
+            std::vector<double> similarity;
+            iarchive >> similarity;
+            config.excess_coeff = similarity.at(0);
+            config.disjoint_coeff = similarity.at(1);
+            config.weight_coeff = similarity.at(2);
+            config.similarity_threshold = similarity.at(3);
+        }
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& weight: weight_mutation_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.weight_mutation_prob = weight;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(weight_mutation_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_weight_mutations.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << weight_mutation_probs.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+    }
+
+    // Add node mutations
+    {
+        std::ifstream in("results/hyper_weight_mutations.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.weight_mutation_prob;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& node: add_node_mutation_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.add_node_mutation_prob = node;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(add_node_mutation_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_add_node_mutations.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << add_node_mutation_probs.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+    }
+
+    // Add connections
+    {
+        std::ifstream in("results/hyper_add_node_mutations.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.add_node_mutation_prob;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& conn: add_connection_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.add_connection_prob = conn;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(add_connection_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_add_connections.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << add_connection_probs.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+    }
+
+    // Weight perturbations
+    {
+        std::ifstream in("results/hyper_add_connections.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.add_connection_prob;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& weight: weight_perturbation_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.weight_perturbation_prob = weight;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(weight_perturbation_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_weight_perturbations.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << weight_perturbation_probs.at(
+                std::ranges::max_element(total_score_vec) - total_score_vec.begin()
+            );
+    }
+
+    // Mutation strengths
+    {
+        std::ifstream in("results/hyper_weight_perturbations.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.weight_perturbation_prob;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& strength: mutation_strengths)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.mutation_strength = strength;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(mutation_strengths.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_mutation_strengths.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << mutation_strengths.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+    }
+
+    // Crossovers
+    {
+        std::ifstream in("results/hyper_mutation_strengths.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.mutation_strength;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& crossover: crossover_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.crossover_prob = crossover;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(crossover_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_crossovers.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << crossover_probs.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
+    }
+
+    // Inherit connection disableds
+    {
+        std::ifstream in("results/hyper_crossovers.txt");
+        boost::archive::text_iarchive iarchive(in);
+
+        for(auto& config: std::views::reverse(configs))
+            iarchive >> config.crossover_prob;
+
+        std::array<std::vector<Network>, DECK_COUNT> populations;
+
+        for(const auto& inherit: inherit_connection_disabled_probs)
+        {
+            auto changed_configs = configs;
+            for(auto& changed_config: changed_configs)
+                changed_config.inherit_connection_disabled_prob = inherit;
+
+            experiment(changed_configs);
+
+            std::vector<Network> results;
+            for(auto [decklist, config]: std::views::zip(decklists, changed_configs))
+            {
+                std::ifstream in(std::format("results/networks/{}_{}.txt", decklist.name, config.name()));
+                results.emplace_back(in);
+            }
+
+            for(auto [result, population]: std::views::zip(results, populations))
+                population.push_back(result);
+        }
+
+        std::mutex score_mutex;
+        std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+        for(auto& total_score_vec: total_scores)
+            total_score_vec.resize(inherit_connection_disabled_probs.size(), 0);
+
+        {
+            std::vector<std::jthread> threads;
+            for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
+                threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }
+                ));
+        }
+
+        std::ofstream out("results/hyper_inherit_disableds.txt");
+        boost::archive::text_oarchive oarchive(out);
+
+        for(const auto& total_score_vec: total_scores)
+            oarchive << inherit_connection_disabled_probs.at(
+                std::ranges::max_element(total_score_vec) - total_score_vec.begin()
+            );
+    }
 }

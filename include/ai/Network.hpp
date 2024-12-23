@@ -5,7 +5,6 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
-#include <iostream>
 
 #include "ai/GameStateInput.h"
 #include "ai/Genome.h"

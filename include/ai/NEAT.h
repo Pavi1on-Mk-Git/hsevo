@@ -37,7 +37,7 @@ private:
         double inherit_connection_disabled_prob
     );
     void cleanup_species();
-    void get_networks(ActivationFunc activation);
+    void get_networks(const ActivationFunc& activation);
 public:
     NEAT(const NEATConfig& config, Rng& rng_);
     const std::vector<Network>& networks() const;

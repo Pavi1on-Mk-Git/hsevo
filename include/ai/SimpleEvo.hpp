@@ -3,7 +3,6 @@
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/array.hpp>
-#include <iostream>
 
 #include "ai/GameStateInput.h"
 #include "utils/Rng.h"

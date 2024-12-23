@@ -1,6 +1,7 @@
 #include "ai/Genome.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "ai/GameStateInput.h"
 
@@ -8,7 +9,7 @@ ConnectionHash Genome::get_connection_hash(NodeId from, NodeId to)
 {
     ConnectionHash hash = 0;
     hash |= static_cast<ConnectionHash>(from);
-    hash |= static_cast<ConnectionHash>(to) << sizeof(NodeId);
+    hash |= static_cast<ConnectionHash>(to) << std::numeric_limits<NodeId>::digits;
     return hash;
 }
 
@@ -42,7 +43,10 @@ void Genome::add_node_to_layer(unsigned layer)
         found_layer->second.push_back(next_node_id++);
     }
     else
-        layers.emplace_back(layer, std::vector<NodeId>{}).second.push_back(next_node_id++);
+    {
+        auto& new_layer = layers.emplace_back(layer, std::vector<NodeId>{});
+        new_layer.second.push_back(next_node_id++);
+    }
 
     node_to_layer.push_back(layer);
 }

@@ -60,7 +60,11 @@ void NEAT::calculate_species_bounds()
     const double total_score = *std::ranges::fold_left_first(species_score_sums_, std::plus{});
 
     for(auto [score_sum, species]: std::views::zip(species_score_sums_, species_))
-        species_bounds_.push_back(std::ceil(score_sum * species.size() / total_score));
+    {
+        auto bound = std::ceil(score_sum * species.size() / total_score);
+
+        species_bounds_.push_back(bound);
+    }
 }
 
 std::optional<Genome> NEAT::crossover(
@@ -128,12 +132,15 @@ void NEAT::cleanup_species()
         if(!species.empty() && kept_count > 0)
             clean_representatives.push_back(population_.at(species.at(rng_.uniform_int(0, kept_count - 1))));
 
+
     species_.clear();
     species_.resize(clean_representatives.size());
     representatives_ = std::move(clean_representatives);
 
     species_score_sums_.clear();
     species_score_sums_.resize(species_.size(), 0.);
+
+    species_bounds_.clear();
 }
 
 NEAT::NEAT(const NEATConfig& config, Rng& rng): config_(config), rng_(rng)
@@ -149,7 +156,7 @@ NEAT::NEAT(const NEATConfig& config, Rng& rng): config_(config), rng_(rng)
     get_networks(config.activation);
 }
 
-void NEAT::get_networks(ActivationFunc activation)
+void NEAT::get_networks(const ActivationFunc& activation)
 {
     networks_.clear();
 

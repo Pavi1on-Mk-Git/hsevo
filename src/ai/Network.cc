@@ -9,13 +9,13 @@ Network::Network(const Genome& genome, const ActivationFunc& activation): activa
 {
     nodes_.reserve(genome.next_node_id);
 
-    for(auto [layer_id, layer_nodes]: genome.layers)
+    for(const auto& [layer_id, layer_nodes]: genome.layers)
         for(NodeId node: layer_nodes)
             nodes_.push_back(node);
 
     in_connections_.resize(genome.next_node_id);
 
-    for(auto [connection_hash, connection]: genome.connections)
+    for(const auto& [connection_hash, connection]: genome.connections)
         if(connection.enabled)
             in_connections_.at(connection.to).emplace_back(connection.from, connection.weight);
 }

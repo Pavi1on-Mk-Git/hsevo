@@ -17,11 +17,12 @@ int main()
     raylib::Window window(1280, 720);
     window.SetTargetFPS(60);
 
-    const Decklist OGRE_DECK = ogre_deck(), HANDLOCK = handlock();
-    const std::vector<const Decklist*> decklists{&OGRE_DECK, &HANDLOCK};
+    const Decklist HANDLOCK = handlock(), FACE_HUNTER = face_hunter(), CONTROL_WARRIOR = control_warrior();
+    const std::vector<const Decklist*> decklists{&HANDLOCK, &FACE_HUNTER, &CONTROL_WARRIOR};
 
-    std::ifstream OGRE_LOGIC("results/test.txt"), HANDLOCK_LOGIC("results/test.txt");
-    const std::vector<std::ifstream*> logic_files{&OGRE_LOGIC, &HANDLOCK_LOGIC};
+    std::ifstream HANDLOCK_LOGIC("gui_player_logics/warlock.txt"), FACE_HUNTER_LOGIC("gui_player_logics/hunter.txt"),
+        CONTROL_WARRIOR_LOGIC("gui_player_logics/warrior.txt");
+    const std::vector<std::ifstream*> logic_files{&HANDLOCK_LOGIC, &FACE_HUNTER_LOGIC, &CONTROL_WARRIOR_LOGIC};
 
     DeckSelection selection(window, decklists, logic_files);
     auto [player_deck, bot_deck, bot_logic_file] = selection.run();

@@ -29,6 +29,7 @@ private:
     void draw();
 public:
     std::optional<unsigned> minion_gap_position;
+    bool is_in_discover_mode;
 
     GameGui(
         raylib::Window& window, const Decklist* player_deck, const Decklist* bot_deck, std::istream& bot_logic_file,

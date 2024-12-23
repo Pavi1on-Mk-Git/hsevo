@@ -2,6 +2,8 @@
 
 std::deque<GuiElementId> get_element_sequence(const std::vector<OnPlayArg>& args)
 {
+    using enum GuiElementIdType;
+
     std::deque<GuiElementId> sequence;
     for(auto arg = args.begin(); arg != args.end(); ++arg)
     {
@@ -9,7 +11,6 @@ std::deque<GuiElementId> get_element_sequence(const std::vector<OnPlayArg>& args
         {
             const auto& type = std::get<TargetType>(*arg);
             using enum TargetType;
-            using enum GuiElementIdType;
 
             switch(type)
             {
@@ -27,6 +28,8 @@ std::deque<GuiElementId> get_element_sequence(const std::vector<OnPlayArg>& args
                 break;
             }
         }
+        else if(std::holds_alternative<Discover>(*arg))
+            sequence.push_back(std::make_pair(DISCOVER, std::get<unsigned>(*(++arg))));
     }
     return sequence;
 }

@@ -28,3 +28,8 @@ unsigned Deck::size() const
 {
     return deck_.size();
 }
+
+const Card* const& Deck::peek(unsigned position) const
+{
+    return deck_.at(position);
+}

@@ -16,7 +16,10 @@ struct overloaded: Ts...
     using Ts::operator()...;
 };
 
-using OnPlayArg = std::variant<unsigned, TargetType>;
+struct Discover
+{};
+
+using OnPlayArg = std::variant<unsigned, TargetType, Discover>;
 
 std::deque<GuiElementId> get_element_sequence(const std::vector<OnPlayArg>& args);
 
@@ -43,6 +46,7 @@ struct fmt::formatter<OnPlayArg>: formatter<std::string>
                         return "UNKNOWN";
                     }
                 },
+                [](const Discover&) -> std::string { return "DISCOVER"; },
                 [](unsigned val) { return std::to_string(val); }
             },
             arg

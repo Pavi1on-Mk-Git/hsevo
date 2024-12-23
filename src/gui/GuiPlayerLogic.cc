@@ -24,7 +24,7 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector
     auto clicked_element = gui_.clicked_element();
 
     if(!clicked_element)
-        click_sequence_.clear();
+        return game;
 
     auto matching_sequence = std::ranges::find_if(potential_sequences, [&clicked_element](const auto& sequence) {
         return !sequence.empty() && (sequence.front() == *clicked_element);
@@ -39,6 +39,7 @@ Game GuiPlayerLogic::choose_and_apply_action(const Game& game, const std::vector
     {
         click_sequence_.clear();
         gui_.minion_gap_position = std::nullopt;
+        gui_.is_in_discover_mode = false;
         auto new_states = actions.at(matching_sequence - potential_sequences.begin())->apply(game);
         return new_states.at(rng_.uniform_int(0, new_states.size() - 1));
     }

@@ -9,12 +9,14 @@
 #include "ai/Network.hpp"
 #include "gui/CardElement.h"
 #include "gui/DeckElement.h"
+#include "gui/DiscoverElement.h"
 #include "gui/EOTElement.h"
 #include "gui/GuiPlayerLogic.h"
 #include "gui/HeroElement.h"
 #include "gui/HeroPowerElement.h"
 #include "gui/MinionElement.h"
 #include "gui/WeaponElement.h"
+#include "logic/cards/Tracking.h"
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
 
@@ -106,9 +108,21 @@ std::optional<GuiElementId> GameGui::clicked_element() const
 {
     const auto position = GetMousePosition();
 
-    for(const auto& element: elements_)
-        if(scale(element->base_area).CheckCollision(position))
-            return element->id();
+    if(is_in_discover_mode)
+    {
+        for(const auto& element: elements_)
+        {
+            auto id = element->id();
+            if(scale(element->base_area).CheckCollision(position) && std::holds_alternative<GuiElementDiscover>(id))
+                return id;
+        }
+    }
+    else
+    {
+        for(const auto& element: elements_)
+            if(scale(element->base_area).CheckCollision(position))
+                return element->id();
+    }
     return std::nullopt;
 }
 
@@ -120,6 +134,11 @@ void GameGui::make_active(const std::vector<std::deque<GuiElementId>> potential_
     for(const auto& sequence: potential_sequences)
     {
         if(sequence.empty())
+            continue;
+
+        if(std::holds_alternative<GuiElementDiscover>(sequence.front()))
+            is_in_discover_mode = true;
+        else if(is_in_discover_mode)
             continue;
 
         auto matching_element = std::ranges::find_if(elements_, [&sequence](const auto& element) {
@@ -154,7 +173,8 @@ GameGui::GameGui(
     window_(window), is_bot_first_(rng.uniform_int(0, 1)), is_turn_started_(false),
     player_logic_(new GuiPlayerLogic(*player_deck, *this, rng)),
     bot_logic_(new EvoPlayerLogic<Network>(*bot_deck, bot_logic_file, rng)),
-    game_(*player_deck, *bot_deck, rng, is_bot_first_), winner_(game_.check_winner()), current_turn_(1)
+    game_(*player_deck, *bot_deck, rng, is_bot_first_), winner_(game_.check_winner()), current_turn_(1),
+    is_in_discover_mode(false)
 {
     for(bool is_player_side: {false, true})
     {
@@ -184,6 +204,11 @@ GameGui::GameGui(
     elements_.push_back(
         std::make_unique<EOTElement>(*this, HERO_WIDTH + ALL_ENTITIES_WIDTH, DECK_HEIGHT, EOT_WIDTH, EOT_HEIGHT)
     );
+    for(unsigned discover_id = 0; discover_id < Tracking::CHOICES; ++discover_id)
+        elements_.push_back(std::make_unique<DiscoverElement>(
+            *this, 0.5f - (3.f - 2.f * discover_id) * CARD_WIDTH, 0.5f - ENTITY_HEIGHT, 2.f * CARD_WIDTH,
+            2.f * ENTITY_HEIGHT, discover_id, game_
+        ));
 }
 
 GameResult GameGui::run()

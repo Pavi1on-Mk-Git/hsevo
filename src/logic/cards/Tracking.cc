@@ -16,7 +16,7 @@ std::vector<Game> Tracking::on_play(const Game& prev_state, const std::vector<On
 
     if(!top_cards.first.empty())
     {
-        const auto chosen_card = std::get<unsigned>(args.at(0));
+        const auto chosen_card = std::get<unsigned>(args.at(1));
 
         game.current_player().hand.add_cards(top_cards.first.at(chosen_card));
     }
@@ -40,9 +40,9 @@ std::vector<std::unique_ptr<PlayCardAction>> Tracking::create_play_actions(const
         play_self_actions.push_back(std::make_unique<PlaySpellAction>(hand_position, mana_cost));
     else
         for(unsigned chosen_card = 0; chosen_card < card_choices; ++chosen_card)
-            play_self_actions.push_back(
-                std::make_unique<PlaySpellAction>(hand_position, mana_cost, std::vector<OnPlayArg>{chosen_card})
-            );
+            play_self_actions.push_back(std::make_unique<PlaySpellAction>(
+                hand_position, mana_cost, std::vector<OnPlayArg>{Discover{}, chosen_card}
+            ));
 
     return play_self_actions;
 }

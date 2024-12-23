@@ -10,10 +10,6 @@
 
 int main()
 {
-    const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-    Rng rng(seed);
-    SPDLOG_DEBUG("Game played with seed: {}", seed);
-
     raylib::Window window(1280, 720);
     window.SetTargetFPS(60);
 
@@ -26,6 +22,11 @@ int main()
 
     DeckSelection selection(window, decklists, logic_files);
     auto [player_deck, bot_deck, bot_logic_file] = selection.run();
+
+    const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    Rng rng(seed);
+    SPDLOG_INFO("Game played with seed: {}", seed);
+
     GameGui gui(window, player_deck, bot_deck, *bot_logic_file, rng);
     gui.run();
 }

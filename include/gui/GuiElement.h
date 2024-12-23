@@ -22,7 +22,7 @@ protected:
 
     GuiElement(const GameGui& gui, float x, float y, float width, float height, bool is_player_side);
     void draw_bg_only(const raylib::Color& background_colour = BG_COLOUR) const;
-    void draw_border() const;
+    virtual void draw_border() const;
     void draw_empty(const raylib::Color& background_colour = BG_COLOUR) const;
     void draw_text(
         const std::string& txt, float text_height, const raylib::Rectangle& rectangle, float offset_multiplier = 0.f

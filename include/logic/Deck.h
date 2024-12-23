@@ -19,6 +19,7 @@ public:
     void shuffle(Rng& rng);
     std::pair<std::vector<HandCard>, unsigned> draw(unsigned amount);
     unsigned size() const;
+    const Card* const& peek(unsigned position) const;
 };
 
 #endif

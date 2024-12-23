@@ -12,10 +12,12 @@ GuiElementId HeroElement::id() const
 }
 
 static const float HERO_TEXT_HEIGHT_RATIO = 0.15f;
+static const raylib::Color SECRET_COLOUR = LIGHTGRAY;
 
 void HeroElement::draw_(const Game& game) const
 {
-    const auto& hero = to_draw(game).hero;
+    const auto& player = to_draw(game);
+    const auto& hero = player.hero;
 
     auto hero_rect = scaled_rect();
     const float text_height = scaled_height(HERO_TEXT_HEIGHT_RATIO);
@@ -41,4 +43,9 @@ void HeroElement::draw_(const Game& game) const
 
     health_rect.Draw(HEALTH_COLOUR);
     draw_text(std::to_string(hero->health), text_height, health_rect);
+
+    const raylib::Rectangle secret_rect({hero_rect.x, hero_rect.y}, stat_rect_size);
+
+    secret_rect.Draw(SECRET_COLOUR);
+    draw_text(std::to_string(player.secrets.size()), text_height, secret_rect);
 }

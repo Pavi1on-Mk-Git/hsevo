@@ -315,7 +315,7 @@ void Game::change_minion_side(unsigned player_id, unsigned position)
     opposite_board.add_minion(minion, opposite_board.minion_count());
 }
 
-HeroInput Game::get_hero_state(unsigned player_index) const
+PlayerInput Game::get_hero_state(unsigned player_index) const
 {
     const auto& player = players.at(player_index);
     const auto& hero = player.hero;
@@ -343,8 +343,8 @@ HeroInput Game::get_hero_state(unsigned player_index) const
     for(auto& minion_hero: minion_heros | std::views::drop(board_size))
         minion_hero = MinionStateInput{};
 
-    return HeroInput{hero_hero,  minion_heros, player.hand.size(),
-                     board_size, player.mana,  static_cast<unsigned>(player.secrets.size())};
+    return PlayerInput{hero_hero,  minion_heros, player.hand.size(),
+                       board_size, player.mana,  static_cast<unsigned>(player.secrets.size())};
 }
 
 GameStateInput Game::get_state() const

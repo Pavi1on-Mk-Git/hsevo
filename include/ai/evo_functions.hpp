@@ -9,6 +9,16 @@
 #include "players/EvoPlayerLogic.hpp"
 #include "utils/Rng.h"
 
+/**
+ * Compute scores for the provided populations
+ *
+ * @tparam Evo Evolutionary algorithm used
+ * @tparam Count Population count
+ * @param populations Populations to compute scores for
+ * @param decklists Decklists used by members of populations
+ * @param rng Source of randomness
+ * @return Vector of computed scores for each population provided
+ */
 template <typename Evo, unsigned Count>
 std::array<std::vector<unsigned>, Count> score_populations(
     const std::array<std::vector<Evo>, Count>& populations, const std::array<Decklist, Count>& decklists, Rng& rng
@@ -61,6 +71,16 @@ std::array<std::vector<unsigned>, Count> score_populations(
     return scores;
 }
 
+/**
+ * Compute score of a contender against the hall of champions
+ *
+ * @tparam Evolutionary algorithm used
+ * @param champions A vector of champions to compare the contender against
+ * @param contender Specimen to be compared against the hall of champions
+ * @param decklist The decklist used by the contender and all of the champions
+ * @param rng Source of randomness
+ * @return Score of the contender. If no champions were provided defaults to 1
+ */
 template <typename Evo>
 unsigned score_hall_of_champions(
     const std::vector<Evo>& champions, const Evo& contender, const Decklist& decklist, Rng& rng

@@ -6,7 +6,7 @@
 
 #include "utils/Rng.h"
 
-void NEAT::speciate(double similarity_threshold, double excess_coeff, double disjoint_coeff, double weight_coeff)
+void NEAT::speciate()
 {
     for(auto [genome_id, genome, genome_species]: std::views::zip(std::views::iota(0), population_, genome_to_species_))
     {
@@ -14,7 +14,8 @@ void NEAT::speciate(double similarity_threshold, double excess_coeff, double dis
         for(auto [species_id, species, representative]:
             std::views::zip(std::views::iota(0), species_, representatives_))
         {
-            if(genome.similarity(representative, excess_coeff, disjoint_coeff, weight_coeff) < similarity_threshold)
+            if(genome.similarity(representative, config_.excess_coeff, config_.disjoint_coeff, config_.weight_coeff) <
+               config_.similarity_threshold)
             {
                 species.push_back(genome_id);
                 genome_species = species_id;
@@ -67,11 +68,9 @@ void NEAT::calculate_species_bounds()
     }
 }
 
-std::optional<Genome> NEAT::crossover(
-    const Species& species, unsigned bound, double crossover_prob, double inherit_connection_disabled_prob
-)
+std::optional<Genome> NEAT::crossover(const Species& species, unsigned bound)
 {
-    if(rng_.uniform_real() < crossover_prob && bound > 0)
+    if(rng_.uniform_real() < config_.crossover_prob && bound > 0)
     {
         const unsigned first_parent_id = species.at(rng_.uniform_int(0, bound - 1));
         const Genome& first_parent = population_.at(first_parent_id);
@@ -82,17 +81,14 @@ std::optional<Genome> NEAT::crossover(
         const double second_parent_score = adjusted_scores_.at(second_parent_id);
 
         return Genome::crossover(
-            first_parent, first_parent_score, second_parent, second_parent_score, inherit_connection_disabled_prob, rng_
+            first_parent, first_parent_score, second_parent, second_parent_score,
+            config_.inherit_connection_disabled_prob, rng_
         );
     }
     return std::nullopt;
 }
 
-void NEAT::offspring(
-    double weight_mutation_prob, double add_node_mutation_prob, double add_connection_prob,
-    double weight_perturbation_prob, double mutation_strength, double crossover_prob,
-    double inherit_connection_disabled_prob
-)
+void NEAT::offspring()
 {
     for(auto [species, bound]: std::views::zip(species_, species_bounds_))
     {
@@ -102,22 +98,22 @@ void NEAT::offspring(
         for(unsigned old_genome_id: species | std::views::take(bound))
             population_.at(old_genome_id)
                 .mutate(
-                    weight_mutation_prob, add_node_mutation_prob, add_connection_prob, weight_perturbation_prob,
-                    mutation_strength
+                    config_.weight_mutation_prob, config_.add_node_mutation_prob, config_.add_connection_prob,
+                    config_.weight_perturbation_prob, config_.mutation_strength
                 );
 
         for(unsigned new_genome_id: species | std::views::drop(bound))
         {
             Genome& to_replace = population_.at(new_genome_id);
 
-            auto new_genome = crossover(species, bound, crossover_prob, inherit_connection_disabled_prob);
+            auto new_genome = crossover(species, bound);
 
             if(new_genome)
                 to_replace = *new_genome;
 
             to_replace.mutate(
-                weight_mutation_prob, add_node_mutation_prob, add_connection_prob, weight_perturbation_prob,
-                mutation_strength
+                config_.weight_mutation_prob, config_.add_node_mutation_prob, config_.add_connection_prob,
+                config_.weight_perturbation_prob, config_.mutation_strength
             );
         }
     }
@@ -153,15 +149,15 @@ NEAT::NEAT(const NEATConfig& config, Rng& rng): config_(config), rng_(rng)
     genome_to_species_.resize(config.population_size);
 
     cleanup_species();
-    get_networks(config.activation);
+    get_networks();
 }
 
-void NEAT::get_networks(const ActivationFunc& activation)
+void NEAT::get_networks()
 {
     networks_.clear();
 
-    std::ranges::transform(population_, std::back_inserter(networks_), [&activation](const auto& genome) {
-        return Network(genome, activation);
+    std::ranges::transform(population_, std::back_inserter(networks_), [&](const auto& genome) {
+        return Network(genome, config_.activation);
     });
 }
 
@@ -180,15 +176,11 @@ std::pair<Network, unsigned> NEAT::assign_scores(const std::vector<unsigned>& sc
 
 void NEAT::epoch()
 {
-    speciate(config_.weight_coeff, config_.excess_coeff, config_.disjoint_coeff, config_.weight_coeff);
+    speciate();
     adjust_scores();
     sort_species();
     calculate_species_bounds();
-    offspring(
-        config_.weight_mutation_prob, config_.add_node_mutation_prob, config_.add_connection_prob,
-        config_.weight_perturbation_prob, config_.mutation_strength, config_.crossover_prob,
-        config_.inherit_connection_disabled_prob
-    );
+    offspring();
     cleanup_species();
-    get_networks(config_.activation);
+    get_networks();
 }

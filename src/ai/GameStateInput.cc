@@ -5,7 +5,7 @@
 std::array<std::array<double, GameStateInput::INPUT_SIZE>, 2> GameStateInput::get_evo_input() const
 {
     std::array<std::array<double, INPUT_SIZE>, 2> result;
-    std::ranges::transform(players, result.begin(), [](const HeroInput& player) {
+    std::ranges::transform(players, result.begin(), [](const PlayerInput& player) {
         std::array<double, INPUT_SIZE> result_element;
         auto result_element_it = result_element.begin();
         auto add_to_element = [&](double value) { *result_element_it++ = value; };

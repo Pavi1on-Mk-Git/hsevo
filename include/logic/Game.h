@@ -28,7 +28,7 @@ private:
     std::vector<Game> trigger_on_death() const;
     std::vector<Game> trigger_end_of_turn() const;
 
-    HeroInput get_hero_state(unsigned player_index) const;
+    PlayerInput get_hero_state(unsigned player_index) const;
 public:
     std::array<Player, 2> players;
     bool turn_ended;

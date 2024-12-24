@@ -8,5 +8,6 @@ std::vector<Game> Flare::on_play(const Game& prev_state, const std::vector<OnPla
     auto& game = resulting_states.at(0);
 
     game.opponent().secrets.clear();
+    game.draw();
     return resulting_states;
 }

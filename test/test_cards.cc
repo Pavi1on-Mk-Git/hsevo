@@ -1326,6 +1326,7 @@ TEST_CASE("Flare")
     auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
     REQUIRE(new_state.opponent().secrets.empty());
+    REQUIRE(new_state.current_player().hand.size() == 3);
 }
 
 TEST_CASE("Eaglehorn Bow")

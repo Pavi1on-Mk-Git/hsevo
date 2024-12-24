@@ -6,7 +6,7 @@
 class Wolfrider: public MinionCard
 {
 private:
-    Wolfrider(): MinionCard("Wolfrider", 1, 3, 1, CHARGE) {}
+    Wolfrider(): MinionCard("Wolfrider", 3, 3, 1, CHARGE) {}
 public:
     static const Wolfrider instance;
 };

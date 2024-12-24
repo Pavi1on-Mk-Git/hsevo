@@ -2,21 +2,22 @@
 
 #include <algorithm>
 
-SimpleEvo::SimpleEvo(unsigned mu, unsigned lambda, double init_mutation_strength, Rng& rng):
-    rng_(rng), mu_(mu), lambda_(lambda)
+SimpleEvo::SimpleEvo(const EvoConfig& config, Rng& rng): rng_(rng), config_(config)
 {
-    population_.reserve(mu);
-    std::generate_n(std::back_inserter(population_), mu, [&]() { return EvoSpecimen(init_mutation_strength, rng); });
+    population_.reserve(config_.mu);
+    std::generate_n(std::back_inserter(population_), config_.mu, [&]() {
+        return EvoSpecimen(config_.init_mutation_strength, rng);
+    });
 }
 
 void SimpleEvo::mutate()
 {
     std::vector<EvoSpecimen> mutants;
-    mutants.reserve(mu_ + lambda_);
+    mutants.reserve(config_.mu + config_.lambda);
 
-    for(unsigned mutant_id = 0; mutant_id < lambda_; ++mutant_id)
+    for(unsigned mutant_id = 0; mutant_id < config_.lambda; ++mutant_id)
     {
-        const unsigned to_mutate = rng_.uniform_int(0, mu_ - 1);
+        const unsigned to_mutate = rng_.uniform_int(0, config_.mu - 1);
         auto mutant = population_.at(to_mutate);
         mutant.mutate();
         mutants.push_back(mutant);
@@ -41,7 +42,7 @@ std::pair<EvoSpecimen, unsigned> SimpleEvo::assign_scores(const std::vector<unsi
 void SimpleEvo::epoch()
 {
     std::vector<std::pair<EvoSpecimen, unsigned>> mutants_with_scores;
-    mutants_with_scores.reserve(mu_ + lambda_);
+    mutants_with_scores.reserve(config_.mu + config_.lambda);
 
     std::ranges::transform(
         population_, scores_, std::back_inserter(mutants_with_scores),
@@ -49,7 +50,7 @@ void SimpleEvo::epoch()
     );
 
     std::ranges::nth_element(
-        mutants_with_scores.begin(), mutants_with_scores.begin() + mu_, mutants_with_scores.end(),
+        mutants_with_scores.begin(), mutants_with_scores.begin() + config_.mu, mutants_with_scores.end(),
         [](const auto& fst, const auto& snd) { return fst.second < snd.second; }
     );
 
@@ -57,7 +58,7 @@ void SimpleEvo::epoch()
     scores_.clear();
 
     std::ranges::transform(
-        mutants_with_scores.begin(), mutants_with_scores.begin() + mu_, std::back_inserter(population_),
+        mutants_with_scores.begin(), mutants_with_scores.begin() + config_.mu, std::back_inserter(population_),
         [](const auto& member_with_score) { return member_with_score.first; }
     );
 

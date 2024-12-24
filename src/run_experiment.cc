@@ -196,7 +196,7 @@ void run_experiment(
         oarchive << parameters.at(std::ranges::max_element(total_score_vec) - total_score_vec.begin());
 }
 
-int main()
+void run_experiment_neat()
 {
     using enum ActivationFuncType;
 
@@ -319,4 +319,9 @@ int main()
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.crossover_prob; }
         )
     );
+}
+
+int main()
+{
+    run_experiment_neat();
 }

@@ -1,6 +1,7 @@
 #ifndef SIMPLE_EVO_H
 #define SIMPLE_EVO_H
 
+#include "ai/EvoConfig.h"
 #include "ai/EvoSpecimen.hpp"
 
 /**
@@ -15,14 +16,9 @@ private:
     Rng& rng_;
 
     /**
-     * Population size
+     * Algorithm configuration
      */
-    unsigned mu_;
-
-    /**
-     * Mutant population size
-     */
-    unsigned lambda_;
+    const EvoConfig config_;
 
     /**
      * Current population
@@ -47,7 +43,7 @@ public:
      * @param init_mutation_strength Initial mutation strength
      * @param rng Source of randomness
      */
-    SimpleEvo(unsigned mu, unsigned lambda, double init_mutation_strength, Rng& rng);
+    SimpleEvo(const EvoConfig& config, Rng& rng);
 
     /**
      * Return specimen for the current population

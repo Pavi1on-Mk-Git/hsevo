@@ -8,6 +8,7 @@ SimpleEvo::SimpleEvo(const EvoConfig& config, Rng& rng): rng_(rng), config_(conf
     std::generate_n(std::back_inserter(population_), config_.mu, [&]() {
         return EvoSpecimen(config_.init_mutation_strength, rng);
     });
+    get_scorers();
 }
 
 void SimpleEvo::mutate()
@@ -26,9 +27,18 @@ void SimpleEvo::mutate()
     std::ranges::move(mutants, std::back_inserter(population_));
 }
 
-const std::vector<EvoSpecimen>& SimpleEvo::get_population() const
+void SimpleEvo::get_scorers()
 {
-    return population_;
+    scorers_.clear();
+
+    std::ranges::transform(population_, std::back_inserter(scorers_), [](const auto& specimen) {
+        return EvoScorer(specimen);
+    });
+}
+
+const std::vector<EvoScorer>& SimpleEvo::get_population() const
+{
+    return scorers_;
 }
 
 std::pair<EvoSpecimen, unsigned> SimpleEvo::assign_scores(const std::vector<unsigned>& scores)
@@ -63,4 +73,5 @@ void SimpleEvo::epoch()
     );
 
     mutate();
+    get_scorers();
 }

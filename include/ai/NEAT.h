@@ -108,9 +108,7 @@ private:
     void cleanup_species();
 
     /**
-     * Create neural networks from the population and provided activation function
-     *
-     * @param activation Activation function to use
+     * Create neural networks from the population
      */
     void get_networks();
 public:

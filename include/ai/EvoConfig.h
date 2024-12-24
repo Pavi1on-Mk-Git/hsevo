@@ -25,6 +25,12 @@ struct EvoConfig
      * @return Name of the configuration
      */
     std::string name() const;
+
+    /**
+     * Get default configuration
+     * @return Configuration filled with default values
+     */
+    static EvoConfig default_config();
 };
 
 #endif

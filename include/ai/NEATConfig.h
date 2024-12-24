@@ -80,12 +80,12 @@ struct NEATConfig
      * @return Name of the configuration
      */
     std::string name() const;
-};
 
-/**
- * Get default configuration
- * @return Configuration filled with default values
- */
-NEATConfig default_config();
+    /**
+     * Get default configuration
+     * @return Configuration filled with default values
+     */
+    static NEATConfig default_config();
+};
 
 #endif

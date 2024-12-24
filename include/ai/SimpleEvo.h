@@ -2,7 +2,8 @@
 #define SIMPLE_EVO_H
 
 #include "ai/EvoConfig.h"
-#include "ai/EvoSpecimen.hpp"
+#include "ai/EvoScorer.hpp"
+#include "ai/EvoSpecimen.h"
 
 /**
  * Simple evolutionary algorithm
@@ -31,9 +32,19 @@ private:
     std::vector<unsigned> scores_;
 
     /**
+     * Score computers created from members of the population
+     */
+    std::vector<EvoScorer> scorers_;
+
+    /**
      * Mutate the population
      */
     void mutate();
+
+    /**
+     * Create score computers from the population
+     */
+    void get_scorers();
 public:
     /**
      * Construct an instance of evolutionary algorithm
@@ -50,7 +61,7 @@ public:
      *
      * @return Vector of specimen
      */
-    const std::vector<EvoSpecimen>& get_population() const;
+    const std::vector<EvoScorer>& get_population() const;
 
     /**
      * Assign scores to current population

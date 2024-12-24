@@ -26,7 +26,7 @@ std::string NEATConfig::name() const
     return name_stream.str();
 }
 
-NEATConfig default_config()
+NEATConfig NEATConfig::default_config()
 {
     return NEATConfig{
         .population_size = 20,

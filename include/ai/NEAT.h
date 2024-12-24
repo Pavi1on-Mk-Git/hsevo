@@ -127,7 +127,7 @@ public:
      *
      * @return Vector of neural networks
      */
-    const std::vector<Network>& networks() const;
+    const std::vector<Network>& get_population() const;
 
     /**
      * Assign scores to current population

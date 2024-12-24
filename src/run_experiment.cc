@@ -37,7 +37,7 @@ void single_seed_experiment(
     {
         std::array<std::vector<Network>, DECK_COUNT> iteration_networks;
         std::ranges::transform(populations, iteration_networks.begin(), [](const NEAT& neat) {
-            return neat.networks();
+            return neat.get_population();
         });
         std::array<std::optional<std::pair<Network, unsigned>>, DECK_COUNT> iteration_bests;
 

@@ -161,7 +161,7 @@ void NEAT::get_networks()
     });
 }
 
-const std::vector<Network>& NEAT::networks() const
+const std::vector<Network>& NEAT::get_population() const
 {
     return networks_;
 }

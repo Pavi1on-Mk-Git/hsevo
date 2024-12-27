@@ -17,7 +17,7 @@ enum class ActivationFuncType
 };
 
 /**
- * Class representing an activation function of a given type
+ * Represents an activation function of a given type
  */
 class ActivationFunc
 {

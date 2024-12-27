@@ -62,7 +62,7 @@ private:
     void draw();
 public:
     /**
-     * Construct a deck selection screen using provided parameters
+     * Construct a deck selection screen
      * @param window Window to draw the screen in
      * @param decklists Decklists the player may choose from
      * @param logic_files Bot logic files associated with provided decklists

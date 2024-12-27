@@ -3,6 +3,9 @@
 
 #include "logic/cards/MinionCard.h"
 
+/**
+ * Base class for all minion cards who need to know their target when played and their target is a minion
+ */
 class SingleArgTargetMinionMinionCard: public MinionCard
 {
 protected:

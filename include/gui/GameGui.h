@@ -93,7 +93,7 @@ public:
     bool is_in_discover_mode;
 
     /**
-     * Construct a game gui using provided parameters
+     * Construct a game gui
      * @param window Window in which the game will be drawn
      * @param player_deck Deck which will be used by the player
      * @param bot_deck Deck which will be used by the bot

@@ -16,11 +16,20 @@ struct overloaded: Ts...
     using Ts::operator()...;
 };
 
+/**
+ * Marker which shows that the next argument refers to a discovered card
+ */
 struct Discover
 {};
 
 using OnPlayArg = std::variant<unsigned, TargetType, Discover>;
 
+/**
+ * Return a sequence of gui elements which if clicked in the provided order would be equivalent to the specified
+ * arguments
+ * @param args Arguments to convert into an element sequence
+ * @return Sequence of elements
+ */
 std::deque<GuiElementId> get_element_sequence(const std::vector<OnPlayArg>& args);
 
 template <>

@@ -3,6 +3,9 @@
 
 #include "logic/cards/Card.h"
 
+/**
+ * Base class for all cards who need to know their target when played
+ */
 class SingleArgTargetCard: public Card
 {
 protected:

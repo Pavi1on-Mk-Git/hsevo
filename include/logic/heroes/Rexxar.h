@@ -8,7 +8,7 @@ struct Rexxar: public Hero
     Rexxar(): Hero("Rexxar", "Steady Shot", 2, 30) {}
 
     std::unique_ptr<Hero> clone() const override;
-    void on_hero_power_use(Game& game, const std::vector<OnPlayArg>& args) override;
+    void on_hero_power_use(Game& game) override;
 };
 
 #endif

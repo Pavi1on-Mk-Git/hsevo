@@ -4,8 +4,6 @@
 
 #include "logic/Game.h"
 
-HeroPowerAction::HeroPowerAction(const std::vector<OnPlayArg>& args): args(args) {}
-
 std::vector<Game> HeroPowerAction::apply(const Game& game) const
 {
     SPDLOG_INFO("Player has used their hero power");
@@ -19,9 +17,5 @@ std::vector<Game> HeroPowerAction::test_apply(const Game& game) const
 
 std::deque<GuiElementId> HeroPowerAction::element_sequence() const
 {
-    std::deque<GuiElementId> sequence;
-    sequence.emplace_back(std::make_pair(GuiElementIdType::HERO_POWER, true));
-    auto args_sequence = get_element_sequence(args);
-    std::ranges::move(args_sequence, std::back_inserter(sequence));
-    return sequence;
+    return {std::make_pair(GuiElementIdType::HERO_POWER, true)};
 }

@@ -24,13 +24,6 @@ void Hero::deal_dmg(unsigned amount, Game&)
         armour -= amount;
 }
 
-std::vector<std::unique_ptr<HeroPowerAction>> Hero::create_hero_power_use_actions(const Game&)
-{
-    std::vector<std::unique_ptr<HeroPowerAction>> actions;
-    actions.push_back(std::make_unique<HeroPowerAction>());
-    return actions;
-}
-
 void Hero::fatigue(unsigned count)
 {
     health -= count * (2 * fatigue_dmg_ + count + 1) / 2; // sum of an arithmetic sequence

@@ -3,6 +3,10 @@
 
 #include "logic/cards/Card.h"
 
+/**
+ * Base class for all cards who need to know their target when played and whose target is a friendly
+ * minion
+ */
 class SingleArgTargetFriendlyMinionCard: public Card
 {
 protected:

@@ -29,7 +29,7 @@ private:
     mutable std::deque<GuiElementId> click_sequence_;
 public:
     /**
-     * Construct a player logic using provided parameters
+     * Construct a player logic
      * @param decklist Decklist used by the player
      * @param rng Source of randomness
      */

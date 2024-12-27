@@ -9,7 +9,7 @@ std::unique_ptr<Hero> GarroshHellscream::clone() const
 
 const unsigned ARMOUR_UP_ARMOR = 2;
 
-void GarroshHellscream::on_hero_power_use(Game& game, const std::vector<OnPlayArg>&)
+void GarroshHellscream::on_hero_power_use(Game& game)
 {
     game.current_player().hero->armour += ARMOUR_UP_ARMOR;
 }

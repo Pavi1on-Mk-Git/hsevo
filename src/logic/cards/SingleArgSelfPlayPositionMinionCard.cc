@@ -1,8 +1,8 @@
-#include "logic/cards/SingleArgSelfPlayPositionCard.h"
+#include "logic/cards/SingleArgSelfPlayPositionMinionCard.h"
 
 #include "logic/Game.h"
 
-std::vector<std::unique_ptr<PlayCardAction>> SingleArgSelfPlayPositionCard::create_play_actions(
+std::vector<std::unique_ptr<PlayCardAction>> SingleArgSelfPlayPositionMinionCard::create_play_actions(
     const Game& game, unsigned hand_position
 ) const
 {

@@ -2,10 +2,9 @@
 
 #include "logic/Game.h"
 
-Minion::Minion(const MinionCard* card, Game& game, unsigned player_id):
-    Entity(card->name, card->base_health, card->tribe), card(card), attack(card->base_attack),
-    id(game.next_minion_id()), player_id(player_id), active(card->keywords & CHARGE), will_die_horribly(false),
-    keywords(card->keywords)
+Minion::Minion(const MinionCard* card, unsigned id, unsigned player_id):
+    Entity(card->name, card->base_health, card->tribe), card(card), attack(card->base_attack), id(id),
+    player_id(player_id), active(card->keywords & CHARGE), will_die_horribly(false), keywords(card->keywords)
 {}
 
 void Minion::restore_health(unsigned amount)

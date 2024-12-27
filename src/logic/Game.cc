@@ -106,10 +106,7 @@ std::vector<std::unique_ptr<Action>> Game::get_possible_actions() const
     auto& current_hero = current_player().hero;
 
     if(current_hero->hero_power_active && current_player().mana >= current_hero->hero_power_mana_cost)
-    {
-        auto hero_power_actions = current_player().hero->create_hero_power_use_actions(*this);
-        std::ranges::move(hero_power_actions, std::back_inserter(possible_actions));
-    }
+        possible_actions.push_back(std::make_unique<HeroPowerAction>());
 
     possible_actions.push_back(std::make_unique<EndTurnAction>());
 
@@ -263,7 +260,7 @@ void Game::add_minion(const MinionCard* card, unsigned position, unsigned player
     if(board.minion_count() >= Board::MAX_BOARD_SIZE)
         return;
 
-    auto added_minion = Minion(card, *this, player_id);
+    auto added_minion = Minion(card, next_minion_id(), player_id);
 
     added_minion.on_summon(*this);
 
@@ -315,7 +312,7 @@ void Game::change_minion_side(unsigned player_id, unsigned position)
     opposite_board.add_minion(minion, opposite_board.minion_count());
 }
 
-PlayerInput Game::get_hero_state(unsigned player_index) const
+PlayerInput Game::get_player_state(unsigned player_index) const
 {
     const auto& player = players.at(player_index);
     const auto& hero = player.hero;
@@ -349,7 +346,7 @@ PlayerInput Game::get_hero_state(unsigned player_index) const
 
 GameStateInput Game::get_state() const
 {
-    return GameStateInput{{get_hero_state(active_player_), get_hero_state(1 - active_player_)}};
+    return GameStateInput{{get_player_state(active_player_), get_player_state(1 - active_player_)}};
 }
 
 std::vector<Game> Game::do_action(const EndTurnAction&) const
@@ -520,7 +517,7 @@ std::vector<Game> Game::do_action(const FightAction& action) const
     return resulting_states;
 }
 
-std::vector<Game> Game::do_action(const HeroPowerAction& action) const
+std::vector<Game> Game::do_action(const HeroPowerAction&) const
 {
     std::vector<Game> resulting_states{*this};
     auto& game = resulting_states.at(0);
@@ -528,7 +525,7 @@ std::vector<Game> Game::do_action(const HeroPowerAction& action) const
     game.current_player().mana -= current_player().hero->hero_power_mana_cost;
     game.current_player().hero->hero_power_active = false;
 
-    game.current_player().hero->on_hero_power_use(game, action.args);
+    game.current_player().hero->on_hero_power_use(game);
 
     return resulting_states;
 }

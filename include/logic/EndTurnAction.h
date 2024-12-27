@@ -3,6 +3,9 @@
 
 #include "logic/Action.h"
 
+/**
+ * Action of ending a player's turn
+ */
 struct EndTurnAction: Action
 {
     std::vector<Game> apply(const Game& game) const override;

@@ -47,7 +47,7 @@ protected:
     const bool is_player_side_;
 
     /**
-     * Construct a gui element using provided parameters
+     * Construct a gui element
      * @param gui Gui containing the element
      * @param x Horizontal position of the element
      * @param y Vertical position of the element

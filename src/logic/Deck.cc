@@ -7,11 +7,6 @@ Deck::Deck(const DecklistDeck& decklist, Rng& rng)
     for(const auto& [card, amount]: decklist)
         for(unsigned i = 0; i < amount; ++i)
             deck_.push_back(card);
-    shuffle(rng);
-}
-
-void Deck::shuffle(Rng& rng)
-{
     std::ranges::shuffle(deck_, rng.generator());
 }
 

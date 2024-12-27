@@ -1,6 +1,9 @@
 #ifndef MINION_KEYWORDS_H
 #define MINION_KEYWORDS_H
 
+/**
+ * Possible keywords which a minion card may have
+ */
 enum MinionKeywords
 {
     NO_KEYWORDS = 0,

@@ -12,8 +12,8 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 2;
-static const unsigned ITERATIONS = 2;
+static const unsigned SEED_COUNT = 30;
+static const unsigned ITERATIONS = 1000;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 template <typename Algo, typename Evo, typename Config>
@@ -364,5 +364,5 @@ void run_experiment_simple_evo()
 
 int main()
 {
-    run_experiment_simple_evo();
+    run_experiment_neat();
 }

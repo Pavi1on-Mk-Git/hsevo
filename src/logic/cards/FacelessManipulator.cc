@@ -7,17 +7,20 @@ std::vector<Game> FacelessManipulator::on_play(const Game& prev_state, const std
     std::vector<Game> resulting_states{prev_state};
     auto& game = resulting_states.at(0);
 
-    const auto position_played = std::get<unsigned>(args.at(0));
-    const auto target_position = std::get<unsigned>(args.at(2));
+    if(!args.empty())
+    {
+        const auto position_played = std::get<unsigned>(args.at(0));
+        const auto target_position = std::get<unsigned>(args.at(2));
 
-    auto& board = game.current_player().board;
-    auto& faceless = board.get_minion(position_played);
-    unsigned faceless_id = faceless.id;
+        auto& board = game.current_player().board;
+        auto& faceless = board.get_minion(position_played);
+        unsigned faceless_id = faceless.id;
 
-    board.transform_minion(board.get_minion(target_position), position_played);
+        board.transform_minion(board.get_minion(target_position), position_played);
 
-    faceless.active = faceless.keywords & MinionKeywords::CHARGE;
-    faceless.id = faceless_id;
+        faceless.active = faceless.keywords & MinionKeywords::CHARGE;
+        faceless.id = faceless_id;
+    }
 
     return resulting_states;
 }
@@ -46,6 +49,10 @@ std::vector<std::unique_ptr<PlayCardAction>> FacelessManipulator::create_play_ac
                 std::vector<OnPlayArg>{board_position, ALLY_MINION, target_position}
             ));
         }
+
+    if(play_self_actions.empty())
+        for(unsigned board_position = 0; board_position <= current_minion_count; ++board_position)
+            play_self_actions.push_back(std::make_unique<PlayMinionAction>(hand_position, mana_cost, board_position));
 
     return play_self_actions;
 }

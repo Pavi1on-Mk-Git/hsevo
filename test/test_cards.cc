@@ -715,6 +715,13 @@ TEST_CASE("Faceless Manipulator")
     Game game(decklist, decklist, rng);
 
     game.current_player().mana = 5;
+
+    SECTION("No target")
+    {
+        auto actions = game.get_possible_actions();
+        REQUIRE(actions.size() == 3);
+    }
+
     game.add_minion(&BoulderfistOgre::instance, 0);
     game.current_player().board.get_minion(0).active = true;
 

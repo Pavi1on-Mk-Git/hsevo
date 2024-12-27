@@ -3,6 +3,9 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing hero's weapon
+ */
 class WeaponElement: public GuiElement
 {
 private:

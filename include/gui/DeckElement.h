@@ -3,6 +3,9 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing a card deck
+ */
 class DeckElement: public GuiElement
 {
 private:

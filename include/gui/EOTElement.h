@@ -3,6 +3,9 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element representing the end-of-turn button
+ */
 class EOTElement: public GuiElement
 {
 private:

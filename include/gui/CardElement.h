@@ -3,9 +3,15 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing a card
+ */
 class CardElement: public GuiElement
 {
 private:
+    /**
+     * Card's position in hand
+     */
     unsigned position_;
     void draw_(const Game& game) const override;
 public:

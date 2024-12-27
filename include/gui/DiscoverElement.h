@@ -3,10 +3,20 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing a card while using discover mechanic
+ */
 class DiscoverElement: public GuiElement
 {
 private:
+    /**
+     * Position of the card being discovered
+     */
     unsigned position_;
+
+    /**
+     * Reference to the game instance from which the discover data will be taken
+     */
     Game& game_;
     void draw_(const Game& game) const override;
     void draw_border() const override;

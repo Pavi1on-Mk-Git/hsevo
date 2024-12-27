@@ -3,6 +3,9 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing player's hero power
+ */
 class HeroPowerElement: public GuiElement
 {
 private:

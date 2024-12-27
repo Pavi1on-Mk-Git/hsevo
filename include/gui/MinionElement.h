@@ -3,9 +3,15 @@
 
 #include "gui/GuiElement.h"
 
+/**
+ * Gui element used for drawing a minion
+ */
 class MinionElement: public GuiElement
 {
 private:
+    /**
+     * Minion's position on the board
+     */
     unsigned position_;
     void draw_(const Game& game) const override;
 public:

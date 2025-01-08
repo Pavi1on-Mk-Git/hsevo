@@ -9,7 +9,10 @@ std::vector<Game> ArcaneGolem::on_play(const Game& prev_state, const std::vector
     std::vector<Game> resulting_states{prev_state};
     auto& game = resulting_states.at(0);
 
-    game.opponent().mana_crystals += ARCANE_GOLEM_MANA_INCREASE;
+    auto& opponent_mana = game.opponent().mana_crystals;
+
+    if(opponent_mana < Player::MAX_MANA)
+        opponent_mana += ARCANE_GOLEM_MANA_INCREASE;
 
     return resulting_states;
 }

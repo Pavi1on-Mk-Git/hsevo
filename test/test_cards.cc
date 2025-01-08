@@ -1014,11 +1014,23 @@ TEST_CASE("Arcane Golem")
     Decklist decklist("Test", std::move(hero), std::move(deck));
     Game game(decklist, decklist, rng);
 
-    game.current_player().mana = 4;
+    game.current_player().mana = 3;
 
-    auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+    SECTION("Normal use")
+    {
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
 
-    REQUIRE(new_state.opponent().mana_crystals == 1);
+        REQUIRE(new_state.opponent().mana_crystals == 1);
+    }
+
+    SECTION("Full mana use")
+    {
+        game.opponent().mana_crystals = 10;
+
+        auto new_state = game.get_possible_actions().at(0)->apply(game).at(0);
+
+        REQUIRE(new_state.opponent().mana_crystals == 10);
+    }
 }
 
 TEST_CASE("Kill Command")

@@ -65,6 +65,12 @@ private:
     std::vector<Game> trigger_end_of_turn() const;
 
     /**
+     * Return an id for the next minion which will be summoned
+     * @return Id of the new minion
+     */
+    unsigned next_minion_id();
+
+    /**
      * Get current state of the selected player
      * @param player_index Id of the selected player
      * @return Relevant state of the selected player
@@ -149,12 +155,6 @@ public:
      * @param amount Amount of cards to draw
      */
     void draw(unsigned amount = 1);
-
-    /**
-     * Return an id for the next minion which will be summoned
-     * @return Id of the new minion
-     */
-    unsigned next_minion_id();
 
     /**
      * Add minion specified in the provided card to the player

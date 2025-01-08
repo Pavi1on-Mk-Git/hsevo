@@ -21,6 +21,11 @@ private:
     std::reference_wrapper<Rng> rng_;
 
     /**
+     * Reverse mapping of a node to its layer
+     */
+    std::vector<unsigned> node_to_layer_;
+
+    /**
      * Compute the hash of a connection between two nodes
      *
      * @param from Id of the source node
@@ -86,11 +91,6 @@ public:
      * Mapping of a layer to a vector of nodes present in the layer
      */
     std::vector<std::pair<unsigned, std::vector<NodeId>>> layers;
-
-    /**
-     * Reverse mapping of a node to its layer
-     */
-    std::vector<unsigned> node_to_layer;
 
     /**
      * Mapping of connection hashes to connections

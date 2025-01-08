@@ -48,7 +48,7 @@ void Genome::add_node_to_layer(unsigned layer)
         new_layer.second.push_back(next_node_id++);
     }
 
-    node_to_layer.push_back(layer);
+    node_to_layer_.push_back(layer);
 }
 
 void Genome::mutate_weight(Connection& connection, double weight_perturbation_prob, double mutation_strength)
@@ -82,7 +82,7 @@ void Genome::mutate_add_node()
 
     add_connection(0, next_node_id, 0.);
 
-    add_node_to_layer(node_to_layer.at(from) + node_to_layer.at(to) / 2);
+    add_node_to_layer(node_to_layer_.at(from) + node_to_layer_.at(to) / 2);
 }
 
 void Genome::mutate_add_connection()
@@ -113,7 +113,7 @@ void Genome::mutate_add_connection()
 
 Genome::Genome(Rng& rng): rng_(rng), next_node_id(0)
 {
-    node_to_layer.reserve(GameStateInput::INPUT_SIZE + 1);
+    node_to_layer_.reserve(GameStateInput::INPUT_SIZE + 1);
 
     for(NodeId node_id = 0; node_id <= GameStateInput::INPUT_SIZE; ++node_id)
         add_node_to_layer(0);
@@ -132,7 +132,7 @@ Genome::Genome(
     NodeId next_node_id, const std::vector<std::pair<unsigned, std::vector<NodeId>>>& layers,
     const std::vector<unsigned>& node_to_layer, const std::vector<std::pair<ConnectionHash, Connection>>& connections,
     Rng& rng
-): rng_(rng), next_node_id(next_node_id), layers(layers), node_to_layer(node_to_layer), connections(connections)
+): rng_(rng), node_to_layer_(node_to_layer), next_node_id(next_node_id), layers(layers), connections(connections)
 {}
 
 double Genome::similarity(const Genome& other, double excess_coeff, double disjoint_coeff, double weight_coeff) const
@@ -235,5 +235,5 @@ Genome Genome::crossover(
         }
     }
 
-    return Genome(stronger.next_node_id, stronger.layers, stronger.node_to_layer, new_connections, rng);
+    return Genome(stronger.next_node_id, stronger.layers, stronger.node_to_layer_, new_connections, rng);
 }

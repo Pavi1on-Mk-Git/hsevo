@@ -10,7 +10,7 @@
 
 int main()
 {
-    raylib::Window window(1280, 720);
+    raylib::Window window(1280, 720, "Classic Hearthstone Simulator");
     window.SetTargetFPS(60);
 
     const Decklist HANDLOCK = handlock(), FACE_HUNTER = face_hunter(), CONTROL_WARRIOR = control_warrior();
@@ -22,6 +22,12 @@ int main()
 
     DeckSelection selection(window, decklists, logic_files);
     auto [player_deck, bot_deck, bot_logic_file] = selection.run();
+
+    if(player_deck == nullptr)
+    {
+        SPDLOG_INFO("Game aborted during deck selection");
+        return 0;
+    }
 
     const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     Rng rng(seed);

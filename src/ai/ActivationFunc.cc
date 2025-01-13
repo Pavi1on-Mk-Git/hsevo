@@ -41,3 +41,8 @@ std::string ActivationFunc::name() const
         return "UNKNOWN";
     }
 }
+
+std::ostream& operator<<(std::ostream& out, const ActivationFunc& func)
+{
+    return out << func.name();
+}

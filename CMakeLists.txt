@@ -13,6 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 file(MAKE_DIRECTORY "./results")
 file(MAKE_DIRECTORY "./results/specimen")
 file(MAKE_DIRECTORY "./results/scores")
+file(MAKE_DIRECTORY "./results/comparisons")
 
 file(GLOB_RECURSE AI_SOURCES CONFIGURE_DEPENDS "src/ai/*.cc")
 file(GLOB_RECURSE GUI_SOURCES CONFIGURE_DEPENDS "src/gui/*.cc")

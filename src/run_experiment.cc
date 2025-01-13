@@ -16,6 +16,13 @@ static const unsigned SEED_COUNT = 30;
 static const unsigned ITERATIONS = 1000;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
+std::ostream& operator<<(std::ostream& out, const std::vector<double>& vec)
+{
+    for(const auto& val: vec)
+        out << val << "_";
+    return out;
+}
+
 template <typename Algo, typename Evo, typename Config>
 void single_seed_experiment(
     unsigned seed, const std::array<Config, DECK_COUNT>& configs, std::mutex& data_mutex,
@@ -127,19 +134,25 @@ void experiment(const std::array<Config, DECK_COUNT>& configs)
 template <typename Evo>
 void score_once(
     unsigned seed, const std::array<std::vector<Evo>, DECK_COUNT>& populations,
-    std::array<std::vector<unsigned>, DECK_COUNT>& total_scores, std::mutex& score_mutex
+    std::array<std::vector<unsigned>, DECK_COUNT>& total_scores, std::ofstream& comp_result_file,
+    std::mutex& score_mutex
 )
 {
     Rng rng(seed);
 
-    for(auto [total_score_vec, current_score_vec]:
-        std::views::zip(total_scores, score_populations<Evo, DECK_COUNT>(populations, decklists, rng)))
-    {
-        std::lock_guard lock(score_mutex);
+    auto current_scores = score_populations<Evo, DECK_COUNT>(populations, decklists, rng);
 
+    std::lock_guard lock(score_mutex);
+
+    for(auto [total_score_vec, current_score_vec]: std::views::zip(total_scores, current_scores))
+    {
         for(auto [total, current]: std::views::zip(total_score_vec, current_score_vec))
+        {
             total += current;
+            comp_result_file << current << ",";
+        }
     }
+    comp_result_file << "\n";
 };
 
 template <typename Algo, typename Evo, typename Config, typename Param>
@@ -154,7 +167,7 @@ void run_experiment(
     {
         auto [name, config_loader] = *input_data;
 
-        std::ifstream in(name);
+        std::ifstream in("results/" + name + ".txt");
         boost::archive::text_iarchive iarchive(in);
 
         for(auto& config: std::views::reverse(configs))
@@ -184,16 +197,26 @@ void run_experiment(
 
     std::mutex score_mutex;
     std::array<std::vector<unsigned>, DECK_COUNT> total_scores;
+
+    std::ofstream comp_result_file("results/comparisons/" + output_file_name + ".csv");
+
+    for(const auto& decklist: decklists)
+        for(const auto& param: parameters)
+            comp_result_file << decklist.name << "_" << param << ",";
+    comp_result_file << "\n";
+
     for(auto& total_score_vec: total_scores)
         total_score_vec.resize(parameters.size(), 0);
 
     {
         std::vector<std::jthread> threads;
         for(unsigned seed = 0; seed < SEED_COUNT; ++seed)
-            threads.push_back(std::jthread([&, seed]() { score_once(seed, populations, total_scores, score_mutex); }));
+            threads.push_back(std::jthread([&, seed]() {
+                score_once(seed, populations, total_scores, comp_result_file, score_mutex);
+            }));
     }
 
-    std::ofstream out(output_file_name);
+    std::ofstream out("results/" + output_file_name + ".txt");
     boost::archive::text_oarchive oarchive(out);
 
     for(const auto& total_score_vec: total_scores)
@@ -224,7 +247,7 @@ void run_experiment_neat()
     run_experiment<NEAT, Network, NEATConfig, ActivationFunc>(
         configs, activations,
         [](NEATConfig& changed_config, const ActivationFunc& activation) { changed_config.activation = activation; },
-        "results/hyper_activations.txt"
+        "activations"
     );
 
     run_experiment<NEAT, Network, NEATConfig, std::vector<double>>(
@@ -240,9 +263,9 @@ void run_experiment_neat()
             changed_config.weight_coeff = weight;
             changed_config.similarity_threshold = threshold;
         },
-        "results/hyper_similarities.txt",
+        "similarities",
         std::make_pair(
-            "results/hyper_activations.txt",
+            "activations",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.activation; }
         )
     );
@@ -250,9 +273,9 @@ void run_experiment_neat()
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, weight_mutation_probs,
         [](NEATConfig& changed_config, const double& weight) { changed_config.weight_mutation_prob = weight; },
-        "results/hyper_weight_mutations.txt",
+        "weight_mutations",
         std::make_pair(
-            "results/hyper_similarities.txt",
+            "similarities",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) {
                 std::vector<double> similarity;
                 iarchive >> similarity;
@@ -267,9 +290,9 @@ void run_experiment_neat()
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, add_node_mutation_probs,
         [](NEATConfig& changed_config, const double& node) { changed_config.add_node_mutation_prob = node; },
-        "results/hyper_add_node_mutations.txt",
+        "add_node_mutations",
         std::make_pair(
-            "results/hyper_weight_mutations.txt",
+            "weight_mutations",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.weight_mutation_prob; }
         )
     );
@@ -277,19 +300,19 @@ void run_experiment_neat()
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, add_connection_probs,
         [](NEATConfig& changed_config, const double& conn) { changed_config.add_connection_prob = conn; },
-        "results/hyper_add_connections.txt",
+        "add_connections",
         std::make_pair(
-            "results/hyper_add_node_mutations.txt", [](NEATConfig& config, boost::archive::text_iarchive& iarchive
-                                                    ) { iarchive >> config.add_node_mutation_prob; }
+            "add_node_mutations", [](NEATConfig& config, boost::archive::text_iarchive& iarchive
+                                  ) { iarchive >> config.add_node_mutation_prob; }
         )
     );
 
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, weight_perturbation_probs,
         [](NEATConfig& changed_config, const double& weight) { changed_config.weight_perturbation_prob = weight; },
-        "results/hyper_weight_perturbations.txt",
+        "weight_perturbations",
         std::make_pair(
-            "results/hyper_add_connections.txt",
+            "add_connections",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.add_connection_prob; }
         )
     );
@@ -297,19 +320,19 @@ void run_experiment_neat()
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, mutation_strengths,
         [](NEATConfig& changed_config, const double& strength) { changed_config.mutation_strength = strength; },
-        "results/hyper_mutation_strengths.txt",
+        "mutation_strengths",
         std::make_pair(
-            "results/hyper_weight_perturbations.txt", [](NEATConfig& config, boost::archive::text_iarchive& iarchive
-                                                      ) { iarchive >> config.weight_perturbation_prob; }
+            "weight_perturbations", [](NEATConfig& config, boost::archive::text_iarchive& iarchive
+                                    ) { iarchive >> config.weight_perturbation_prob; }
         )
     );
 
     run_experiment<NEAT, Network, NEATConfig, double>(
         configs, crossover_probs,
         [](NEATConfig& changed_config, const double& crossover) { changed_config.crossover_prob = crossover; },
-        "results/hyper_crossovers.txt",
+        "crossovers",
         std::make_pair(
-            "results/hyper_mutation_strengths.txt",
+            "mutation_strengths",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.mutation_strength; }
         )
     );
@@ -319,9 +342,9 @@ void run_experiment_neat()
         [](NEATConfig& changed_config, const double& inherit) {
             changed_config.inherit_connection_disabled_prob = inherit;
         },
-        "results/hyper_inherit_disableds.txt",
+        "inherit_disableds",
         std::make_pair(
-            "results/hyper_crossovers.txt",
+            "crossovers",
             [](NEATConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.crossover_prob; }
         )
     );
@@ -338,26 +361,21 @@ void run_experiment_simple_evo()
     };
 
     run_experiment<SimpleEvo, EvoScorer, EvoConfig, unsigned>(
-        configs, mu_s, [](EvoConfig& changed_config, const unsigned& mu) { changed_config.mu = mu; },
-        "results/hyper_mus.txt"
+        configs, mu_s, [](EvoConfig& changed_config, const unsigned& mu) { changed_config.mu = mu; }, "mus"
     );
 
     run_experiment<SimpleEvo, EvoScorer, EvoConfig, unsigned>(
         configs, lambdas, [](EvoConfig& changed_config, const unsigned& lambda) { changed_config.lambda = lambda; },
-        "results/hyper_lambdas.txt",
-        std::make_pair(
-            "results/hyper_mus.txt",
-            [](EvoConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.mu; }
-        )
+        "lambdas",
+        std::make_pair("mus", [](EvoConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.mu; })
     );
 
     run_experiment<SimpleEvo, EvoScorer, EvoConfig, double>(
         configs, init_mutation_strengths,
         [](EvoConfig& changed_config, const double& strength) { changed_config.init_mutation_strength = strength; },
-        "results/hyper_init_mutation_strengths.txt",
+        "init_mutation_strengths",
         std::make_pair(
-            "results/hyper_lambdas.txt",
-            [](EvoConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.lambda; }
+            "lambdas", [](EvoConfig& config, boost::archive::text_iarchive& iarchive) { iarchive >> config.lambda; }
         )
     );
 }

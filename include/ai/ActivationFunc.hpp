@@ -62,5 +62,13 @@ public:
      */
     std::string name() const;
 };
-
 #endif
+
+/**
+ * Output the function name into a stream
+ *
+ * @param out Stream to write the name to
+ * @param func Instance of an activation function
+ * @return Modified stream
+ */
+std::ostream& operator<<(std::ostream& out, const ActivationFunc& func);

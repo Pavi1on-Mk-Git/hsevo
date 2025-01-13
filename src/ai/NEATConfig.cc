@@ -10,7 +10,7 @@ std::string NEATConfig::name() const
     auto concat = [&name_stream](const auto& value) { name_stream << value << '_'; };
 
     concat(population_size);
-    concat(activation.name());
+    concat(activation);
     concat(similarity_threshold);
     concat(excess_coeff);
     concat(disjoint_coeff);

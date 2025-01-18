@@ -10,6 +10,7 @@
 #include "ai/SimpleEvo.h"
 #include "ai/evo_functions.hpp"
 #include "logic/decklists.h"
+#include "players/RandomPlayerLogic.h"
 #include "utils/Rng.h"
 
 static const unsigned SEED_COUNT = 30;
@@ -170,7 +171,7 @@ void run_experiment(
         std::ifstream in("results/" + name + ".txt");
         boost::archive::text_iarchive iarchive(in);
 
-        for(auto& config: std::views::reverse(configs))
+        for(auto& config: configs)
             config_loader(config, iarchive);
     }
 
@@ -379,6 +380,95 @@ void run_experiment_simple_evo()
         )
     );
 }
+
+template <unsigned Count>
+void score_comparison(
+    unsigned seed, unsigned iterations, const std::vector<Network>& population,
+    const std::array<Decklist, Count>& decklists, std::ofstream& comp_result_file, std::mutex& score_mutex
+)
+{
+    Rng rng(seed);
+
+    for(unsigned iteration = 0; iteration < iterations; ++iteration)
+    {
+        std::array<std::vector<unsigned>, Count> scores;
+        for(auto& score: scores)
+            score.resize(2, 0);
+
+        std::array<std::vector<std::unique_ptr<PlayerLogic>>, Count> deck_players;
+        for(auto [players, decklist, member]: std::views::zip(deck_players, decklists, population))
+        {
+            players.push_back(std::make_unique<EvoPlayerLogic<Network>>(decklist, member, rng));
+            players.push_back(std::make_unique<RandomPlayerLogic>(decklist, rng));
+        }
+
+        auto deck_ids = std::views::iota(0u, Count);
+        auto player_ids = std::views::iota(0u, 2u);
+
+        for(auto [fst_deck_id, fst_player_id, snd_deck_id, snd_player_id]:
+            std::views::cartesian_product(deck_ids, player_ids, deck_ids, player_ids))
+        {
+            if(fst_player_id == snd_player_id && fst_deck_id == snd_deck_id)
+                continue;
+
+            const auto& fst_player = deck_players.at(fst_deck_id).at(fst_player_id);
+            const auto& snd_player = deck_players.at(snd_deck_id).at(snd_player_id);
+
+            auto winner = run_game(fst_player, snd_player, rng);
+
+            switch(winner)
+            {
+            case GameResult::PLAYER_1:
+                scores.at(fst_deck_id).at(fst_player_id)++;
+                break;
+            case GameResult::PLAYER_2:
+                scores.at(snd_deck_id).at(snd_player_id)++;
+                break;
+            default:
+                break;
+            }
+        }
+
+        std::lock_guard lock(score_mutex);
+
+        for(const auto& current_score_vec: scores)
+            for(const auto& current: current_score_vec)
+                comp_result_file << current << ",";
+        comp_result_file << "\n";
+    }
+}
+
+void run_comparison_neat()
+{
+    std::vector<Network> best_networks;
+
+    std::ifstream warlock_in("./results/specimen/Handlock_20_ID_4_1_1_3_0.6_0.02_0.05_0.3_0.1_0.9_0.25_.txt");
+    best_networks.emplace_back(warlock_in);
+
+    std::ifstream hunter_in("./results/specimen/Face Hunter_20_TANH_3_1_1_0.4_0.2_0.02_0.4_0.9_0.2_0.25_0.25_.txt");
+    best_networks.emplace_back(hunter_in);
+
+    std::ifstream warrior_in("./results/specimen/Control Warrior_20_ID_3_1_1_0.4_0.6_0.05_0.02_0.7_0.2_0.5_0.75_.txt");
+    best_networks.emplace_back(warrior_in);
+
+    std::mutex score_mutex;
+    std::ofstream comp_result_file("results/vs_random.csv");
+
+    for(const auto& decklist: decklists)
+        for(const auto& type: {"NEAT", "random"})
+            comp_result_file << decklist.name << "_" << type << ",";
+    comp_result_file << "\n";
+
+    {
+        std::vector<std::jthread> threads;
+        for(unsigned seed = 0; seed < 30; ++seed)
+            threads.push_back(std::jthread([&, seed]() {
+                score_comparison<DECK_COUNT>(seed, 1000000, best_networks, decklists, comp_result_file, score_mutex);
+            }));
+    }
+}
+
+#include <iostream>
 
 int main()
 {

@@ -4,3 +4,5 @@ docs/*.pdf
 code_archives
 logs/
 results/
+.venv/
+plots/

@@ -9,7 +9,7 @@
 /**
  * Logic of a player who makes decisions completely randomly
  */
-class RandomPlayerLogic: PlayerLogic
+class RandomPlayerLogic: public PlayerLogic
 {
 private:
     /**

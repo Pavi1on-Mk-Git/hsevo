@@ -14,6 +14,7 @@ file(MAKE_DIRECTORY "./results")
 file(MAKE_DIRECTORY "./results/specimen")
 file(MAKE_DIRECTORY "./results/scores")
 file(MAKE_DIRECTORY "./results/comparisons")
+file(MAKE_DIRECTORY "./plots")
 
 file(GLOB_RECURSE AI_SOURCES CONFIGURE_DEPENDS "src/ai/*.cc")
 file(GLOB_RECURSE GUI_SOURCES CONFIGURE_DEPENDS "src/gui/*.cc")

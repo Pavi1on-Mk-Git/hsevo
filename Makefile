@@ -3,6 +3,7 @@ BROWSER = powershell.exe
 .DEFAULT_GOAL := all
 
 .PHONY: test
+.PHONY: plots
 
 run: hsevo
 	@ ./build/bin/hsevo
@@ -43,6 +44,17 @@ profile:
 
 zip:
 	@ zip -r ./code_archives/HSEVO_$$(date '+%d.%m.%Y').zip ./include ./src ./test ./.clang-format ./CMakeLists.txt ./Makefile
+
+plots:
+	@ if ! python3 -m venv --help > /dev/null 2>&1; then \
+		echo "Error: Python venv module is not available. Please install Python 3 and ensure venv is enabled."; \
+		exit 1; \
+	  fi
+	@ if [ ! -d ".venv" ]; then \
+		python3 -m venv .venv; \
+	  fi
+	@ . .venv/bin/activate && pip install -r scripts/requirements.txt > /dev/null
+	@ . .venv/bin/activate && python ./scripts/draw_plots.py
 
 %:
 	@ $(MAKE) -j$$(nproc) --no-print-directory -C build $@

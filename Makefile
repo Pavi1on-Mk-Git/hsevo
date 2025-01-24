@@ -1,4 +1,4 @@
-BROWSER = powershell.exe
+BROWSER = xdg-open
 
 .DEFAULT_GOAL := all
 

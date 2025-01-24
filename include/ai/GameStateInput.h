@@ -16,6 +16,11 @@ struct HeroStateInput
     int health;
 
     /**
+     * Armour of the hero
+     */
+    unsigned armour;
+
+    /**
      * Whether or not the hero can currently attack
      */
     bool can_attack;
@@ -91,7 +96,7 @@ struct GameStateInput
     /**
      * Total size of the input (To be updated when parts of this class change)
      */
-    static constexpr unsigned INPUT_SIZE = 4 + 6 * Board::MAX_BOARD_SIZE + 4;
+    static constexpr unsigned INPUT_SIZE = 5 + 6 * Board::MAX_BOARD_SIZE + 4;
 
     /**
      * Input of both players

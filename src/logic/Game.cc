@@ -318,8 +318,10 @@ PlayerInput Game::get_player_state(unsigned player_index) const
     const auto& hero = player.hero;
 
     auto hero_hero = player.hero->weapon ?
-                         HeroStateInput{hero->health, hero->active, hero->weapon->attack, hero->weapon->durability} :
-                         HeroStateInput{hero->health, false, 0, 0};
+                         HeroStateInput{
+                             hero->health, hero->armour, hero->active, hero->weapon->attack, hero->weapon->durability
+                         } :
+                         HeroStateInput{hero->health, hero->armour, false, 0, 0};
 
     std::array<MinionStateInput, Board::MAX_BOARD_SIZE> minion_heros;
 

@@ -7,17 +7,20 @@
 
 Network::Network(const Genome& genome, const ActivationFunc& activation): activation_(activation)
 {
-    nodes_.reserve(genome.next_node_id);
+    std::vector<unsigned> node_to_position;
+    node_to_position.resize(genome.next_node_id);
 
+    unsigned current_position = 0;
     for(const auto& [layer_id, layer_nodes]: genome.layers)
         for(NodeId node: layer_nodes)
-            nodes_.push_back(node);
+            node_to_position.at(node) = current_position++;
 
     in_connections_.resize(genome.next_node_id);
 
     for(const auto& [connection_hash, connection]: genome.connections)
         if(connection.enabled)
-            in_connections_.at(connection.to).emplace_back(connection.from, connection.weight);
+            in_connections_.at(node_to_position.at(connection.to))
+                .emplace_back(node_to_position.at(connection.from), connection.weight);
 }
 
 Network::Network(std::istream& in)
@@ -29,7 +32,7 @@ Network::Network(std::istream& in)
 double Network::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& input_vec) const
 {
     std::vector<double> node_values;
-    node_values.resize(nodes_.size());
+    node_values.resize(in_connections_.size());
 
     node_values.at(0) = 1;
 
@@ -44,7 +47,7 @@ double Network::score_vec(const std::array<double, GameStateInput::INPUT_SIZE>& 
             }
         ));
 
-    return node_values.at(nodes_.size() - 1);
+    return node_values.at(node_values.size() - 1);
 }
 
 void Network::save(std::ostream& out) const

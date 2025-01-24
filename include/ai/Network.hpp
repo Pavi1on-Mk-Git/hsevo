@@ -26,18 +26,13 @@ private:
     template <typename Archive>
     void serialize(Archive& archive, const unsigned)
     {
-        archive & activation_ & nodes_ & in_connections_;
+        archive & activation_ & in_connections_;
     }
 
     /**
      * Activation function used by the network
      */
     ActivationFunc activation_;
-
-    /**
-     * Nodes present in the network
-     */
-    std::vector<NodeId> nodes_;
 
     /**
      * Input connections for each node present in the network

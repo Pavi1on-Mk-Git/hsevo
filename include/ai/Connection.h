@@ -13,7 +13,7 @@ struct Connection
     /**
      * Weight bounds of an connection
      */
-    static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 1.;
+    static constexpr double MIN_WEIGHT = 0., MAX_WEIGHT = 10.;
 
     /**
      * Ids of connection's source and target nodes

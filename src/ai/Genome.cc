@@ -33,7 +33,7 @@ void Genome::add_connection(NodeId from, NodeId to, double weight)
 
 void Genome::add_node_to_layer(unsigned layer)
 {
-    auto found_layer = std::ranges::find_if(layers, [&layer](const auto& entry) { return entry.first == layer; });
+    auto found_layer = std::ranges::lower_bound(layers, layer, {}, [](const auto& entry) { return entry.first; });
 
     if(found_layer != layers.end())
     {
@@ -46,6 +46,12 @@ void Genome::add_node_to_layer(unsigned layer)
     {
         auto& new_layer = layers.emplace_back(layer, std::vector<NodeId>{});
         new_layer.second.push_back(next_node_id++);
+
+        auto bound = std::ranges::lower_bound(layers, new_layer.first, {}, [](const auto& layer) {
+            return layer.first;
+        });
+
+        std::ranges::rotate(bound, layers.end() - 1, layers.end());
     }
 
     node_to_layer_.push_back(layer);
@@ -82,7 +88,7 @@ void Genome::mutate_add_node()
 
     add_connection(0, next_node_id, 0.);
 
-    add_node_to_layer(node_to_layer_.at(from) + node_to_layer_.at(to) / 2);
+    add_node_to_layer(node_to_layer_.at(from) / 2 + node_to_layer_.at(to) / 2);
 }
 
 void Genome::mutate_add_connection()
@@ -99,7 +105,8 @@ void Genome::mutate_add_connection()
     if(layer_to < layer_from)
         std::swap(layer_to, layer_from);
 
-    const auto &layer_from_nodes = layers.at(layer_from).second, layer_to_nodes = layers.at(layer_to).second;
+    const auto& layer_from_nodes = layers.at(layer_from).second;
+    const auto& layer_to_nodes = layers.at(layer_to).second;
 
     NodeId node_from = layer_from_nodes.at(rng_.get().uniform_int(0, layer_from_nodes.size() - 1)),
            node_to = layer_to_nodes.at(rng_.get().uniform_int(0, layer_to_nodes.size() - 1));

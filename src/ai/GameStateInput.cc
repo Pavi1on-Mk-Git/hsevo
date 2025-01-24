@@ -11,6 +11,7 @@ std::array<std::array<double, GameStateInput::INPUT_SIZE>, 2> GameStateInput::ge
         auto add_to_element = [&](double value) { *result_element_it++ = value; };
 
         add_to_element(player.hero.health);
+        add_to_element(player.hero.armour);
         add_to_element(player.hero.can_attack);
         add_to_element(player.hero.weapon_attack);
         add_to_element(player.hero.weapon_durability);

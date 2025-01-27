@@ -10,8 +10,8 @@
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
-static const unsigned SEED_COUNT = 30;
-static const unsigned ITERATIONS = 30;
+static const unsigned SEED_COUNT = 1;
+static const unsigned ITERATIONS = 5;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 void single_seed_experiment(unsigned seed, const std::array<NEATConfig, DECK_COUNT>& configs)
@@ -82,14 +82,12 @@ int main()
         {1., 1., 0.4, 3.},
     };
 
-    std::array<NEATConfig, DECK_COUNT> configs{default_config(), default_config(), default_config()};
+    std::array<NEATConfig, DECK_COUNT> configs{
+        NEATConfig::default_config(), NEATConfig::default_config(), NEATConfig::default_config()
+    };
 
     // Similarities
     {
-        configs.at(0).activation = ActivationFuncType::SIGMOID;
-        configs.at(1).activation = ActivationFuncType::ID;
-        configs.at(2).activation = ActivationFuncType::SIGMOID;
-
         std::array<std::vector<Network>, DECK_COUNT> populations;
 
         for(const auto& similarity: similarities)

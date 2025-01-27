@@ -14,7 +14,7 @@
 #include "utils/Rng.h"
 
 static const unsigned SEED_COUNT = 30;
-static const unsigned ITERATIONS = 1000;
+static const unsigned ITERATIONS = 500;
 static const std::array<Decklist, DECK_COUNT> decklists = get_decklists();
 
 std::ostream& operator<<(std::ostream& out, const std::vector<double>& vec)
@@ -442,13 +442,15 @@ void run_comparison_neat()
 {
     std::vector<Network> best_networks;
 
-    std::ifstream warlock_in("./results/specimen/Handlock_20_ID_4_1_1_3_0.6_0.02_0.05_0.3_0.1_0.9_0.25_.txt");
+    std::ifstream warlock_in("./results/specimen/Handlock_20_ID_3_1_1_0.4_0.2_0.01_0.05_0.9_0.1_0.75_0.75_.txt");
     best_networks.emplace_back(warlock_in);
 
-    std::ifstream hunter_in("./results/specimen/Face Hunter_20_TANH_3_1_1_0.4_0.2_0.02_0.4_0.9_0.2_0.25_0.25_.txt");
+    std::ifstream hunter_in("./results/specimen/Face Hunter_20_SIGMOID_3_1_1_0.4_0.2_0.02_0.05_0.9_0.2_0.75_0.75_.txt");
     best_networks.emplace_back(hunter_in);
 
-    std::ifstream warrior_in("./results/specimen/Control Warrior_20_ID_3_1_1_0.4_0.6_0.05_0.02_0.7_0.2_0.5_0.75_.txt");
+    std::ifstream warrior_in(
+        "./results/specimen/Control Warrior_20_SIGMOID_3_1_1_0.4_0.2_0.2_0.02_0.7_0.1_0.75_0.75_.txt"
+    );
     best_networks.emplace_back(warrior_in);
 
     std::mutex score_mutex;
@@ -463,14 +465,13 @@ void run_comparison_neat()
         std::vector<std::jthread> threads;
         for(unsigned seed = 0; seed < 30; ++seed)
             threads.push_back(std::jthread([&, seed]() {
-                score_comparison<DECK_COUNT>(seed, 1000000, best_networks, decklists, comp_result_file, score_mutex);
+                score_comparison<DECK_COUNT>(seed, 100000, best_networks, decklists, comp_result_file, score_mutex);
             }));
     }
 }
 
-#include <iostream>
-
 int main()
 {
-    run_experiment_neat();
+    // run_experiment_neat();
+    run_comparison_neat();
 }

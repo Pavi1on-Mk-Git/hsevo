@@ -13,7 +13,7 @@ ConnectionHash Genome::get_connection_hash(NodeId from, NodeId to)
     return hash;
 }
 
-std::optional<Connection> Genome::find_connection(NodeId from, NodeId to)
+Connection* Genome::find_connection(NodeId from, NodeId to)
 {
     const ConnectionHash hash = get_connection_hash(from, to);
 
@@ -21,9 +21,7 @@ std::optional<Connection> Genome::find_connection(NodeId from, NodeId to)
         return entry.first == hash;
     });
 
-    if(found_connection != connections.end())
-        return found_connection->second;
-    return std::nullopt;
+    return found_connection != connections.end() ? &found_connection->second : nullptr;
 }
 
 void Genome::add_connection(NodeId from, NodeId to, double weight)
@@ -111,7 +109,7 @@ void Genome::mutate_add_connection()
     NodeId node_from = layer_from_nodes.at(rng_.get().uniform_int(0, layer_from_nodes.size() - 1)),
            node_to = layer_to_nodes.at(rng_.get().uniform_int(0, layer_to_nodes.size() - 1));
 
-    auto connection = find_connection(node_from, node_to);
+    auto* connection = find_connection(node_from, node_to);
     if(connection)
         connection->enabled = true;
     else

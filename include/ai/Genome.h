@@ -1,7 +1,6 @@
 #ifndef GENOME_HPP
 #define GENOME_HPP
 
-#include <optional>
 #include <vector>
 
 #include "ai/Connection.h"
@@ -39,9 +38,9 @@ private:
      *
      * @param from Id of the source node
      * @param to Id of the target node
-     * @return The connection if it exists, `std::nullopt` otherwise
+     * @return The connection if it exists, `nullptr` otherwise
      */
-    std::optional<Connection> find_connection(NodeId from, NodeId to);
+    Connection* find_connection(NodeId from, NodeId to);
 
     /**
      * Add a connection between two nodes to the genome

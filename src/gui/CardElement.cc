@@ -45,7 +45,7 @@ void CardElement::draw_(const Game& game) const
         Game game_copy(game);
         if(!gui_.is_player_turn())
             game_copy.switch_active_player();
-        draw_text(std::to_string(card.card->mana_cost(game_copy)), number_text_height, mana_rect);
+        draw_text(std::to_string(card.mana_cost(game_copy)), number_text_height, mana_rect);
 
         const auto minion = dynamic_cast<const MinionCard*>(card.card);
         if(minion != nullptr)

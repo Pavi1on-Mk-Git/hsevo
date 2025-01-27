@@ -368,11 +368,11 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action) const
 {
     Game game{*this};
 
-    game.current_player().mana -= action.card_cost;
+    auto played_hand_card = game.current_player().hand.remove_card(action.hand_position);
 
-    const auto* played_card = static_cast<const MinionCard*>(
-        game.current_player().hand.remove_card(action.hand_position).card
-    );
+    game.current_player().mana -= action.card_cost + played_hand_card.mana_cost_increase;
+
+    const auto* played_card = static_cast<const MinionCard*>(played_hand_card.card);
     game.add_minion(played_card, action.board_position);
 
     std::vector<Game> final_states;
@@ -453,13 +453,17 @@ std::vector<Game> Game::do_fight_actions(std::vector<std::pair<Game, FightAction
             break;
         }
 
-        apply_to_entity(state, std::vector<OnPlayArg>{action.defender, *action.defender_position}, [&](Entity& entity) {
-            entity.deal_dmg(attacker_dmg, state);
-        });
+        if(attacker_dmg > 0)
+            apply_to_entity(
+                state, std::vector<OnPlayArg>{action.defender, *action.defender_position},
+                [&](Entity& entity) { entity.deal_dmg(attacker_dmg, state); }
+            );
 
-        apply_to_entity(state, std::vector<OnPlayArg>{action.attacker, *action.attacker_position}, [&](Entity& entity) {
-            entity.deal_dmg(defender_dmg, state);
-        });
+        if(defender_dmg > 0)
+            apply_to_entity(
+                state, std::vector<OnPlayArg>{action.attacker, *action.attacker_position},
+                [&](Entity& entity) { entity.deal_dmg(defender_dmg, state); }
+            );
 
         std::ranges::move(state.trigger_on_death(), std::back_inserter(resulting_states));
     }

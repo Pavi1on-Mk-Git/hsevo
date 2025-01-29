@@ -33,7 +33,7 @@ void Genome::add_node_to_layer(unsigned layer)
 {
     auto found_layer = std::ranges::lower_bound(layers, layer, {}, [](const auto& entry) { return entry.first; });
 
-    if(found_layer != layers.end())
+    if(found_layer != layers.end() && found_layer->first == layer)
     {
         if((std::ranges::find(found_layer->second, next_node_id) != found_layer->second.end()))
             return;

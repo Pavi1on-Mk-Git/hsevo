@@ -1,4 +1,6 @@
 ### Zależności
+- C++23
+
 - CMake
 ```
 sudo apt install cmake

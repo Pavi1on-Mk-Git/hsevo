@@ -36,6 +36,9 @@ target_link_options(experiment_hsevo PRIVATE -static)
 add_executable(gui_hsevo ${AI_SOURCES} ${GUI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES} "src/gui.cc")
 target_compile_options(gui_hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
 
+add_executable(draw_hsevo "src/ai/Network.cc" "src/ai/ActivationFunc.cc" "src/draw_network.cc")
+target_compile_options(draw_hsevo PRIVATE ${DEBUG_FLAGS} -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG)
+
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "test/*.cc" ${AI_SOURCES} ${LOGIC_SOURCES} ${PLAYERS_SOURCES} ${UTILS_SOURCES})
 
 add_executable(test_hsevo ${TEST_SOURCES})
@@ -77,6 +80,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib_cpp)
 
 target_link_libraries(gui_hsevo PRIVATE raylib raylib_cpp)
+target_link_libraries(draw_hsevo PRIVATE raylib raylib_cpp)
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.83 REQUIRED serialization)
@@ -85,3 +89,4 @@ target_link_libraries(profile_hsevo PRIVATE Boost::serialization)
 target_link_libraries(experiment_hsevo PRIVATE Boost::serialization)
 target_link_libraries(gui_hsevo PRIVATE Boost::serialization)
 target_link_libraries(test_hsevo PRIVATE Boost::serialization)
+target_link_libraries(draw_hsevo PRIVATE Boost::serialization)

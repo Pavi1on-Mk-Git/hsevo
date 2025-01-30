@@ -65,6 +65,10 @@ public:
      * @param out Stream to save the network to
      */
     void save(std::ostream& out) const;
+
+#ifdef DRAW_NETWORK
+    friend void draw_network(const Network& network, unsigned node_radius, unsigned layer_spacing);
+#endif
 };
 
 #endif

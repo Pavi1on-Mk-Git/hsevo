@@ -29,6 +29,9 @@ test: test_hsevo
 debug_test: test_hsevo
 	@ gdb ./build/bin/test_hsevo
 
+draw: draw_hsevo
+	@ ./build/bin/draw_hsevo $(net)
+
 coverage: test_hsevo
 	@ ./build/bin/test_hsevo
 	@ lcov -q -no-external -d ./src -d ./include -d ./build/CMakeFiles/test_hsevo.dir -c --ignore-errors empty -o ./build/bin/test_coverage.info 2> /dev/null

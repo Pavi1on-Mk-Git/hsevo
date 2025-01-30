@@ -110,3 +110,12 @@ make zip
 ```bash
 make plots
 ```
+
+#### Wizualizacja wybranej sieci
+```bash
+make draw net="path/to/file/containing/net"
+```
+Należy dokonywać ucieczki wszelkich spacji występujących w ścieżce np.
+```bash
+make draw net="./results/specimen/Control\ Warrior_20_ID_4_1_1_3_0.2_0.02_0.05_0.9_0.2_0.75_0.75_.txt"
+```

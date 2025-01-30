@@ -445,12 +445,10 @@ void run_comparison_neat()
     std::ifstream warlock_in("./results/specimen/Handlock_20_ID_3_1_1_0.4_0.2_0.01_0.05_0.9_0.1_0.75_0.75_.txt");
     best_networks.emplace_back(warlock_in);
 
-    std::ifstream hunter_in("./results/specimen/Face Hunter_20_SIGMOID_3_1_1_0.4_0.2_0.02_0.05_0.9_0.2_0.75_0.75_.txt");
+    std::ifstream hunter_in("./results/specimen/Face Hunter_20_ID_4_1_1_3_0.2_0.02_0.05_0.5_0.4_0.75_0.75_.txt");
     best_networks.emplace_back(hunter_in);
 
-    std::ifstream warrior_in(
-        "./results/specimen/Control Warrior_20_SIGMOID_3_1_1_0.4_0.2_0.2_0.02_0.7_0.1_0.75_0.75_.txt"
-    );
+    std::ifstream warrior_in("./results/specimen/Control Warrior_20_ID_4_1_1_3_0.2_0.02_0.05_0.9_0.2_0.75_0.75_.txt");
     best_networks.emplace_back(warrior_in);
 
     std::mutex score_mutex;
@@ -472,6 +470,6 @@ void run_comparison_neat()
 
 int main()
 {
-    // run_experiment_neat();
-    run_comparison_neat();
+    run_experiment_neat();
+    // run_comparison_neat();
 }

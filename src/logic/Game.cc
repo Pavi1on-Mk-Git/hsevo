@@ -370,7 +370,7 @@ std::vector<Game> Game::do_action(const PlayMinionAction& action) const
 
     auto played_hand_card = game.current_player().hand.remove_card(action.hand_position);
 
-    game.current_player().mana -= action.card_cost + played_hand_card.mana_cost_increase;
+    game.current_player().mana -= played_hand_card.mana_cost(game);
 
     const auto* played_card = static_cast<const MinionCard*>(played_hand_card.card);
     game.add_minion(played_card, action.board_position);

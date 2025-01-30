@@ -6,13 +6,14 @@
 /**
  * Represents a card with possible modifiers it may receive while in player's hand
  */
-struct HandCard
+class HandCard
 {
+private:
     /**
      * Amount by which the card's cost is increased
      */
-    unsigned mana_cost_increase;
-
+    unsigned mana_cost_increase_;
+public:
     /**
      * Underlying card
      */

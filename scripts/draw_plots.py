@@ -148,8 +148,42 @@ def plot_vs_data(file: Comparison) -> None:
     plt.close()
 
 
+def load_score_progress(
+    warlock: str, hunter: str, warrior: str
+) -> list[list[list[int]]]:
+    loaded_files = []
+    for file_name in [warlock, hunter, warrior]:
+        with open("./results/scores/" + file_name, "r") as f:
+            data = []
+            for line in f:
+                cleaned_line = line.rstrip(",\n").strip()
+                if cleaned_line:
+                    data.append([int(value) for value in cleaned_line.split(",")[:-1]])
+            loaded_files.append(data)
+    return loaded_files
+
+
+def plot_score_progress(scores_data: list[list[list[int]]], name: str):
+    for deck_scores, colour in zip(scores_data, ["purple", "green", "orange"]):
+        deck_averages = [sum(x) / len(x) for x in zip(*deck_scores)]
+        plt.plot(deck_averages, color=colour)
+    plt.legend(["Handlock", "Face Hunter", "Control Warrior"])
+    plt.xlabel("Iteracja")
+    plt.ylabel("Średnia ocena")
+    plt.savefig(f"./plots/{name}.png", bbox_inches="tight")
+    plt.close()
+
+
 if __name__ == "__main__":
     files = load_comparison_files()
     plot_sum_data(files)
     plot_boxplot_data(files)
-    # plot_vs_data(load_vs_random())
+    plot_score_progress(
+        load_score_progress(
+            "Handlock_20_ID_3_1_1_0.4_0.2_0.01_0.05_0.9_0.1_0.75_0.75_",
+            "Face Hunter_20_ID_4_1_1_3_0.2_0.02_0.05_0.5_0.4_0.75_0.75_",
+            "Control Warrior_20_ID_4_1_1_3_0.2_0.02_0.05_0.9_0.2_0.75_0.75_",
+        ),
+        "score_progress",
+    )
+    plot_vs_data(load_vs_random())

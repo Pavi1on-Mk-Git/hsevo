@@ -211,7 +211,7 @@ GameGui::GameGui(
         ));
 }
 
-GameResult GameGui::run()
+BotGameResult GameGui::run()
 {
     while(!window_.ShouldClose() && !winner_)
     {
@@ -220,7 +220,17 @@ GameResult GameGui::run()
     }
 
     if(!window_.ShouldClose())
-        return *winner_;
+    {
+        if(*winner_ == GameResult::TIE)
+            return BotGameResult::TIE;
+
+        bool first_won = *winner_ == GameResult::PLAYER_1;
+
+        if(first_won == is_bot_first_)
+            return BotGameResult::BOT;
+        else
+            return BotGameResult::PLAYER;
+    }
     else
-        return GameResult::TIE;
+        return BotGameResult::TIE;
 }

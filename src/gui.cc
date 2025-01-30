@@ -5,6 +5,7 @@
 
 #include "gui/DeckSelection.h"
 #include "gui/GameGui.h"
+#include "gui/PostGameScreen.h"
 #include "logic/decklists.h"
 #include "utils/Rng.h"
 
@@ -34,5 +35,7 @@ int main()
     SPDLOG_INFO("Game played with seed: {}", seed);
 
     GameGui gui(window, player_deck, bot_deck, *bot_logic_file, rng);
-    gui.run();
+    auto result = gui.run();
+    PostGameScreen post_game(window, result);
+    post_game.run();
 }

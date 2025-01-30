@@ -10,6 +10,16 @@
 #include "utils/GuiElementId.h"
 
 /**
+ * Result of a game played against a bot
+ */
+enum class BotGameResult
+{
+    PLAYER,
+    BOT,
+    TIE
+};
+
+/**
  * Class which manages drawing a screen containg the game
  */
 class GameGui
@@ -109,7 +119,7 @@ public:
      * Run the game
      * @return Winner of the game
      */
-    GameResult run();
+    BotGameResult run();
 
     /**
      * Return information about the current turn

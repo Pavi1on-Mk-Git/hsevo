@@ -87,7 +87,7 @@ int main(int argc, char** argv)
     {
         std::ifstream in(argv[1]);
         Network net(in);
-        draw_network(net, 10, 200);
+        draw_network(net, 10, 100);
     }
     catch(boost::archive::archive_exception& e)
     {

@@ -68,6 +68,7 @@ def plot_sum_data(loaded_files: list[Comparison]) -> None:
 
         data.plot.bar(rot=0)
         plt.ylabel("Suma ocen")
+        plt.legend(title=param_name, loc="center left", bbox_to_anchor=(1, 0.5))
         plt.savefig(f"./plots/sum_{filename}.png", bbox_inches="tight")
         plt.close()
 
@@ -180,9 +181,9 @@ if __name__ == "__main__":
     plot_boxplot_data(files)
     plot_score_progress(
         load_score_progress(
-            "Handlock_20_ID_3_1_1_0.4_0.2_0.01_0.05_0.9_0.1_0.75_0.75_",
-            "Face Hunter_20_ID_4_1_1_3_0.2_0.02_0.05_0.5_0.4_0.75_0.75_",
-            "Control Warrior_20_ID_4_1_1_3_0.2_0.02_0.05_0.9_0.2_0.75_0.75_",
+            "Handlock_20_ID_3_1_1_0.4_0.6_0.02_0.02_0.9_0.4_0.5_0.75_",
+            "Face Hunter_20_ID_3_1_1_0.4_0.6_0.02_0.02_0.3_0.2_0.75_0.75_",
+            "Control Warrior_20_ID_4_1_1_3_0.8_0.01_0.05_0.3_0.6_0.75_0.75_",
         ),
         "score_progress",
     )
